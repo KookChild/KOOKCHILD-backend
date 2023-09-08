@@ -15,8 +15,5 @@ public class ManagementController {
 
     private final ManagementService managementService;
 
-    @GetMapping("/info")
-    public ResponseEntity<FindAccountResponse> findAccountInfo(){
-        return ResponseEntity.ok(new FindAccountResponse());
-    }
+
 }

@@ -31,4 +31,5 @@ public class Account extends BaseEntity {
     private Long balance;
     private String password;
     private AccountType type;
+    private String accountNum; //계좌번호
 }
