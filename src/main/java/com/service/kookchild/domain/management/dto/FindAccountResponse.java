@@ -23,6 +23,4 @@ public class FindAccountResponse {
     private Long balance;
     private String password;
     private AccountType type;
-
-
 }
