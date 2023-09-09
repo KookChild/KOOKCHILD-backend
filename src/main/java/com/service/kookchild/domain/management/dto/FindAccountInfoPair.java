@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class FindAccountInfoPair {
-    private Long childId;
-
-    private Long parentId;
+    private String childId;
+    private String parentId;
 }

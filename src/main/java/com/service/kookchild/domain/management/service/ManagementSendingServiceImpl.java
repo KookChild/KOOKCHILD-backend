@@ -17,23 +17,11 @@ public class ManagementSendingServiceImpl implements ManagementSendingService{
     private final AccountRepository accountRepository;
 
     @Override
-    public void updateParentBalance(String parentId) {
-        accountRepository.updateParentBalance(parentId);
-    }
-
-    @Override
-    public void updateChildBalance(String childId) {
-        accountRepository.updateChildBalance(childId);
-    }
-
-    @Override
     public FindAccountResponse sendMoney(FindAccountInfoPair fi) {
         FindAccountResponse fr = null;
-        try{
-            fr = accountRepository.sendMoney(String.valueOf(fi.getChildId()));
-        }catch(Exception e){
-
-        }
+        accountRepository.updateParentBalance(Long.parseLong(fi.getParentId()));
+        accountRepository.updateChildBalance(Long.parseLong(fi.getChildId()));
+        fr = accountRepository.sendMoney(Long.parseLong(fi.getChildId()));
         return fr;
     }
 }

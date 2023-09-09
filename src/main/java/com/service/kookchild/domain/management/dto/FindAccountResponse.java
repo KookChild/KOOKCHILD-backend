@@ -24,6 +24,11 @@ public class FindAccountResponse {
     private String password;
     private AccountType type;
     private String accountNum;
+    private String userName;
 
-
+    public FindAccountResponse(Long balance, String accountNum, String userName) {
+        this.balance = balance;
+        this.accountNum = accountNum;
+        this.userName = userName;
+    }
 }
