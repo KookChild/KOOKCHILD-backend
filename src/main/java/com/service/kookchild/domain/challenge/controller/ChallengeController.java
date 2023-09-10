@@ -59,14 +59,14 @@ public class ChallengeController {
             List<Challenge> challengeList = null;
             HttpSession session = request.getSession();
             switch (state) {
-                    /* (자녀가) 현재 참여중인 챌린지 */
+                /* (자녀가) 현재 참여중인 챌린지 */
                 case "proceeding":
                     challengeList = challengeService.getChallengeListByChildId(child_id);
                     /* (자녀에게) 추천을 한 챌린지 */
                 case "parentConfirmed":
                     challengeList = challengeService.getRecommendedChallenges(child_id);
                     break;
-                    /* default: 전체 챌린지 목록? --논의필요 */
+                /* default: 전체 챌린지 목록? --논의필요 */
                 default:
                     challengeList = challengeService.getAllChallenge();
             }

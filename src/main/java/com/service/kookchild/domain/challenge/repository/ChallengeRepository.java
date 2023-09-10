@@ -1,13 +1,14 @@
+
 package com.service.kookchild.domain.challenge.repository;
 
-import com.service.kookchild.domain.challenge.domain.Challenge;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
+        import com.service.kookchild.domain.challenge.domain.Challenge;
+        import org.springframework.data.jpa.repository.JpaRepository;
+        import org.springframework.data.jpa.repository.Query;
+        import org.springframework.data.repository.query.Param;
 
 
-import java.time.LocalDate;
-import java.util.List;
+        import java.time.LocalDate;
+        import java.util.List;
 
 public interface ChallengeRepository extends JpaRepository<Challenge,Long> {
 
@@ -43,7 +44,7 @@ public interface ChallengeRepository extends JpaRepository<Challenge,Long> {
     List<Challenge> getRecommendedChallenges(Long childId);
 
 
-   /* 챌린지 추천 */
+    /* 챌린지 추천 */
 //    @Query(value="")
 
 
