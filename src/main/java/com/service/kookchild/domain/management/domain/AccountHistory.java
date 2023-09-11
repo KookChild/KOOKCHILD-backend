@@ -12,6 +12,7 @@ import javax.persistence.*;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(name = "account_history")
 public class AccountHistory extends BaseEntity {
 
 

@@ -1,22 +1,23 @@
 package com.service.kookchild.domain.management.dto;
 
 import com.service.kookchild.domain.management.domain.AccountType;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Getter
 @Builder
-@AllArgsConstructor
+@Setter
 @NoArgsConstructor
 public class FindAccountInfoPair {
     private String childId;
     private String parentId;
 
-    public FindAccountInfoPair(String childId) {
+    public FindAccountInfoPair(String childId, String parentId) {
         System.out.println("생성자 객체생성");
         this.childId = childId;
-        this.parentId = null;
+        this.parentId = parentId;
+    }
+
+    public FindAccountInfoPair(String childId) {
+        this.childId = childId;
     }
 }

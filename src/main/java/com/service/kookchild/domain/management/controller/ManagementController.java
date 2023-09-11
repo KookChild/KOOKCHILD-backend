@@ -4,10 +4,12 @@ import com.service.kookchild.domain.management.dto.FindAccountInfoPair;
 import com.service.kookchild.domain.management.dto.FindAccountResponse;
 import com.service.kookchild.domain.management.service.ManagementSendingService;
 import com.service.kookchild.domain.management.service.ManagementService;
+import com.service.kookchild.domain.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -18,7 +20,9 @@ public class ManagementController {
     private final ManagementSendingService managementSendingService;
 
     @PostMapping("/send")
-    public ResponseEntity sendMoney(@RequestBody FindAccountInfoPair fi){
+    public ResponseEntity sendMoney(Authentication authentication, @RequestBody FindAccountInfoPair fi){
+        String email = getEmail(authentication);
+
         FindAccountResponse fr = null;
         try {
             fr = managementSendingService.sendChildMoney(fi);
@@ -30,7 +34,7 @@ public class ManagementController {
     }
 
     @GetMapping("/{child_id}")
-    public ResponseEntity checkChildMoney (@PathVariable int child_id){
+    public ResponseEntity checkChildMoney (Authentication authentication, @PathVariable int child_id){
         System.out.println(child_id);
 
         FindAccountResponse fr = null;
@@ -45,5 +49,22 @@ public class ManagementController {
             return new ResponseEntity(HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity(fr, HttpStatus.OK);
+    }
+
+    @GetMapping("/amount/{child_id}")
+    public ResponseEntity getChildConsumptionAndDeposit(Authentication authentication, @PathVariable int child_id){
+        Long amount = null;
+        try{
+            amount = managementSendingService.FindConsumption(new FindAccountInfoPair(String.valueOf(child_id)));
+        }catch(Exception e){
+            System.out.println(e);
+        }
+        return new ResponseEntity(amount, HttpStatus.OK);
+    }
+
+    public String getEmail(Authentication authentication) {
+        CustomUserDetails principal = (CustomUserDetails)authentication.getPrincipal();
+
+        return principal.getEmail();
     }
 }

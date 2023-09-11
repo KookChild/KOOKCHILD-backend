@@ -1,6 +1,7 @@
 package com.service.kookchild.domain.management.service;
 
 import com.service.kookchild.domain.management.domain.AccountHistory;
+import com.service.kookchild.domain.management.domain.AccountType;
 import com.service.kookchild.domain.management.dto.FindAccountInfoPair;
 import com.service.kookchild.domain.management.dto.FindAccountResponse;
 import com.service.kookchild.domain.management.repository.AccountHistoryRepository;
@@ -36,5 +37,12 @@ public class ManagementSendingServiceImpl implements ManagementSendingService{
     public FindAccountResponse checkChildMoney(FindAccountInfoPair fi) {
         System.out.println("sendChildMoney");
         return accountRepository.checkChildMoney(Long.parseLong(fi.getChildId().trim()));
-}
+    }
+
+    @Override
+    public Long FindConsumption(FindAccountInfoPair fi){
+        Long consumption = null;
+        consumption = accountHistoryRepository.findAmount(Long.parseLong(fi.getChildId().trim()), "예금");
+        return consumption;
+    }
 }
