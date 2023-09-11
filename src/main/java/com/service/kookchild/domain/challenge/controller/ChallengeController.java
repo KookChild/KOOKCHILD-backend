@@ -2,12 +2,15 @@ package com.service.kookchild.domain.challenge.controller;
 
 import com.service.kookchild.domain.challenge.domain.Challenge;
 import com.service.kookchild.domain.challenge.service.ChallengeService;
+import com.service.kookchild.domain.challenge.service.ChallengeStateService;
+import com.service.kookchild.domain.user.domain.ParentChild;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
@@ -19,6 +22,9 @@ public class ChallengeController {
 
     @Autowired
     private ChallengeService challengeService;
+
+    @Autowired
+    private ChallengeStateService challengeStateService;
 
     /*(자녀가) 자신이 참여하고 있는 챌린지 및 부모에게 추천받은 챌린지 조회 */
     @GetMapping("/challenge")
@@ -90,5 +96,41 @@ public class ChallengeController {
         }
     }
 
+    /* 부모가 챌린지에 대한 confirm을 업데이트 */
+    @PutMapping("/challenge/{challenge_id}/parent_confirm")
+    public ResponseEntity updateParentConfirm(@PathVariable Long challenge_id,
+                                              @RequestParam ParentChild parentChild, // 적절한 방법으로 ParentChild 객체를 얻습니다.
+                                              @RequestParam int parentReward) {
+        try {
+            challengeStateService.updateParentConfirm(challenge_id, parentChild, parentReward);
+            return new ResponseEntity(HttpStatus.OK);
+        } catch(Exception e) {
+            return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /* 자녀가 챌린지에 대한 confirm을 업데이트 */
+    @PutMapping("/challenge/{challenge_id}/child_confirm")
+    public ResponseEntity updateChildConfirm(@PathVariable Long challenge_id,
+                                             @RequestParam ParentChild parentChild) { // 적절한 방법으로 ParentChild 객체를 얻습니다.
+        try {
+            challengeStateService.updateChildConfirm(challenge_id, parentChild);
+            return new ResponseEntity(HttpStatus.OK);
+        } catch(Exception e) {
+            return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /* 챌린지의 proceeding 상태를 업데이트 */
+    @PutMapping("/challenge/{challenge_id}/proceeding")
+    public ResponseEntity updateProceedingStatus(@PathVariable Long challenge_id,
+                                                 @RequestParam ParentChild parentChild) { // 적절한 방법으로 ParentChild 객체를 얻습니다.
+        try {
+            challengeStateService.updateProceedingStatus(challenge_id, parentChild);
+            return new ResponseEntity(HttpStatus.OK);
+        } catch(Exception e) {
+            return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
 }
