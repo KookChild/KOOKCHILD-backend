@@ -29,9 +29,7 @@ public class MissionChildServiceImpl implements MissionChildService{
     @Transactional
     public MissionChildListDTO getMissionList(String email, String state) {
         List<MissionChildViewDTO> missionDTOList = new ArrayList<>();
-        User user = userRepository.findByEmail(email).orElseThrow(
-                () -> new UsernameNotFoundException("존재하지 않은 유저입니다.")
-        );
+        User user = findUser(email);
 
         ParentChild child = findParentChildByChildId(user.getId());
         List<Mission> missionList = new ArrayList<>();
@@ -54,13 +52,15 @@ public class MissionChildServiceImpl implements MissionChildService{
     @Override
     @Transactional
     public MissionDetailDTO getMission(String email, long missionId) {
-        User user = userRepository.findByEmail(email).orElseThrow(
-                () -> new UsernameNotFoundException("존재하지 않은 유저입니다.")
-        );
+        User user = findUser(email);
 
         Mission mission = missionChildRepository.findById(missionId).orElseThrow(
                 () -> new MissionNotFoundException("해당 미션이 존재하지 않습니다.")
         );
+
+        if (mission.getParentChild().getChild() != user || mission.getParentChild().getParent() != user) {
+            return null;
+        }
 
         boolean isParent = false;
         String childName = "";
@@ -89,27 +89,36 @@ public class MissionChildServiceImpl implements MissionChildService{
 
     @Override
     @Transactional
-    public void requestMissionConfirm(String email, long missionId) {
-        User user = userRepository.findByEmail(email).orElseThrow(
-                () -> new UsernameNotFoundException("존재하지 않은 유저입니다.")
-        );
+    public boolean requestMissionConfirm(String email, long missionId) {
+        User user = findUser(email);
         ParentChild child = findParentChildByChildId(user.getId());
         Mission mission = findMissionByChildId(missionId, child);
+        if(mission.isChildConfirm()) return false;
         mission.requestConfirm(true);
+        return true;
     }
 
     @Override
     @Transactional
-    public void updateMission(String email, MissionUpdateDTO missionUpdateDTO) {
+    public boolean updateMission(String email, MissionUpdateDTO missionUpdateDTO) {
         Mission mission = missionChildRepository.findById(missionUpdateDTO.getMissionId()).orElseThrow(
                 () -> new MissionNotFoundException("해당 미션이 존재하지 않습니다.")
         );
+        User user = findUser(email);
+        if(mission.getParentChild().getParent().getId()!=user.getId()) return false;
         mission.setMission(missionUpdateDTO);
+        return true;
     }
 
     @Override
-    public void deleteMission(String email, MissionDTO missionDTO) {
-        missionChildRepository.deleteById(missionDTO.getMissionId());
+    public boolean deleteMission(String email, MissionDTO missionDTO) {
+        User user = findUser(email);
+        Mission mission = missionChildRepository.findById(missionDTO.getMissionId()).orElseThrow(
+                () -> new MissionNotFoundException("해당 미션이 존재하지 않습니다.")
+        );
+        if(mission.getParentChild().getParent().getId()!=user.getId()) return false;
+        missionChildRepository.delete(mission);
+        return true;
     }
 
 
@@ -126,6 +135,13 @@ public class MissionChildServiceImpl implements MissionChildService{
     }
     private Mission findMissionByChildId(long missionId, ParentChild child){
         return missionChildRepository.findByIdAndParentChild(missionId, child);
+    }
+
+    private User findUser(String email){
+        User user = userRepository.findByEmail(email).orElseThrow(
+                () -> new UsernameNotFoundException("존재하지 않은 유저입니다.")
+        );
+        return user;
     }
 }
 

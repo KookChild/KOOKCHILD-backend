@@ -9,9 +9,9 @@ public interface MissionChildService {
     MissionChildListDTO getMissionList(String email, String state);
     MissionDetailDTO getMission(String email, long missionId);
 
-    void requestMissionConfirm(String email, long missionId);
+    boolean requestMissionConfirm(String email, long missionId);
 
-    void updateMission(String email, MissionUpdateDTO missionUpdateDTO);
+    boolean updateMission(String email, MissionUpdateDTO missionUpdateDTO);
 
-    void deleteMission(String email, MissionDTO missionDTO);
+    boolean deleteMission(String email, MissionDTO missionDTO);
 }
