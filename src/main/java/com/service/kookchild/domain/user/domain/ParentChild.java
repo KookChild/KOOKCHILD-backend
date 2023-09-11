@@ -1,10 +1,7 @@
 package com.service.kookchild.domain.user.domain;
 
 import com.service.kookchild.global.domain.BaseEntity;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 
@@ -27,5 +24,14 @@ public class ParentChild extends BaseEntity {
     private int level1Reward;
     private int level2Reward;
     private int level3Reward;
+
+    @Builder
+    public ParentChild(User parent, User child, int level1Reward, int level2Reward, int level3Reward){
+        this.parent = parent;
+        this.child = child;
+        this.level1Reward = level1Reward;
+        this.level2Reward = level2Reward;
+        this.level3Reward = level3Reward;
+    }
 
 }
