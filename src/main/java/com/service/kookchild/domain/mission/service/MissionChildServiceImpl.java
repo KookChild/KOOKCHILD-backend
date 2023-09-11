@@ -58,7 +58,7 @@ public class MissionChildServiceImpl implements MissionChildService{
                 () -> new MissionNotFoundException("해당 미션이 존재하지 않습니다.")
         );
 
-        if (mission.getParentChild().getChild() != user || mission.getParentChild().getParent() != user) {
+        if (!mission.getParentChild().getChild().equals(user) && !mission.getParentChild().getParent().equals(user)) {
             return null;
         }
 
@@ -75,7 +75,7 @@ public class MissionChildServiceImpl implements MissionChildService{
                 .childName(childName)
                 .title(mission.getTitle())
                 .content(mission.getContent())
-                .reward(mission.getReward()+"원")
+                .reward(mission.getReward())
                 .image(mission.getImage())
                 .startDate(mission.getStartDate())
                 .endDate(mission.getEndDate())
@@ -105,7 +105,7 @@ public class MissionChildServiceImpl implements MissionChildService{
                 () -> new MissionNotFoundException("해당 미션이 존재하지 않습니다.")
         );
         User user = findUser(email);
-        if(mission.getParentChild().getParent().getId()!=user.getId()) return false;
+        if(!mission.getParentChild().getParent().equals(user)) return false;
         mission.setMission(missionUpdateDTO);
         return true;
     }

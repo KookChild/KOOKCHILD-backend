@@ -32,7 +32,7 @@ public class MissionChildController {
     public ResponseEntity getMission(Authentication authentication, @PathVariable long missionId){
         String email = getEmail(authentication);
         MissionDetailDTO missionDetailDTO = missionChildService.getMission(email, missionId);
-        if(missionDetailDTO == null) return new ResponseEntity(HttpStatus.BAD_REQUEST);
+        if(missionDetailDTO == null) return ResponseEntity.badRequest().body("잘못된 접근입니다.");
         return ResponseEntity.ok(missionDetailDTO);
     }
 
