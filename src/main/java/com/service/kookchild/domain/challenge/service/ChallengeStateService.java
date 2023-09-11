@@ -13,5 +13,4 @@ public interface ChallengeStateService {
     @Transactional
     void updateChildConfirm(Long challengeId, ParentChild parentChild);
 
-    void updateProceedingStatus(Long challengeId, ParentChild parentChild);
 }

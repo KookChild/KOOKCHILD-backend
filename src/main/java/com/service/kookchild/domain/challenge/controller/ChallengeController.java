@@ -121,16 +121,5 @@ public class ChallengeController {
         }
     }
 
-    /* 챌린지의 proceeding 상태를 업데이트 */
-    @PutMapping("/challenge/{challenge_id}/proceeding")
-    public ResponseEntity updateProceedingStatus(@PathVariable Long challenge_id,
-                                                 @RequestParam ParentChild parentChild) { // 적절한 방법으로 ParentChild 객체를 얻습니다.
-        try {
-            challengeStateService.updateProceedingStatus(challenge_id, parentChild);
-            return new ResponseEntity(HttpStatus.OK);
-        } catch(Exception e) {
-            return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
 
 }

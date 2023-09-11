@@ -29,14 +29,10 @@ public class ChallengeState extends BaseEntity {
     private boolean parentConfirm;
     private boolean childConfirm;
     private boolean isSuccess;
-    private boolean proceeding;
 
 
     public void setChildConfirm(boolean childConfirm) {
         this.childConfirm = childConfirm;
     }
 
-    public void setProceeding(boolean proceeding) {
-        this.proceeding = proceeding;
-    }
 }
