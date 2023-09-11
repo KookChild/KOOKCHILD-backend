@@ -1,10 +1,7 @@
 package com.service.kookchild.domain.mission.service;
 
 import com.service.kookchild.domain.mission.domain.Mission;
-import com.service.kookchild.domain.mission.dto.MissionChildListDTO;
-import com.service.kookchild.domain.mission.dto.MissionChildViewDTO;
-import com.service.kookchild.domain.mission.dto.MissionDetailDTO;
-import com.service.kookchild.domain.mission.dto.MissionUpdateDTO;
+import com.service.kookchild.domain.mission.dto.*;
 import com.service.kookchild.domain.mission.exception.MissionNotFoundException;
 import com.service.kookchild.domain.mission.repository.MissionChildRepository;
 import com.service.kookchild.domain.user.domain.ParentChild;
@@ -108,6 +105,11 @@ public class MissionChildServiceImpl implements MissionChildService{
                 () -> new MissionNotFoundException("해당 미션이 존재하지 않습니다.")
         );
         mission.setMission(missionUpdateDTO);
+    }
+
+    @Override
+    public void deleteMission(String email, MissionDTO missionDTO) {
+        missionChildRepository.deleteById(missionDTO.getMissionId());
     }
 
 

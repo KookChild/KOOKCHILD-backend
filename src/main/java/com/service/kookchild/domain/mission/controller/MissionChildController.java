@@ -48,6 +48,13 @@ public class MissionChildController {
         return ResponseEntity.ok().build();
     }
 
+    @DeleteMapping("")
+    public ResponseEntity deleteMission(Authentication authentication, @RequestBody MissionDTO missionDTO){
+        String email = getEmail(authentication);
+        missionChildService.deleteMission(email, missionDTO);
+        return ResponseEntity.ok().build();
+    }
+
     public String getEmail(Authentication authentication) {
         CustomUserDetails principal = (CustomUserDetails)authentication.getPrincipal();
         return principal.getEmail();

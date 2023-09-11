@@ -1,5 +1,6 @@
 package com.service.kookchild.domain.mission.service;
 
+import com.service.kookchild.domain.mission.dto.MissionDTO;
 import com.service.kookchild.domain.mission.dto.MissionDetailDTO;
 import com.service.kookchild.domain.mission.dto.MissionChildListDTO;
 import com.service.kookchild.domain.mission.dto.MissionUpdateDTO;
@@ -11,4 +12,6 @@ public interface MissionChildService {
     void requestMissionConfirm(String email, long missionId);
 
     void updateMission(String email, MissionUpdateDTO missionUpdateDTO);
+
+    void deleteMission(String email, MissionDTO missionDTO);
 }
