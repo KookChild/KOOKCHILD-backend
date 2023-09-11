@@ -12,7 +12,7 @@ import java.util.List;
 public interface ChallengeRepository extends JpaRepository<Challenge,Long> {
 
     /* 1. 전체 챌린지 조회 (진행중) */
-    @Query(value="SELECT * FROM Challenge WHERE start_date <= NOW() AND end_date >= NOW()", nativeQuery = true)
+    @Query(value="SELECT * FROM Challenge WHERE start_date <= SYSDATE AND end_date >= SYSDATE", nativeQuery = true)
     List<Challenge> getAllChallenge();
 
     /* 2. 챌린지 내용 상세 조회 (나중에 frontend에서 child_content, parent_content 필터링 */
