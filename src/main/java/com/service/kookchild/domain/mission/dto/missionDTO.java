@@ -1,4 +1,8 @@
 package com.service.kookchild.domain.mission.dto;
 
-public class missionDTO {
+import lombok.Getter;
+
+@Getter
+public class MissionDTO {
+    private long missionId;
 }
