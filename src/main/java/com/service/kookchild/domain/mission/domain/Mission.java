@@ -1,7 +1,6 @@
 package com.service.kookchild.domain.mission.domain;
 
 
-import com.service.kookchild.domain.mission.dto.MissionUpdateDTO;
 import com.service.kookchild.global.domain.BaseEntity;
 import com.service.kookchild.domain.user.domain.ParentChild;
 import lombok.*;
