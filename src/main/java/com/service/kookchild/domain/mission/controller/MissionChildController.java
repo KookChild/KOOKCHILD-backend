@@ -3,6 +3,7 @@ package com.service.kookchild.domain.mission.controller;
 import com.service.kookchild.domain.mission.dto.MissionChildListDTO;
 import com.service.kookchild.domain.mission.dto.MissionDTO;
 import com.service.kookchild.domain.mission.dto.MissionDetailDTO;
+import com.service.kookchild.domain.mission.dto.MissionUpdateDTO;
 import com.service.kookchild.domain.mission.service.MissionChildService;
 import com.service.kookchild.domain.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +38,13 @@ public class MissionChildController {
     public ResponseEntity requestMissionApproval(Authentication authentication, @RequestBody MissionDTO missionDTO){
         String email = getEmail(authentication);
         missionChildService.requestMissionConfirm(email, missionDTO.getMissionId());
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("")
+    public ResponseEntity updateMission(Authentication authentication, @RequestBody MissionUpdateDTO missionUpdateDTO){
+        String email = getEmail(authentication);
+        missionChildService.updateMission(email, missionUpdateDTO);
         return ResponseEntity.ok().build();
     }
 

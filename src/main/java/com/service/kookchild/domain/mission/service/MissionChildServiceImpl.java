@@ -4,6 +4,7 @@ import com.service.kookchild.domain.mission.domain.Mission;
 import com.service.kookchild.domain.mission.dto.MissionChildListDTO;
 import com.service.kookchild.domain.mission.dto.MissionChildViewDTO;
 import com.service.kookchild.domain.mission.dto.MissionDetailDTO;
+import com.service.kookchild.domain.mission.dto.MissionUpdateDTO;
 import com.service.kookchild.domain.mission.exception.MissionNotFoundException;
 import com.service.kookchild.domain.mission.repository.MissionChildRepository;
 import com.service.kookchild.domain.user.domain.ParentChild;
@@ -99,6 +100,16 @@ public class MissionChildServiceImpl implements MissionChildService{
         Mission mission = findMissionByChildId(missionId, child);
         mission.requestConfirm(true);
     }
+
+    @Override
+    @Transactional
+    public void updateMission(String email, MissionUpdateDTO missionUpdateDTO) {
+        Mission mission = missionChildRepository.findById(missionUpdateDTO.getMissionId()).orElseThrow(
+                () -> new MissionNotFoundException("해당 미션이 존재하지 않습니다.")
+        );
+        mission.setMission(missionUpdateDTO);
+    }
+
 
     private ParentChild findParentChildByChildId(long childId){
         ParentChild child = parentChildRepository.findByChildId(childId)

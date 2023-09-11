@@ -14,4 +14,5 @@ public interface MissionChildRepository extends JpaRepository<Mission, Long> {
 
     Mission findByIdAndParentChild(long missionId, ParentChild parentChild);
 
+
 }

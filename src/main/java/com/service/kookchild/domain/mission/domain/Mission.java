@@ -1,6 +1,7 @@
 package com.service.kookchild.domain.mission.domain;
 
 
+import com.service.kookchild.domain.mission.dto.MissionUpdateDTO;
 import com.service.kookchild.global.domain.BaseEntity;
 import com.service.kookchild.domain.user.domain.ParentChild;
 import lombok.*;
@@ -45,8 +46,7 @@ public class Mission extends BaseEntity {
         this.title = missionUpdateDTO.getTitle();
         this.content = missionUpdateDTO.getContent();
         this.reward = missionUpdateDTO.getReward();
-        this.image = missionUpdateDTO.getImage();
-        this.endDate = missionUpdateDTO.getEndDate();
+        this.endDate = missionUpdateDTO.getEndDate().atStartOfDay();
     }
 
     public void requestConfirm(boolean childConfirm){
