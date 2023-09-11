@@ -5,6 +5,7 @@ import com.service.kookchild.domain.management.service.ManagementService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -16,7 +17,7 @@ public class ManagementController {
     private final ManagementService managementService;
 
     @GetMapping("/info")
-    public ResponseEntity<FindAccountResponse> findAccountInfo(){
-        return ResponseEntity.ok(new FindAccountResponse());
+    public ResponseEntity<FindAccountResponse> findAccountInfo(@RequestBody Long accountId){
+        return ResponseEntity.ok(managementService.getAccountInfo(accountId));
     }
 }
