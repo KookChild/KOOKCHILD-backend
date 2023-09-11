@@ -17,12 +17,13 @@ import java.util.List;
 @NoArgsConstructor
 public class FindAccountResponse {
 
+    private Account account;
+    private List<AccountHistory> accountHistories;
 
-    private Long id;
-    private String accountName;
-    private Long balance;
-    private String password;
-    private AccountType type;
-
-
+    public static FindAccountResponse of(Account account, List<AccountHistory> accountHistories){
+        return FindAccountResponse.builder()
+                .account(account)
+                .accountHistories(accountHistories)
+                .build();
+    }
 }
