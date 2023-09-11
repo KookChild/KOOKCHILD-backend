@@ -5,5 +5,6 @@ import com.service.kookchild.domain.management.dto.FindAccountResponse;
 import org.springframework.web.bind.annotation.RequestBody;
 
 public interface ManagementSendingService {
-    public FindAccountResponse sendMoney(FindAccountInfoPair fi);
+    public FindAccountResponse sendChildMoney(FindAccountInfoPair fi);
+    public FindAccountResponse checkChildMoney(FindAccountInfoPair fi);
 }

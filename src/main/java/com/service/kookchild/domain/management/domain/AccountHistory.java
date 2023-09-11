@@ -6,10 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Entity
 @Getter
@@ -17,10 +14,20 @@ import javax.persistence.Id;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class AccountHistory extends BaseEntity {
 
+
     @Id @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
-    private boolean isDeposit;
+    private Long userId;
+    private int isDeposit;
     private Long amount;
     private String targetName;
     private String category;
+
+    public AccountHistory(Long userId, int isDeposit, Long amount, String targetName, String category) {
+        this.userId = userId;
+        this.isDeposit = isDeposit;
+        this.amount = amount;
+        this.targetName = targetName;
+        this.category = category;
+    }
 }

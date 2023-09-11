@@ -13,4 +13,10 @@ import lombok.NoArgsConstructor;
 public class FindAccountInfoPair {
     private String childId;
     private String parentId;
+
+    public FindAccountInfoPair(String childId) {
+        System.out.println("생성자 객체생성");
+        this.childId = childId;
+        this.parentId = null;
+    }
 }

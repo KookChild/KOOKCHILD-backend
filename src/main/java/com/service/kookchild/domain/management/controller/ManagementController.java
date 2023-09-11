@@ -21,9 +21,27 @@ public class ManagementController {
     public ResponseEntity sendMoney(@RequestBody FindAccountInfoPair fi){
         FindAccountResponse fr = null;
         try {
-            fr = managementSendingService.sendMoney(fi);
+            fr = managementSendingService.sendChildMoney(fi);
         }catch(Exception e){
             System.out.println(e.getMessage());
+            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity(fr, HttpStatus.OK);
+    }
+
+    @GetMapping("/{child_id}")
+    public ResponseEntity checkChildMoney (@PathVariable int child_id){
+        System.out.println(child_id);
+
+        FindAccountResponse fr = null;
+        try{
+            System.out.println("컨트롤러 진입");
+            fr = managementSendingService.checkChildMoney(new FindAccountInfoPair(String.valueOf(child_id)));
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid child_id format: " + e.getMessage());
+            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            System.out.println(e);
             return new ResponseEntity(HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity(fr, HttpStatus.OK);
