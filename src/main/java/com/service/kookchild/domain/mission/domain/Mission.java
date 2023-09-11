@@ -1,12 +1,10 @@
 package com.service.kookchild.domain.mission.domain;
 
 
+import com.service.kookchild.domain.mission.dto.MissionUpdateDTO;
 import com.service.kookchild.global.domain.BaseEntity;
 import com.service.kookchild.domain.user.domain.ParentChild;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -31,4 +29,28 @@ public class Mission extends BaseEntity {
     private LocalDateTime endDate;
     private boolean parentConfirm;
     private boolean childConfirm;
+
+    @Builder
+    public Mission(ParentChild parentChild, String title, String content, String reward, String image, LocalDateTime startDate,
+                   LocalDateTime endDate){
+        this.parentChild = parentChild;
+        this.title = title;
+        this.content = content;
+        this.reward = reward;
+        this.image = image;
+        this.startDate = startDate;
+        this.endDate = endDate;
+    }
+
+    public void setMission(MissionUpdateDTO missionUpdateDTO) {
+        this.title = missionUpdateDTO.getTitle();
+        this.content = missionUpdateDTO.getContent();
+        this.reward = missionUpdateDTO.getReward();
+        this.image = missionUpdateDTO.getImage();
+        this.endDate = missionUpdateDTO.getEndDate();
+    }
+
+    public void requestConfirm(boolean childConfirm){
+        this.childConfirm = childConfirm;
+    }
 }
