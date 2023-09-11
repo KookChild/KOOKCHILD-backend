@@ -1,5 +1,6 @@
 package com.service.kookchild.domain.management.service;
 
+import com.service.kookchild.domain.management.domain.Account;
 import com.service.kookchild.domain.management.domain.AccountHistory;
 import com.service.kookchild.domain.management.domain.AccountType;
 import com.service.kookchild.domain.management.dto.FindAccountInfoPair;
@@ -21,13 +22,27 @@ public class ManagementSendingServiceImpl implements ManagementSendingService{
     private final AccountHistoryRepository accountHistoryRepository;
 
     @Override
+    public Long findUserId(String email) {
+        Long id = accountRepository.findUserId(email);
+        return id;
+    }
+
+    @Override
+    public String findUserNameById(Long id) {
+        String name = accountRepository.findUserNameById(id);
+        return name;
+    }
+
+
+    @Override
     public FindAccountResponse sendChildMoney(FindAccountInfoPair fi) {
         FindAccountResponse fr = null;
-        Long id = Long.parseLong(fi.getChildId());
-        accountRepository.updateParentBalance(id);
-        accountRepository.updateChildBalance(id);
+        Long pId = Long.parseLong(fi.getParentId());
+        Long cId = Long.parseLong(fi.getChildId());
+        accountRepository.updateParentBalance(pId);
+        accountRepository.updateChildBalance(cId);
 
-        accountHistoryRepository.save(new AccountHistory(id, 1, 1000L, "", "예금"));
+        accountHistoryRepository.save(new AccountHistory(cId, 1, 1000L, "", "예금"));
         fr = accountRepository.checkChildMoney(Long.parseLong(fi.getChildId()));
 
         return fr;

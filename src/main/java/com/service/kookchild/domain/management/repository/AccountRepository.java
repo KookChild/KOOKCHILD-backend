@@ -14,6 +14,12 @@ import javax.transaction.Transactional;
 @Repository
 @Transactional
 public interface AccountRepository extends JpaRepository<Account, Long> {
+    @Query("SELECT u.id FROM User u WHERE u.email = :email")
+    Long findUserId(@Param("email") String email);
+
+    @Query("SELECT u.name FROM User u WHERE u.id = :id")
+    String findUserNameById(@Param("id")Long id);
+
     @Modifying
     @Query("UPDATE Account a SET a.balance = a.balance - 1000 WHERE a.user.id = (SELECT u.id FROM User u WHERE u.isParent = 1 AND u.id = :parentId)")
     void updateParentBalance(@Param("parentId") Long parentId);
@@ -24,7 +30,6 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 
     @Query( "SELECT new com.service.kookchild.domain.management.dto.FindAccountResponse(a.balance AS balance, a.accountNum AS accountNum, a.user.name AS userName) FROM Account a JOIN User u ON a.user.id = u.id WHERE u.id = :childId")
     FindAccountResponse checkChildMoney(@Param("childId") Long childId);
-
 
 
 }

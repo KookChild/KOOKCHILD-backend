@@ -30,14 +30,25 @@ public class ManagementController {
     public ResponseEntity<FindAccountResponse> findAccountInfo(@RequestBody Long accountId){
         return ResponseEntity.ok(managementService.getAccountInfo(accountId));
     }
+
     @PostMapping("/send")
-    public ResponseEntity sendMoney(Authentication authentication, @RequestBody FindAccountInfoPair fi){
+    public ResponseEntity sendMoney(Authentication authentication, @RequestBody Long childId){
         String email = getEmail(authentication);
+        FindAccountInfoPair fi = null;
+        fi.setChildId(String.valueOf(childId));
+        Long id = managementSendingService.findUserId(email);
+        String name = managementSendingService.findUserNameById(childId);
+
+        fi.setParentId(String.valueOf(id));
 
         FindAccountResponse fr = null;
         try {
+
             fr = managementSendingService.sendChildMoney(fi);
+            fr.setUserName(name);
+
         }catch(Exception e){
+
             System.out.println(e.getMessage());
             return new ResponseEntity(HttpStatus.BAD_REQUEST);
         }
