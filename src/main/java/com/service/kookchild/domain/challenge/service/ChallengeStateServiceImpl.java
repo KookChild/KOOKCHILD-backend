@@ -17,6 +17,9 @@ public class ChallengeStateServiceImpl implements ChallengeStateService {
 
     @Override
     public void updateParentConfirm(Long challengeId, ParentChild parentChild, int parentReward) {
+        /*
+        부모님의 추천, 자녀가 신청한 챌린지의 승인은 동일하게 해당 Confirm 로직으로 처리됨.
+        */
         challengeStateRepository.updateParentConfirm(challengeId, parentChild.getId(), parentReward);
 
     }
@@ -38,6 +41,10 @@ public class ChallengeStateServiceImpl implements ChallengeStateService {
     // ChallengeStateServiceImpl.java
 
     public void updateProceedingStatus(Long challengeId, ParentChild parentChild) {
+        /*
+        챌린지의 부모 확인, 자녀 확인이 모두 1일 시, 챌린지의 상태 "proceeding"을 true로 변경하는 메소드
+        부모, 자녀의 Confirm 상태 변경 시 함께 실행 될 것.
+         */
         Optional<ChallengeState> challengeStateOpt = challengeStateRepository.findByChallengeIdAndParentChildId(challengeId, parentChild.getId());
         challengeStateOpt.ifPresent(cs -> {
             if (cs.isParentConfirm() && cs.isChildConfirm()) {
