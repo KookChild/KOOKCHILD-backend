@@ -1,6 +1,7 @@
 package com.service.kookchild.domain.management.controller;
 
 import com.service.kookchild.domain.management.dto.FindAccountInfoPair;
+import com.service.kookchild.domain.management.dto.FindAccountRequest;
 import com.service.kookchild.domain.management.dto.FindAccountResponse;
 import com.service.kookchild.domain.management.service.ManagementSendingService;
 import com.service.kookchild.domain.management.service.ManagementService;
@@ -27,8 +28,8 @@ public class ManagementController {
     private final ManagementService managementService;
 
     @GetMapping("/info")
-    public ResponseEntity<FindAccountResponse> findAccountInfo(@RequestBody Long accountId){
-        return ResponseEntity.ok(managementService.getAccountInfo(accountId));
+    public ResponseEntity<FindAccountResponse> findAccountInfo(@RequestBody FindAccountRequest findAccountRequest){
+        return ResponseEntity.ok(managementService.getAccountInfo(findAccountRequest.getId()));
     }
     @PostMapping("/send")
     public ResponseEntity sendMoney(Authentication authentication, @RequestBody FindAccountInfoPair fi){
