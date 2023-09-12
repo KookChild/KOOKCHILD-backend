@@ -1,7 +1,9 @@
 package com.service.kookchild.domain.management.controller;
 
+import com.service.kookchild.domain.management.dto.CheckChildMoneyResponse;
 import com.service.kookchild.domain.management.dto.FindAccountInfoPair;
 import com.service.kookchild.domain.management.dto.FindAccountDTO;
+
 import com.service.kookchild.domain.management.dto.FindAccountResponse;
 import com.service.kookchild.domain.management.service.ManagementSendingService;
 import com.service.kookchild.domain.management.service.ManagementService;
@@ -17,6 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+
 
 @RestController
 @RequiredArgsConstructor
@@ -31,28 +35,32 @@ public class ManagementController {
         String email = getEmail(authentication);
         return ResponseEntity.ok(managementService.getAccountInfo(email));
     }
+
     @PostMapping("/send")
     public ResponseEntity sendMoney(Authentication authentication, @RequestBody FindAccountInfoPair fi){
         String email = getEmail(authentication);
+        Long id = managementSendingService.findUserId(email);
 
-        FindAccountDTO fr = null;
+        fi.setParentId(String.valueOf(id));
+        FindAccountDTO findAccountDTO = null;
         try {
-            fr = managementSendingService.sendChildMoney(fi);
+            findAccountDTO = managementSendingService.sendChildMoney(fi);
         }catch(Exception e){
+
             System.out.println(e.getMessage());
             return new ResponseEntity(HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity(fr, HttpStatus.OK);
+        return new ResponseEntity(findAccountDTO, HttpStatus.OK);
     }
 
     @GetMapping("/{child_id}")
     public ResponseEntity checkChildMoney (Authentication authentication, @PathVariable int child_id){
         System.out.println(child_id);
 
-        FindAccountDTO fr = null;
+        CheckChildMoneyResponse checkChildMoneyResponse = null;
         try{
             System.out.println("컨트롤러 진입");
-            fr = managementSendingService.checkChildMoney(new FindAccountInfoPair(String.valueOf(child_id)));
+            checkChildMoneyResponse = managementSendingService.checkChildMoney(new FindAccountInfoPair(String.valueOf(child_id)));
         } catch (NumberFormatException e) {
             System.out.println("Invalid child_id format: " + e.getMessage());
             return new ResponseEntity(HttpStatus.BAD_REQUEST);
@@ -60,18 +68,21 @@ public class ManagementController {
             System.out.println(e);
             return new ResponseEntity(HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity(fr, HttpStatus.OK);
+        return new ResponseEntity(checkChildMoneyResponse, HttpStatus.OK);
     }
 
-    @GetMapping("/amount/{child_id}")
-    public ResponseEntity getChildConsumptionAndDeposit(Authentication authentication, @PathVariable int child_id){
-        Long amount = null;
+
+    @GetMapping("/childName")
+    public ResponseEntity getChildName(Authentication authentication){
+        ArrayList list = null;
+        String email = getEmail(authentication);
+        Long id = managementSendingService.findUserId(email);
         try{
-            amount = managementSendingService.FindConsumption(new FindAccountInfoPair(String.valueOf(child_id)));
+            list = managementSendingService.findChildNamesByParentId(id);
         }catch(Exception e){
             System.out.println(e);
         }
-        return new ResponseEntity(amount, HttpStatus.OK);
+        return new ResponseEntity(list, HttpStatus.OK);
     }
 
     public String getEmail(Authentication authentication) {

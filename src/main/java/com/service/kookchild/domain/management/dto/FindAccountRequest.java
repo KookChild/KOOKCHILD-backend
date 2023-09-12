@@ -5,13 +5,10 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Getter
 @Builder
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class FindAccountDTO {
-    //DB 리턴 전용 DTO
-    private Long balance;
-    private String accountNum;
-    private String userName;
+public class FindAccountRequest {
+    private Long id;
 }
