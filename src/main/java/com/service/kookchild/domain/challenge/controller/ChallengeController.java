@@ -4,14 +4,20 @@ import com.service.kookchild.domain.challenge.domain.Challenge;
 import com.service.kookchild.domain.challenge.service.ChallengeService;
 import com.service.kookchild.domain.challenge.service.ChallengeStateService;
 import com.service.kookchild.domain.user.domain.ParentChild;
+import com.service.kookchild.domain.security.CustomUserDetails;
+import com.service.kookchild.domain.user.domain.User;
+import com.service.kookchild.domain.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -25,13 +31,21 @@ public class ChallengeController {
 
     @Autowired
     private ChallengeStateService challengeStateService;
+    private UserRepository userRepository;
+
+    @RequestMapping(value = "/test/hello")
+    @ResponseBody
+    public String helloKookchild(Model model) {
+        return "Hello Kookchild";
+    }
 
     /*(자녀가) 자신이 참여하고 있는 챌린지 및 부모에게 추천받은 챌린지 조회 */
     @GetMapping("/challenge")
-    public ResponseEntity<List<Challenge>> select(@RequestParam(value = "state", defaultValue = "all") String state, HttpServletRequest request) {
+    public ResponseEntity<List<Challenge>> select(Authentication authentication, @RequestParam(value = "state", defaultValue = "all") String state, HttpServletRequest request) {
+        String email = getEmail(authentication);
+        User user = userRepository.findByEmail(email).get();
         try {
             List<Challenge> challengeList = null;
-            HttpSession session = request.getSession();
 
             switch (state) {
 
@@ -40,11 +54,11 @@ public class ChallengeController {
                     break;
                 case "proceeding":
                     /* 임시 :: 아직 로그인 로직 구현안됨 */
-                    challengeList = challengeService.getChallengeListByChildId((Long) session.getAttribute("vo"));
+                    challengeList = challengeService.getChallengeListByChildId(user.getId());
                     break;
                 case "parentConfirmed":
                     /* 임시 :: 아직 로그인 로직 구현안됨 */
-                    challengeList = challengeService.getRecommendedChallenges((Long) session.getAttribute("vo"));
+                    challengeList = challengeService.getRecommendedChallenges(user.getId());
                     break;
                 default:
                     challengeList = challengeService.getAllChallenge();
@@ -85,7 +99,7 @@ public class ChallengeController {
 
     /* Challenge 상세내용 조회*/
     /* 나중에 프론트 측에서 child,parent를 param으로 구분해서 content type 구분해주기*/
-    @GetMapping("/challenge/{challenge_id}")
+    @GetMapping("/challenge/detail/{challenge_id}")
     public ResponseEntity select( @PathVariable Long challenge_id){
         try{
             Challenge challenge =  (Challenge) challengeService.findChallengeById(challenge_id);
@@ -95,6 +109,8 @@ public class ChallengeController {
             return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    public String getEmail(Authentication authentication) {
+        CustomUserDetails principal = (CustomUserDetails)authentication.getPrincipal();
 
     /* 부모가 챌린지에 대한 confirm을 업데이트 */
     @PutMapping("/challenge/{challenge_id}/parent_confirm")
@@ -107,6 +123,7 @@ public class ChallengeController {
         } catch(Exception e) {
             return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
         }
+        return principal.getEmail();
     }
 
     /* 자녀가 챌린지에 대한 confirm을 업데이트 */
