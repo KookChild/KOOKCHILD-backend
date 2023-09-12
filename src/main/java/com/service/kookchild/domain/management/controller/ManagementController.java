@@ -1,6 +1,7 @@
 package com.service.kookchild.domain.management.controller;
 
 import antlr.collections.List;
+import com.service.kookchild.domain.management.dto.FindAccountAmount;
 import com.service.kookchild.domain.management.dto.FindAccountInfoPair;
 import com.service.kookchild.domain.management.dto.FindAccountResponse;
 import com.service.kookchild.domain.management.service.ManagementSendingService;
@@ -74,16 +75,6 @@ public class ManagementController {
         return new ResponseEntity(fr, HttpStatus.OK);
     }
 
-    @GetMapping("/amount/{child_id}")
-    public ResponseEntity getChildConsumptionAndDeposit(Authentication authentication, @PathVariable int child_id){
-        Long amount = null;
-        try{
-            amount = managementSendingService.FindConsumption(new FindAccountInfoPair(String.valueOf(child_id)));
-        }catch(Exception e){
-            System.out.println(e);
-        }
-        return new ResponseEntity(amount, HttpStatus.OK);
-    }
 
     @GetMapping("/childName")
     public ResponseEntity getChildName(Authentication authentication){

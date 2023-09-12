@@ -4,6 +4,7 @@ import antlr.collections.List;
 import com.service.kookchild.domain.management.domain.Account;
 import com.service.kookchild.domain.management.domain.AccountHistory;
 import com.service.kookchild.domain.management.domain.AccountType;
+import com.service.kookchild.domain.management.dto.FindAccountAmount;
 import com.service.kookchild.domain.management.dto.FindAccountInfoPair;
 import com.service.kookchild.domain.management.dto.FindAccountResponse;
 import com.service.kookchild.domain.management.repository.AccountHistoryRepository;
@@ -54,14 +55,14 @@ public class ManagementSendingServiceImpl implements ManagementSendingService{
     @Override
     public FindAccountResponse checkChildMoney(FindAccountInfoPair fi) {
         System.out.println("sendChildMoney");
-        return accountRepository.checkChildMoney(Long.parseLong(fi.getChildId().trim()));
-    }
-
-    @Override
-    public Long FindConsumption(FindAccountInfoPair fi){
-        Long consumption = null;
-        consumption = accountHistoryRepository.findAmount(Long.parseLong(fi.getChildId().trim()), "예금");
-        return consumption;
+        Long findConsumption = null;
+        Long findNotInConsumption = null;
+        findConsumption = accountHistoryRepository.findAmount(Long.parseLong(fi.getChildId().trim()), "예금");
+        findNotInConsumption = accountHistoryRepository.findNotInAmount(Long.parseLong(fi.getChildId().trim()), "예금");
+        FindAccountResponse fr = accountRepository.checkChildMoney(Long.parseLong(fi.getChildId().trim()));
+        fr.setAmount(findConsumption);
+        fr.setNotInAmount(findNotInConsumption);
+        return fr;
     }
 
     @Override

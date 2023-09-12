@@ -33,6 +33,8 @@ public class FindAccountResponse {
     private AccountType type;
     private String accountNum;
     private String userName;
+    private Long amount;
+    private Long notInAmount;
 
     public FindAccountResponse(Long balance, String accountNum, String userName) {
         this.balance = balance;
