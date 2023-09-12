@@ -1,5 +1,6 @@
 package com.service.kookchild.domain.management.service;
 
+import antlr.collections.List;
 import com.service.kookchild.domain.management.domain.Account;
 import com.service.kookchild.domain.management.domain.AccountHistory;
 import com.service.kookchild.domain.management.domain.AccountType;
@@ -11,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
 
 @Service
 @Transactional
@@ -59,5 +62,12 @@ public class ManagementSendingServiceImpl implements ManagementSendingService{
         Long consumption = null;
         consumption = accountHistoryRepository.findAmount(Long.parseLong(fi.getChildId().trim()), "예금");
         return consumption;
+    }
+
+    @Override
+    public ArrayList<String> findChildNamesByParentId(Long id) {
+        ArrayList<String> list = null;
+        list = accountRepository.findChildNamesByParentId(id);
+        return list;
     }
 }

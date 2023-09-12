@@ -1,5 +1,6 @@
 package com.service.kookchild.domain.management.controller;
 
+import antlr.collections.List;
 import com.service.kookchild.domain.management.dto.FindAccountInfoPair;
 import com.service.kookchild.domain.management.dto.FindAccountResponse;
 import com.service.kookchild.domain.management.service.ManagementSendingService;
@@ -16,6 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
 
 
 @RestController
@@ -80,6 +83,19 @@ public class ManagementController {
             System.out.println(e);
         }
         return new ResponseEntity(amount, HttpStatus.OK);
+    }
+
+    @GetMapping("/childName")
+    public ResponseEntity getChildName(Authentication authentication){
+        ArrayList list = null;
+        String email = getEmail(authentication);
+        Long id = managementSendingService.findUserId(email);
+        try{
+            list = managementSendingService.findChildNamesByParentId(id);
+        }catch(Exception e){
+            System.out.println(e);
+        }
+        return new ResponseEntity(list, HttpStatus.OK);
     }
 
     public String getEmail(Authentication authentication) {

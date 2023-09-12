@@ -1,5 +1,6 @@
 package com.service.kookchild.domain.management.repository;
 
+import java.util.ArrayList;
 import com.service.kookchild.domain.management.domain.Account;
 import com.service.kookchild.domain.management.dto.FindAccountResponse;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -31,5 +32,7 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
     @Query( "SELECT new com.service.kookchild.domain.management.dto.FindAccountResponse(a.balance AS balance, a.accountNum AS accountNum, a.user.name AS userName) FROM Account a WHERE a.user.id = :childId")
     FindAccountResponse checkChildMoney(@Param("childId") Long childId);
 
+    @Query ("SELECT u.name FROM User u WHERE u.id IN (SELECT pc.child.id FROM ParentChild pc WHERE pc.parent.id = :id)")
+    ArrayList<String> findChildNamesByParentId(@Param("id") Long id);
 
 }
