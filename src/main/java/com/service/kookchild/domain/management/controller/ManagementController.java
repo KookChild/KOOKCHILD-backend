@@ -27,8 +27,9 @@ public class ManagementController {
     private final ManagementService managementService;
 
     @GetMapping("/info")
-    public ResponseEntity<FindAccountResponse> findAccountInfo(@RequestBody Long accountId){
-        return ResponseEntity.ok(managementService.getAccountInfo(accountId));
+    public ResponseEntity<FindAccountResponse> findAccountInfo(Authentication authentication){
+        String email = getEmail(authentication);
+        return ResponseEntity.ok(managementService.getAccountInfo(email));
     }
     @PostMapping("/send")
     public ResponseEntity sendMoney(Authentication authentication, @RequestBody FindAccountInfoPair fi){
