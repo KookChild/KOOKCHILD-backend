@@ -19,10 +19,6 @@ public class Account extends BaseEntity {
     @Id @GeneratedValue
     private Long id;
 
-    @OneToOne
-    @JoinColumn(name = "account_history_id")
-    private AccountHistory accountHistory;
-
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
@@ -31,4 +27,5 @@ public class Account extends BaseEntity {
     private Long balance;
     private String password;
     private AccountType type;
+    private String accountNum; //계좌번호
 }
