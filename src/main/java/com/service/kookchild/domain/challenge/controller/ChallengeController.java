@@ -4,6 +4,7 @@ import com.service.kookchild.domain.challenge.domain.Challenge;
 import com.service.kookchild.domain.challenge.repository.ChallengeStateRepository;
 import com.service.kookchild.domain.challenge.service.ChallengeService;
 import com.service.kookchild.domain.challenge.service.ChallengeStateService;
+import com.service.kookchild.domain.user.domain.ParentChild;
 import com.service.kookchild.domain.security.CustomUserDetails;
 import com.service.kookchild.domain.user.domain.ParentChild;
 import com.service.kookchild.domain.user.domain.User;
@@ -14,6 +15,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,6 +33,7 @@ public class ChallengeController {
     private ChallengeService challengeService;
 
     @Autowired
+    private ChallengeStateService challengeStateService;
     private UserRepository userRepository;
 
     @Autowired
@@ -82,14 +88,14 @@ public class ChallengeController {
             List<Challenge> challengeList = null;
             HttpSession session = request.getSession();
             switch (state) {
-                    /* (자녀가) 현재 참여중인 챌린지 */
+                /* (자녀가) 현재 참여중인 챌린지 */
                 case "proceeding":
                     challengeList = challengeService.getChallengeListByChildId(child_id);
                     /* (자녀에게) 추천을 한 챌린지 */
                 case "parentConfirmed":
                     challengeList = challengeService.getRecommendedChallenges(child_id);
                     break;
-                    /* default: 전체 챌린지 목록? --논의필요 */
+                /* default: 전체 챌린지 목록? --논의필요 */
                 default:
                     challengeList = challengeService.getAllChallenge();
             }
@@ -126,10 +132,22 @@ public class ChallengeController {
         }
     }
     public String getEmail(Authentication authentication) {
-        CustomUserDetails principal = (CustomUserDetails)authentication.getPrincipal();
-
+        CustomUserDetails principal = (CustomUserDetails) authentication.getPrincipal();
         return principal.getEmail();
     }
+    /* 부모가 챌린지에 대한 confirm을 업데이트 */
+//    @PutMapping("/challenge/{challenge_id}/parent_confirm")
+//    public ResponseEntity updateParentConfirm(@PathVariable Long challenge_id,
+//                                              @RequestParam ParentChild parentChild, // 적절한 방법으로 ParentChild 객체를 얻습니다.
+//                                              @RequestParam int parentReward) {
+//        try {
+//            challengeStateService.updateParentConfirm(challenge_id, parentChild, parentReward);
+//            return new ResponseEntity(HttpStatus.OK);
+//        } catch(Exception e) {
+//            return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+//        }
+//        return principal.getEmail();
+//    }
 
 
 

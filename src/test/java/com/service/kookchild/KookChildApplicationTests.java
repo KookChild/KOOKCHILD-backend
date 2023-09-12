@@ -30,6 +30,8 @@ class KookChildApplicationTests {
 
 
 
+	}
+
 	@Autowired
 	private ChallengeRepository challengeRepository;
 

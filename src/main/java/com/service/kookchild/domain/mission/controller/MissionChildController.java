@@ -2,6 +2,7 @@ package com.service.kookchild.domain.mission.controller;
 
 import com.service.kookchild.domain.mission.dto.*;
 import com.service.kookchild.domain.mission.service.MissionChildService;
+import com.service.kookchild.domain.mission.service.MissionService;
 import com.service.kookchild.domain.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 public class MissionChildController {
 
     private final MissionChildService missionChildService;
+    private final MissionService missionService;
 
     @GetMapping("")
     public ResponseEntity getMissionList(
@@ -23,6 +25,14 @@ public class MissionChildController {
         String email = getEmail(authentication);
         MissionChildListDTO missionChildListDTO = missionChildService.getMissionList(email, state);
         return ResponseEntity.ok(missionChildListDTO);
+    }
+
+    @PostMapping("")
+    public void registerMission(@RequestBody MissionCreateDTO m, Authentication authentication){
+        System.out.println("9999999999999999");
+        String email = getEmail(authentication); // 토큰으로 이메일 가져옴
+        System.out.println(email);
+        missionService.saveMission(m,email);
     }
 
     @GetMapping("/parent")
