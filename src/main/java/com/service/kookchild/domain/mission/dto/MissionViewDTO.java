@@ -8,24 +8,26 @@ import java.time.format.DateTimeFormatter;
 @Builder @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class MissionChildViewDTO {
+public class MissionViewDTO {
     private long id;
     private String title;
     private String reward;
     private String deadline;
     private boolean parentConfirm;
+    private boolean childConfirm;
 
-    public static MissionChildViewDTO of(Mission m) {
+    public static MissionViewDTO of(Mission m) {
         DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
 
         String deadline = m.getStartDate().format(outputFormatter) + " ~ " + m.getEndDate().format(outputFormatter);
 
-        return MissionChildViewDTO.builder()
+        return MissionViewDTO.builder()
                 .id(m.getId())
                 .title(m.getTitle())
                 .reward(m.getReward())
                 .deadline(deadline)
                 .parentConfirm(m.isParentConfirm())
+                .childConfirm(m.isChildConfirm())
                 .build();
     }
 

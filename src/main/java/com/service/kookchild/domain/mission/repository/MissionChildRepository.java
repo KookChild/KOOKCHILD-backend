@@ -13,6 +13,8 @@ public interface MissionChildRepository extends JpaRepository<Mission, Long> {
     List<Mission> findByParentChildOrderByEndDateDesc(ParentChild parentChild);
 
     Mission findByIdAndParentChild(long missionId, ParentChild parentChild);
+    List<Mission> findByParentChildIdIn(List<Long> parentChildIds);
+
 
 
 }
