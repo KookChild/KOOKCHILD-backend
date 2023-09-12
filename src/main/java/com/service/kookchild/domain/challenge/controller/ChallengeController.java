@@ -112,7 +112,6 @@ public class ChallengeController {
     }
 
     /* Challenge 상세내용 조회*/
-    /* 나중에 프론트 측에서 child,parent를 param으로 구분해서 content type 구분해주기*/
     @GetMapping("/challenge/detail/{challenge_id}")
     public ResponseEntity select( @PathVariable Long challenge_id){
         try{
@@ -124,6 +123,7 @@ public class ChallengeController {
         }
     }
 
+    /* 자녀가 챌린지 참여요청 혹은 추천 챌린지 승인 */
     @PostMapping("/challenge/detail/{challenge_id}/childConfirm")
     public ResponseEntity updateChildConfirm(Authentication authentication, @PathVariable  Long challenge_id) {
         String email = getEmail(authentication);

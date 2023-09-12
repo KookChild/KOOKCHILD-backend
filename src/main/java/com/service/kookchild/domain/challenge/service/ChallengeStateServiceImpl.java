@@ -12,8 +12,6 @@ public class ChallengeStateServiceImpl implements ChallengeStateService {
 
     @Override
     public void updateChildConfirm(Long challengeId, Long parentChildId) {
-        System.out.println(challengeId);
-        System.out.println(parentChildId);
         challengeStateRepository.updateChildConfirm(challengeId, parentChildId);
 
     }
