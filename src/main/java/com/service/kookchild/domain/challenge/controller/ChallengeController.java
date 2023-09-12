@@ -110,21 +110,22 @@ public class ChallengeController {
         }
     }
     public String getEmail(Authentication authentication) {
-        CustomUserDetails principal = (CustomUserDetails)authentication.getPrincipal();
-
-    /* 부모가 챌린지에 대한 confirm을 업데이트 */
-    @PutMapping("/challenge/{challenge_id}/parent_confirm")
-    public ResponseEntity updateParentConfirm(@PathVariable Long challenge_id,
-                                              @RequestParam ParentChild parentChild, // 적절한 방법으로 ParentChild 객체를 얻습니다.
-                                              @RequestParam int parentReward) {
-        try {
-            challengeStateService.updateParentConfirm(challenge_id, parentChild, parentReward);
-            return new ResponseEntity(HttpStatus.OK);
-        } catch(Exception e) {
-            return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        CustomUserDetails principal = (CustomUserDetails) authentication.getPrincipal();
         return principal.getEmail();
     }
+    /* 부모가 챌린지에 대한 confirm을 업데이트 */
+//    @PutMapping("/challenge/{challenge_id}/parent_confirm")
+//    public ResponseEntity updateParentConfirm(@PathVariable Long challenge_id,
+//                                              @RequestParam ParentChild parentChild, // 적절한 방법으로 ParentChild 객체를 얻습니다.
+//                                              @RequestParam int parentReward) {
+//        try {
+//            challengeStateService.updateParentConfirm(challenge_id, parentChild, parentReward);
+//            return new ResponseEntity(HttpStatus.OK);
+//        } catch(Exception e) {
+//            return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+//        }
+//        return principal.getEmail();
+//    }
 
     /* 자녀가 챌린지에 대한 confirm을 업데이트 */
     @PutMapping("/challenge/{challenge_id}/child_confirm")

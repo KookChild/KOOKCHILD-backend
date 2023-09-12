@@ -1,9 +1,8 @@
 package com.service.kookchild.domain.management.service;
 
 import com.service.kookchild.domain.management.domain.AccountHistory;
-import com.service.kookchild.domain.management.domain.AccountType;
 import com.service.kookchild.domain.management.dto.FindAccountInfoPair;
-import com.service.kookchild.domain.management.dto.FindAccountResponse;
+import com.service.kookchild.domain.management.dto.FindAccountDTO;
 import com.service.kookchild.domain.management.repository.AccountHistoryRepository;
 import com.service.kookchild.domain.management.repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,8 +20,8 @@ public class ManagementSendingServiceImpl implements ManagementSendingService{
     private final AccountHistoryRepository accountHistoryRepository;
 
     @Override
-    public FindAccountResponse sendChildMoney(FindAccountInfoPair fi) {
-        FindAccountResponse fr = null;
+    public FindAccountDTO sendChildMoney(FindAccountInfoPair fi) {
+        FindAccountDTO fr = null;
         Long id = Long.parseLong(fi.getChildId());
         accountRepository.updateParentBalance(id);
         accountRepository.updateChildBalance(id);
@@ -34,7 +33,7 @@ public class ManagementSendingServiceImpl implements ManagementSendingService{
     }
 
     @Override
-    public FindAccountResponse checkChildMoney(FindAccountInfoPair fi) {
+    public FindAccountDTO checkChildMoney(FindAccountInfoPair fi) {
         System.out.println("sendChildMoney");
         return accountRepository.checkChildMoney(Long.parseLong(fi.getChildId().trim()));
     }

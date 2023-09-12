@@ -1,12 +1,11 @@
 package com.service.kookchild.domain.management.service;
 
 import com.service.kookchild.domain.management.dto.FindAccountInfoPair;
-import com.service.kookchild.domain.management.dto.FindAccountResponse;
-import org.springframework.web.bind.annotation.RequestBody;
+import com.service.kookchild.domain.management.dto.FindAccountDTO;
 
 public interface ManagementSendingService {
-    public FindAccountResponse sendChildMoney(FindAccountInfoPair fi);
-    public FindAccountResponse checkChildMoney(FindAccountInfoPair fi);
+    public FindAccountDTO sendChildMoney(FindAccountInfoPair fi);
+    public FindAccountDTO checkChildMoney(FindAccountInfoPair fi);
 
     public Long FindConsumption(FindAccountInfoPair fi);
 }
