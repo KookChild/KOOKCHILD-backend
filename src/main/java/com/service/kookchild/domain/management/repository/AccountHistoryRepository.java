@@ -20,4 +20,6 @@ public interface AccountHistoryRepository extends JpaRepository<AccountHistory, 
 
     @Query("SELECT NVL(SUM(a.amount), 0) FROM AccountHistory a WHERE a.category NOT IN(:name) AND a.userId = :id")
     Long findNotInAmount(@Param("id") Long id, @Param("name") String name);
+
+    List<AccountHistory> findAccountHistoriesByUserId();
 }
