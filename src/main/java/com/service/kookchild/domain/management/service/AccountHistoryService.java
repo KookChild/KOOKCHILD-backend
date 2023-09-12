@@ -21,7 +21,7 @@ public class AccountHistoryService {
 
     public FindAccountHistoryResponse findAccountHistories(Authentication authentication){
         String email = getEmail(authentication);
-        List<AccountHistory> accountHistoriesByUserId = accountHistoryRepository.findAccountHistoriesByUserId();
+        List<AccountHistory> accountHistoriesByUserId = accountHistoryRepository.findAccountHistoriesByUserId(1L);
 
         return new FindAccountHistoryResponse();
     }

@@ -10,5 +10,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class FindAccountHistoryResponse {
-    
+    private Long id;
 }
