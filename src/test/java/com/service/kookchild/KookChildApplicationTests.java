@@ -28,7 +28,7 @@ class KookChildApplicationTests {
 	private MissionServiceImpl missionServiceImpl;
 
 
-	void quizTest() {
+
 
 	}
 
@@ -37,9 +37,8 @@ class KookChildApplicationTests {
 
 	@Autowired
 	private ChallengeService challengeService;
-	@Test
-	void contextLoads() {
-	}
+
+
 
 	@Test
 	void 김지은테스트1(){

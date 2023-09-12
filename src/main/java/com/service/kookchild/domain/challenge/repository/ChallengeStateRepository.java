@@ -1,23 +1,10 @@
 package com.service.kookchild.domain.challenge.repository;
-
 import com.service.kookchild.domain.challenge.domain.ChallengeState;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
-import com.service.kookchild.domain.user.domain.ParentChild;
 import org.springframework.data.jpa.repository.JpaRepository;
-import java.util.Optional;
+import org.springframework.data.jpa.repository.Query;
 
-public interface ChallengeStateRepository extends JpaRepository<ChallengeState, Long> {
-    Optional<ChallengeState> findByChallengeIdAndParentChildId(Long challengeId, Long parentChildId);
+public interface ChallengeStateRepository extends JpaRepository<ChallengeState,Long> {
 
-
-    @Query("UPDATE ChallengeState cs SET cs.parentConfirm = 1," +
-            " cs.parentReward = :parentReward WHERE cs.challenge.id = :challengeId AND cs.parentChild.id = :parentChildId")
-    void updateParentConfirm(@Param("challengeId") Long challengeId, @Param("parentChildId") Long parentChildId, @Param("parentReward") int parentReward);
-
-
-
-
+    @Query(value = "UPDATE challenge_state  SET  child_confirm = 1 WHERE challenge_id = :challengeId AND parent_child_id = :parentChildId", nativeQuery = true)
+    void updateChildConfirm(Long challengeId, Long parentChildId);
 }
-
-

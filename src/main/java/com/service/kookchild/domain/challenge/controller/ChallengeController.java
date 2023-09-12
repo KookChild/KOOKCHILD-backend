@@ -1,11 +1,14 @@
 package com.service.kookchild.domain.challenge.controller;
 
 import com.service.kookchild.domain.challenge.domain.Challenge;
+import com.service.kookchild.domain.challenge.repository.ChallengeStateRepository;
 import com.service.kookchild.domain.challenge.service.ChallengeService;
 import com.service.kookchild.domain.challenge.service.ChallengeStateService;
 import com.service.kookchild.domain.user.domain.ParentChild;
 import com.service.kookchild.domain.security.CustomUserDetails;
+import com.service.kookchild.domain.user.domain.ParentChild;
 import com.service.kookchild.domain.user.domain.User;
+import com.service.kookchild.domain.user.repository.ParentChildRepository;
 import com.service.kookchild.domain.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -32,6 +35,12 @@ public class ChallengeController {
     @Autowired
     private ChallengeStateService challengeStateService;
     private UserRepository userRepository;
+
+    @Autowired
+    private ParentChildRepository parentChildRepository;
+
+    @Autowired
+    private ChallengeStateService challengeStateService;
 
     @RequestMapping(value = "/test/hello")
     @ResponseBody
@@ -109,6 +118,19 @@ public class ChallengeController {
             return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @PostMapping("/challenge/detail/{challenge_id}/childConfirm")
+    public ResponseEntity updateChildConfirm(Authentication authentication, @PathVariable  Long challenge_id) {
+        String email = getEmail(authentication);
+        User user = userRepository.findByEmail(email).get();
+        ParentChild parentChild = parentChildRepository.findByChildId(user.getId()).get();
+        try {
+            challengeStateService.updateChildConfirm(challenge_id, parentChild.getId());
+            return new ResponseEntity(HttpStatus.OK);
+        } catch(Exception e) {
+            return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
     public String getEmail(Authentication authentication) {
         CustomUserDetails principal = (CustomUserDetails) authentication.getPrincipal();
         return principal.getEmail();
@@ -127,17 +149,6 @@ public class ChallengeController {
 //        return principal.getEmail();
 //    }
 
-    /* 자녀가 챌린지에 대한 confirm을 업데이트 */
-    @PutMapping("/challenge/{challenge_id}/child_confirm")
-    public ResponseEntity updateChildConfirm(@PathVariable Long challenge_id,
-                                             @RequestParam ParentChild parentChild) { // 적절한 방법으로 ParentChild 객체를 얻습니다.
-        try {
-            challengeStateService.updateChildConfirm(challenge_id, parentChild);
-            return new ResponseEntity(HttpStatus.OK);
-        } catch(Exception e) {
-            return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
 
 
 }
