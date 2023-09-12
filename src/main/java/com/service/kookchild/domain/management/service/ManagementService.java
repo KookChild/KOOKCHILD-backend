@@ -2,6 +2,7 @@ package com.service.kookchild.domain.management.service;
 
 import com.service.kookchild.domain.management.domain.Account;
 import com.service.kookchild.domain.management.dto.FindAccountDTO;
+import com.service.kookchild.domain.management.dto.FindAccountResponse;
 import com.service.kookchild.domain.management.repository.AccountHistoryRepository;
 import com.service.kookchild.domain.management.repository.AccountRepository;
 import com.service.kookchild.domain.user.domain.User;
@@ -23,13 +24,13 @@ public class ManagementService {
     private final AccountRepository accountRepository;
     private final UserRepository userRepository;
 
-    public FindAccountDTO getAccountInfo(String userEmail){
+    public FindAccountResponse getAccountInfo(String userEmail){
         User user = userRepository.findByEmail(userEmail).orElseThrow(
                 ()-> new KookChildException(ExceptionStatus.NOT_EXIST_USER_EMAIL));
 
         Account account = accountRepository.findAccountByUser(user);
 
-//        return FindAccountResponse.from(account);
-        return new FindAccountDTO();
+        return FindAccountResponse.from(account);
+//        return new FindAccountDTO();
     }
 }

@@ -2,6 +2,7 @@ package com.service.kookchild.domain.management.controller;
 
 import com.service.kookchild.domain.management.dto.FindAccountInfoPair;
 import com.service.kookchild.domain.management.dto.FindAccountDTO;
+import com.service.kookchild.domain.management.dto.FindAccountResponse;
 import com.service.kookchild.domain.management.service.ManagementSendingService;
 import com.service.kookchild.domain.management.service.ManagementService;
 import com.service.kookchild.domain.security.CustomUserDetails;
@@ -26,7 +27,7 @@ public class ManagementController {
     private final ManagementService managementService;
 
     @GetMapping("/info")
-    public ResponseEntity<FindAccountDTO> findAccountInfo(Authentication authentication){
+    public ResponseEntity<FindAccountResponse> findAccountInfo(Authentication authentication){
         String email = getEmail(authentication);
         return ResponseEntity.ok(managementService.getAccountInfo(email));
     }
