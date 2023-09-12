@@ -20,7 +20,6 @@ public class ManagementService {
 
     private final AccountHistoryRepository accountHistoryRepository;
     private final AccountRepository accountRepository;
-
     public FindAccountResponse getAccountInfo(Long accountId){
         Account account = accountRepository.findById(accountId).get();
         List<AccountHistory> accountHistoriesByAccount = accountHistoryRepository.findAccountHistoriesByAccount(account);
