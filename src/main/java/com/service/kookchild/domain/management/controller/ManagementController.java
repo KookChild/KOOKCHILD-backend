@@ -32,12 +32,10 @@ public class ManagementController {
     }
 
     @PostMapping("/send")
-    public ResponseEntity sendMoney(Authentication authentication, @RequestBody Long childId){
+    public ResponseEntity sendMoney(Authentication authentication, @RequestBody FindAccountInfoPair fi){
         String email = getEmail(authentication);
-        FindAccountInfoPair fi = null;
-        fi.setChildId(String.valueOf(childId));
         Long id = managementSendingService.findUserId(email);
-        String name = managementSendingService.findUserNameById(childId);
+        String name = managementSendingService.findUserNameById(Long.parseLong(fi.getChildId()));
 
         fi.setParentId(String.valueOf(id));
 

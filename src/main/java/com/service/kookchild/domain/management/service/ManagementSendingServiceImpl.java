@@ -39,10 +39,10 @@ public class ManagementSendingServiceImpl implements ManagementSendingService{
         FindAccountResponse fr = null;
         Long pId = Long.parseLong(fi.getParentId());
         Long cId = Long.parseLong(fi.getChildId());
-        accountRepository.updateParentBalance(pId);
-        accountRepository.updateChildBalance(cId);
+        accountRepository.updateParentBalance(pId, fi.getAmount());
+        accountRepository.updateChildBalance(cId, fi.getAmount());
 
-        accountHistoryRepository.save(new AccountHistory(cId, 1, 1000L, "", "예금"));
+        accountHistoryRepository.save(new AccountHistory(cId, 1, fi.getAmount(), "", "예금"));
         fr = accountRepository.checkChildMoney(Long.parseLong(fi.getChildId()));
 
         return fr;
