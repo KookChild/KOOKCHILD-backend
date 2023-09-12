@@ -39,9 +39,6 @@ public class ChallengeController {
     @Autowired
     private ParentChildRepository parentChildRepository;
 
-    @Autowired
-    private ChallengeStateService challengeStateService;
-
     @RequestMapping(value = "/test/hello")
     @ResponseBody
     public String helloKookchild(Model model) {
