@@ -1,4 +1,111 @@
 package com.service.kookchild.domain.challenge.controller;
 
+import com.service.kookchild.domain.challenge.domain.Challenge;
+import com.service.kookchild.domain.challenge.service.ChallengeService;
+import com.service.kookchild.domain.security.CustomUserDetails;
+import com.service.kookchild.domain.user.domain.User;
+import com.service.kookchild.domain.user.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import java.util.List;
+
+@Controller
 public class ChallengeController {
+
+    @Autowired
+    private ChallengeService challengeService;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @RequestMapping(value = "/test/hello")
+    @ResponseBody
+    public String helloKookchild(Model model) {
+        return "Hello Kookchild";
+    }
+
+    /*(자녀가) 자신이 참여하고 있는 챌린지 및 부모에게 추천받은 챌린지 조회 */
+    @GetMapping("/challenge")
+    public ResponseEntity<List<Challenge>> select(Authentication authentication, @RequestParam(value = "state", defaultValue = "all") String state, HttpServletRequest request) {
+        String email = getEmail(authentication);
+        User user = userRepository.findByEmail(email).get();
+        try {
+            List<Challenge> challengeList = null;
+
+            switch (state) {
+
+                case "all":
+                    challengeList = challengeService.getAllChallenge();
+                    break;
+                case "proceeding":
+                    /* 임시 :: 아직 로그인 로직 구현안됨 */
+                    challengeList = challengeService.getChallengeListByChildId(user.getId());
+                    break;
+                case "parentConfirmed":
+                    /* 임시 :: 아직 로그인 로직 구현안됨 */
+                    challengeList = challengeService.getRecommendedChallenges(user.getId());
+                    break;
+                default:
+                    challengeList = challengeService.getAllChallenge();
+            }
+
+            return new ResponseEntity<>(challengeList, HttpStatus.OK);
+
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /* (부모가) 자녀별로 참여하고 있는 챌린지 및 추천한 챌린지 조회 */
+    @GetMapping("/challenge/{child_id}")
+    public ResponseEntity select(HttpServletRequest request, @PathVariable Long child_id,
+                                 @RequestParam(value = "state", defaultValue = "parentConfirmed") String state){
+        try{
+            List<Challenge> challengeList = null;
+            HttpSession session = request.getSession();
+            switch (state) {
+                    /* (자녀가) 현재 참여중인 챌린지 */
+                case "proceeding":
+                    challengeList = challengeService.getChallengeListByChildId(child_id);
+                    /* (자녀에게) 추천을 한 챌린지 */
+                case "parentConfirmed":
+                    challengeList = challengeService.getRecommendedChallenges(child_id);
+                    break;
+                    /* default: 전체 챌린지 목록? --논의필요 */
+                default:
+                    challengeList = challengeService.getAllChallenge();
+            }
+            return new ResponseEntity(challengeList,HttpStatus.OK);
+        }
+        catch(Exception e){
+            return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /* Challenge 상세내용 조회*/
+    /* 나중에 프론트 측에서 child,parent를 param으로 구분해서 content type 구분해주기*/
+    @GetMapping("/challenge/detail/{challenge_id}")
+    public ResponseEntity select( @PathVariable Long challenge_id){
+        try{
+            Challenge challenge =  (Challenge) challengeService.findChallengeById(challenge_id);
+            return new ResponseEntity(challenge,HttpStatus.OK);
+        }
+        catch(Exception e){
+            return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    public String getEmail(Authentication authentication) {
+        CustomUserDetails principal = (CustomUserDetails)authentication.getPrincipal();
+
+        return principal.getEmail();
+    }
+
 }
