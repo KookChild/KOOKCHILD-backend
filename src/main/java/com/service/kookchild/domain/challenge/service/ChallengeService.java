@@ -12,4 +12,6 @@ public interface ChallengeService {
 
     List<Challenge> getRecommendedChallenges(@Param("userId") Long userId);
 
+
+
 }

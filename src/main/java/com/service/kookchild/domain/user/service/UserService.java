@@ -3,12 +3,16 @@ package com.service.kookchild.domain.user.service;
 import com.service.kookchild.domain.security.JwtProvider;
 import com.service.kookchild.domain.user.domain.ParentChild;
 import com.service.kookchild.domain.user.domain.User;
+import com.service.kookchild.domain.user.dto.FindUserResponseDTO;
 import com.service.kookchild.domain.user.dto.LoginRequestDTO;
 import com.service.kookchild.domain.user.dto.LoginResponseDTO;
 import com.service.kookchild.domain.user.dto.RegisterRequestDTO;
 import com.service.kookchild.domain.user.repository.ParentChildRepository;
 import com.service.kookchild.domain.user.repository.UserRepository;
+import com.service.kookchild.global.exception.ExceptionStatus;
+import com.service.kookchild.global.exception.KookChildException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -17,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
+@Slf4j
 @Transactional
 @RequiredArgsConstructor
 public class UserService {
@@ -63,6 +68,17 @@ public class UserService {
                 .name(user.getName())
                 .token(jwtProvider.createToken(user.getEmail())).build();
     }
+
+    @Transactional(readOnly = true)
+    public FindUserResponseDTO getUserInfo(String email) {
+        log.info("/user Service 진입");
+
+        User user = userRepository.findByEmail(email).orElseThrow(
+                () -> new KookChildException(ExceptionStatus.NOT_EXIST_USER_EMAIL));
+
+        return FindUserResponseDTO.from(user);
+    }
+
 
     private User insertUser(RegisterRequestDTO request, boolean isParent){
         return User.builder()

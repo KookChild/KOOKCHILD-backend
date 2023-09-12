@@ -1,9 +1,13 @@
 package com.service.kookchild;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.transaction.Transactional;
 
+import com.service.kookchild.domain.challenge.domain.Challenge;
+import com.service.kookchild.domain.challenge.repository.ChallengeRepository;
+import com.service.kookchild.domain.challenge.service.ChallengeService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -25,6 +29,8 @@ class KookChildApplicationTests {
 
 
 	void quizTest() {
+
+	}
 
 	@Autowired
 	private ChallengeRepository challengeRepository;
@@ -51,7 +57,7 @@ class KookChildApplicationTests {
 		Challenge challenge = challengeRepository.findChallengeById(1L);
 		System.out.println(challenge);
 	}
-	}
+
 
 
 
