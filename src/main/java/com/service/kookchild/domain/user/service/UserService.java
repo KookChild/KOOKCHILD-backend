@@ -66,6 +66,7 @@ public class UserService {
         return LoginResponseDTO.builder()
                 .email(user.getEmail())
                 .name(user.getName())
+                .isParent(user.isParent())
                 .token(jwtProvider.createToken(user.getEmail())).build();
     }
 

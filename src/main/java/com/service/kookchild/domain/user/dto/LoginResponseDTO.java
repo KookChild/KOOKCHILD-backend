@@ -14,5 +14,6 @@ import java.time.LocalDateTime;
 public class LoginResponseDTO {
     private String email;
     private String name;
+    private boolean isParent;
     private String token;
 }
