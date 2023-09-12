@@ -1,5 +1,6 @@
 package com.service.kookchild.domain.management.controller;
 
+import com.service.kookchild.domain.management.domain.AccountType;
 import com.service.kookchild.domain.management.dto.FindAccountResponse;
 import com.service.kookchild.domain.management.service.ManagementService;
 import lombok.RequiredArgsConstructor;
@@ -19,5 +20,6 @@ public class ManagementController {
     @GetMapping("/info")
     public ResponseEntity<FindAccountResponse> findAccountInfo(@RequestBody Long accountId){
         return ResponseEntity.ok(managementService.getAccountInfo(accountId));
+
     }
 }

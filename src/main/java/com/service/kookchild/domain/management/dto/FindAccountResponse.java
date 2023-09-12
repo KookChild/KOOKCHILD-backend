@@ -20,6 +20,7 @@ public class FindAccountResponse {
     private Account account;
     private List<AccountHistory> accountHistories;
 
+
     public static FindAccountResponse of(Account account, List<AccountHistory> accountHistories){
         return FindAccountResponse.builder()
                 .account(account)
