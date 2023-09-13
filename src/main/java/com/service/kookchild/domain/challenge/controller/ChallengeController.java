@@ -53,15 +53,14 @@ public class ChallengeController {
     @GetMapping("/challenge")
     public ResponseEntity<List<Challenge>> select(Authentication authentication, @RequestParam(value = "state", defaultValue = "all") String state) {
         String email = getEmail(authentication);
-        System.out.println(email + " " + state);
-        User user = null;
+        User user = userRepository.findByEmail(email).get();
         try {
             List<Challenge> challengeList = null;
-
+            System.out.println(user.getId());
             switch (state) {
 
                 case "all":
-                    challengeList = challengeService.getAllChallenge();
+                    challengeList = challengeService.getAllChallenge(user.getId());
                     break;
                 case "proceeding":
                     user = userRepository.findByEmail(email).get();
@@ -75,7 +74,7 @@ public class ChallengeController {
                     challengeList = challengeService.getRecommendedChallenges(user.getId());
                     break;
                 default:
-                    challengeList = challengeService.getAllChallenge();
+                    challengeList = challengeService.getAllChallenge(user.getId());
             }
 
             return new ResponseEntity<>(challengeList, HttpStatus.OK);
@@ -102,7 +101,7 @@ public class ChallengeController {
                     break;
                 /* default: 전체 챌린지 목록? --논의필요 */
                 default:
-                    challengeList = challengeService.getAllChallenge();
+                    challengeList = challengeService.getAllChallenge(child_id);
             }
             return new ResponseEntity(challengeList,HttpStatus.OK);
         }
