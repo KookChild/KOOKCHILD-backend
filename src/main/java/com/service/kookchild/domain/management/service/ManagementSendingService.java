@@ -1,10 +1,7 @@
 package com.service.kookchild.domain.management.service;
 
 import antlr.collections.List;
-import com.service.kookchild.domain.management.dto.CheckChildMoneyResponse;
-import com.service.kookchild.domain.management.dto.FindAccountAmount;
-import com.service.kookchild.domain.management.dto.FindAccountInfoPair;
-import com.service.kookchild.domain.management.dto.FindAccountDTO;
+import com.service.kookchild.domain.management.dto.*;
 
 import java.util.ArrayList;
 
@@ -16,5 +13,5 @@ public interface ManagementSendingService {
 
 
 
-    public ArrayList<String> findChildNamesByParentId(Long id);
+    public ArrayList<FindAccountChildNameId> findChildNamesByParentId(Long id);
 }
