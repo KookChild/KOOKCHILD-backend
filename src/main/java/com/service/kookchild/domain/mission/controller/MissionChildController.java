@@ -29,8 +29,7 @@ public class MissionChildController {
 
     @PostMapping("")
     public void registerMission(@RequestBody MissionCreateDTO m, Authentication authentication){
-        System.out.println("9999999999999999");
-        String email = getEmail(authentication); // 토큰으로 이메일 가져옴
+        String email = getEmail(authentication);
         System.out.println(email);
         missionService.saveMission(m,email);
     }

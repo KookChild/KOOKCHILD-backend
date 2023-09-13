@@ -22,5 +22,5 @@ public class MissionCreateDTO {
     private LocalDateTime endDate;
 
     private LocalDateTime createdDate;
-    private long childId;
+    private String childIds;
 }
