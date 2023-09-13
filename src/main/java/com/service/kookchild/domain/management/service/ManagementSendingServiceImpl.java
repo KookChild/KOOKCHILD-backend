@@ -1,5 +1,6 @@
 package com.service.kookchild.domain.management.service;
 
+import com.service.kookchild.domain.management.domain.Account;
 import com.service.kookchild.domain.management.domain.AccountHistory;
 
 import com.service.kookchild.domain.management.dto.CheckChildMoneyResponse;
@@ -32,6 +33,7 @@ public class ManagementSendingServiceImpl implements ManagementSendingService {
         Long cId = Long.parseLong(fi.getChildId());
         accountRepository.updateParentBalance(pId, fi.getAmount());
         accountRepository.updateChildBalance(cId, fi.getAmount());
+        Account a  = accountRepository.findByUserId(cId);
         accountHistoryRepository.save(new AccountHistory(cId, 1, fi.getAmount(), "", "예금"));
         findAccountDTO = accountRepository.checkChildMoney(Long.parseLong(fi.getChildId()));
 
@@ -54,13 +56,14 @@ public class ManagementSendingServiceImpl implements ManagementSendingService {
     @Override
     public CheckChildMoneyResponse checkChildMoney(FindAccountInfoPair fi) {
         System.out.println("sendChildMoney");
+        FindAccountDTO findAccountDTO = accountRepository.checkChildMoney(Long.parseLong(fi.getChildId().trim()));
         Long amount = accountHistoryRepository.findAmount(Long.parseLong(fi.getChildId().trim()), "예금");
         Long notInAmount = accountHistoryRepository.findNotInAmount(Long.parseLong(fi.getChildId().trim()), "예금");
+        System.out.println(amount+", "+ notInAmount);
 
-        FindAccountDTO findAccountDTO = accountRepository.checkChildMoney(Long.parseLong(fi.getChildId().trim()));
         CheckChildMoneyResponse checkChildMoneyResponse =
                 CheckChildMoneyResponse.of(findAccountDTO.getAccountNum(),findAccountDTO.getUserName(), amount,notInAmount);
-
+        System.out.println(findAccountDTO.getAccountNum());
         return checkChildMoneyResponse;
     }
 
