@@ -56,7 +56,7 @@ public class ChallengeController {
         User user = userRepository.findByEmail(email).get();
         try {
             List<Challenge> challengeList = null;
-            System.out.println(user.getId());
+
             switch (state) {
 
                 case "all":
@@ -90,7 +90,6 @@ public class ChallengeController {
                                  @RequestParam(value = "state", defaultValue = "parentConfirmed") String state){
         try{
             List<Challenge> challengeList = null;
-            HttpSession session = request.getSession();
             switch (state) {
                 /* (자녀가) 현재 참여중인 챌린지 */
                 case "proceeding":
@@ -110,20 +109,33 @@ public class ChallengeController {
         }
     }
 
-    /* Challenge 상세내용 조회*/
+    /* Challenge 상세페이지 조회*/
     @GetMapping("/challenge/detail/{challenge_id}")
     public ResponseEntity select( @PathVariable Long challenge_id){
         try{
-            Challenge challenge =  (Challenge) challengeService.findChallengeById(challenge_id);
+            Challenge challenge = challengeService.findChallengeById(challenge_id);
             return new ResponseEntity(challenge,HttpStatus.OK);
         }
         catch(Exception e){
             return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
+/* (자녀가) 챌린지  0) 참여하기 1) 대기중 2) 승인하기 3) 진행중  */
+@GetMapping("/challenge/check/{challenge_id}")
+public ResponseEntity select( @PathVariable Long challenge_id, Authentication authentication){
+    String email = getEmail(authentication);
+    User user = userRepository.findByEmail(email).get();
+    int result = 0;
+    try{
+        result = challengeStateService.getChallengeType(challenge_id, user.getId());
+        return new ResponseEntity(result,HttpStatus.OK);
+    }
+    catch(Exception e){
+        return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+}
     /* 자녀가 챌린지 참여요청 혹은 추천 챌린지 승인 */
-    @PostMapping("/challenge/detail/{challenge_id}/childConfirm")
+    @PutMapping ("/challenge/detail/{challenge_id}/childConfirm")
     public ResponseEntity updateChildConfirm(Authentication authentication, @PathVariable  Long challenge_id) {
         String email = getEmail(authentication);
         User user = userRepository.findByEmail(email).get();
