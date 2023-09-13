@@ -3,12 +3,13 @@ package com.service.kookchild.domain.management.service;
 import com.service.kookchild.domain.management.domain.Account;
 import com.service.kookchild.domain.management.domain.AccountHistory;
 
-import com.service.kookchild.domain.management.dto.CheckChildMoneyResponse;
-import com.service.kookchild.domain.management.dto.FindAccountInfoPair;
-import com.service.kookchild.domain.management.dto.FindAccountDTO;
-import com.service.kookchild.domain.management.dto.FindAccountResponse;
+import com.service.kookchild.domain.management.dto.*;
 import com.service.kookchild.domain.management.repository.AccountHistoryRepository;
 import com.service.kookchild.domain.management.repository.AccountRepository;
+import com.service.kookchild.domain.user.domain.User;
+import com.service.kookchild.domain.user.repository.UserRepository;
+import com.service.kookchild.global.exception.ExceptionStatus;
+import com.service.kookchild.global.exception.KookChildException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.annotations.Check;
@@ -25,6 +26,7 @@ public class ManagementSendingServiceImpl implements ManagementSendingService {
 
     private final AccountRepository accountRepository;
     private final AccountHistoryRepository accountHistoryRepository;
+    private final UserRepository userRepository;
 
     @Override
     public FindAccountDTO sendChildMoney(FindAccountInfoPair fi) {
@@ -56,7 +58,13 @@ public class ManagementSendingServiceImpl implements ManagementSendingService {
     @Override
     public CheckChildMoneyResponse checkChildMoney(FindAccountInfoPair fi) {
         System.out.println("sendChildMoney");
-        FindAccountDTO findAccountDTO = accountRepository.checkChildMoney(Long.parseLong(fi.getChildId().trim()));
+//        FindAccountDTO findAccountDTO = accountRepository.checkChildMoney(24L);
+        User user = userRepository.findById(Long.parseLong(fi.getChildId())).orElseThrow(
+                () -> new KookChildException(ExceptionStatus.NOT_EXIST_USER_EMAIL));
+        Account account= accountRepository.findByUserId(user.getId());
+        FindAccountDTO findAccountDTO = new FindAccountDTO(account.getBalance(),account.getAccountNum(), user.getName());
+
+        System.out.println("accountNum : " + findAccountDTO.getAccountNum());
         Long amount = accountHistoryRepository.findAmount(Long.parseLong(fi.getChildId().trim()), "예금");
         Long notInAmount = accountHistoryRepository.findNotInAmount(Long.parseLong(fi.getChildId().trim()), "예금");
         System.out.println(amount+", "+ notInAmount);
@@ -68,8 +76,8 @@ public class ManagementSendingServiceImpl implements ManagementSendingService {
     }
 
     @Override
-    public ArrayList<String> findChildNamesByParentId(Long id) {
-        ArrayList<String> list = null;
+    public ArrayList<FindAccountChildNameId> findChildNamesByParentId(Long id) {
+        ArrayList<FindAccountChildNameId> list = null;
         list = accountRepository.findChildNamesByParentId(id);
         return list;
     }
