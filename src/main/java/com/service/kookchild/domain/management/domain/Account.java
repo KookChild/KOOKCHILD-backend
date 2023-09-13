@@ -3,10 +3,7 @@ package com.service.kookchild.domain.management.domain;
 
 import com.service.kookchild.global.domain.BaseEntity;
 import com.service.kookchild.domain.user.domain.User;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 
@@ -27,5 +24,16 @@ public class Account extends BaseEntity {
     private Long balance;
     private String password;
     private AccountType type;
+    @Column(unique = true)
     private String accountNum; //계좌번호
+
+    @Builder
+    public Account(User user, String accountName, long balance, String password, AccountType type, String accountNum){
+        this.user = user;
+        this.accountName = accountName;
+        this.balance = balance;
+        this.password = password;
+        this.type = type;
+        this.accountNum = accountNum;
+    }
 }

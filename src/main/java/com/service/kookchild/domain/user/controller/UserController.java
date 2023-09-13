@@ -1,10 +1,7 @@
 package com.service.kookchild.domain.user.controller;
 
 import com.service.kookchild.domain.security.CustomUserDetails;
-import com.service.kookchild.domain.user.dto.FindUserResponseDTO;
-import com.service.kookchild.domain.user.dto.LoginRequestDTO;
-import com.service.kookchild.domain.user.dto.LoginResponseDTO;
-import com.service.kookchild.domain.user.dto.RegisterRequestDTO;
+import com.service.kookchild.domain.user.dto.*;
 import com.service.kookchild.domain.user.repository.UserRepository;
 import com.service.kookchild.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +26,7 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public  ResponseEntity<Boolean> register(@RequestBody RegisterRequestDTO request) throws Exception{
+    public  ResponseEntity<RegisterResponseDTO> register(@RequestBody RegisterRequestDTO request){
         return new ResponseEntity<>(userService.register(request), HttpStatus.OK);
     }
 
