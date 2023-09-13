@@ -10,7 +10,7 @@ public interface ChallengeService {
     Challenge findChallengeById(Long id);
     List<Challenge> getChallengeListByChildId(Long childId);
 
-    List<Challenge> getRecommendedChallenges(@Param("userId") Long userId);
+    List<Challenge> getRecommendedChallenges(Long userId);
 
 
 
