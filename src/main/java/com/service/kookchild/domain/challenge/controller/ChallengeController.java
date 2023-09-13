@@ -10,6 +10,8 @@ import com.service.kookchild.domain.user.domain.ParentChild;
 import com.service.kookchild.domain.user.domain.User;
 import com.service.kookchild.domain.user.repository.ParentChildRepository;
 import com.service.kookchild.domain.user.repository.UserRepository;
+import com.service.kookchild.global.exception.ExceptionStatus;
+import com.service.kookchild.global.exception.KookChildException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,6 +36,8 @@ public class ChallengeController {
 
     @Autowired
     private ChallengeStateService challengeStateService;
+
+    @Autowired
     private UserRepository userRepository;
 
     @Autowired
@@ -47,9 +51,10 @@ public class ChallengeController {
 
     /*(자녀가) 자신이 참여하고 있는 챌린지 및 부모에게 추천받은 챌린지 조회 */
     @GetMapping("/challenge")
-    public ResponseEntity<List<Challenge>> select(Authentication authentication, @RequestParam(value = "state", defaultValue = "all") String state, HttpServletRequest request) {
+    public ResponseEntity<List<Challenge>> select(Authentication authentication, @RequestParam(value = "state", defaultValue = "all") String state) {
         String email = getEmail(authentication);
-        User user = userRepository.findByEmail(email).get();
+        System.out.println(email + " " + state);
+        User user = null;
         try {
             List<Challenge> challengeList = null;
 
@@ -59,10 +64,13 @@ public class ChallengeController {
                     challengeList = challengeService.getAllChallenge();
                     break;
                 case "proceeding":
+                    user = userRepository.findByEmail(email).get();
+
                     /* 임시 :: 아직 로그인 로직 구현안됨 */
                     challengeList = challengeService.getChallengeListByChildId(user.getId());
                     break;
                 case "parentConfirmed":
+                    user = userRepository.findByEmail(email).get();
                     /* 임시 :: 아직 로그인 로직 구현안됨 */
                     challengeList = challengeService.getRecommendedChallenges(user.getId());
                     break;

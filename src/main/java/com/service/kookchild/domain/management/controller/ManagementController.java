@@ -1,10 +1,8 @@
 package com.service.kookchild.domain.management.controller;
 
-import com.service.kookchild.domain.management.dto.CheckChildMoneyResponse;
-import com.service.kookchild.domain.management.dto.FindAccountInfoPair;
-import com.service.kookchild.domain.management.dto.FindAccountDTO;
+import com.service.kookchild.domain.management.dto.*;
 
-import com.service.kookchild.domain.management.dto.FindAccountResponse;
+import com.service.kookchild.domain.management.service.AccountHistoryService;
 import com.service.kookchild.domain.management.service.ManagementSendingService;
 import com.service.kookchild.domain.management.service.ManagementService;
 import com.service.kookchild.domain.security.CustomUserDetails;
@@ -29,6 +27,7 @@ public class ManagementController {
 
     private final ManagementSendingService managementSendingService;
     private final ManagementService managementService;
+    private final AccountHistoryService accountHistoryService;
 
     @GetMapping("/info")
     public ResponseEntity<FindAccountResponse> findAccountInfo(Authentication authentication){
@@ -83,6 +82,13 @@ public class ManagementController {
             System.out.println(e);
         }
         return new ResponseEntity(list, HttpStatus.OK);
+    }
+
+    @GetMapping("/history")
+    public ResponseEntity<FindAccountHistoryResponse> findAccountHistory(Authentication authentication){
+        FindAccountHistoryResponse accountHistories = accountHistoryService.findAccountHistories(authentication);
+
+        return ResponseEntity.ok(accountHistories);
     }
 
     public String getEmail(Authentication authentication) {
