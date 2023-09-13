@@ -36,7 +36,13 @@ public class ManagementSendingServiceImpl implements ManagementSendingService {
         accountRepository.updateParentBalance(pId, fi.getAmount());
         accountRepository.updateChildBalance(cId, fi.getAmount());
         Account a  = accountRepository.findByUserId(cId);
-        accountHistoryRepository.save(new AccountHistory(cId, 1, fi.getAmount(), "", "예금"));
+        AccountHistory accountHistory = AccountHistory.builder()
+                .userId(cId)
+                .isDeposit(1)
+                .category("예금")
+                .amount(fi.getAmount())
+                .targetName("").build();
+        accountHistoryRepository.save(accountHistory);
         findAccountDTO = accountRepository.checkChildMoney(Long.parseLong(fi.getChildId()));
 
         return findAccountDTO;

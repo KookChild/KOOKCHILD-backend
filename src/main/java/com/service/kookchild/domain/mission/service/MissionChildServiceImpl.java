@@ -1,5 +1,9 @@
 package com.service.kookchild.domain.mission.service;
 
+import com.service.kookchild.domain.management.domain.Account;
+import com.service.kookchild.domain.management.domain.AccountHistory;
+import com.service.kookchild.domain.management.repository.AccountHistoryRepository;
+import com.service.kookchild.domain.management.repository.AccountRepository;
 import com.service.kookchild.domain.mission.domain.Mission;
 import com.service.kookchild.domain.mission.dto.*;
 import com.service.kookchild.domain.mission.exception.MissionNotFoundException;
@@ -27,6 +31,8 @@ public class MissionChildServiceImpl implements MissionChildService{
     private final ParentChildRepository parentChildRepository;
     private final MissionChildRepository missionChildRepository;
     private final UserRepository userRepository;
+    private final AccountRepository accountRepository;
+    private final AccountHistoryRepository accountHistoryRepository;
     @Override
     @Transactional
     public MissionChildListDTO getMissionList(String email, String state) {
@@ -120,15 +126,32 @@ public class MissionChildServiceImpl implements MissionChildService{
 
     @Override
     @Transactional
-    public boolean confirmMission(String email, long missionId) {
+    public int confirmMission(String email, long missionId) {
         User user = findUser(email);
         Mission mission = missionChildRepository.findById(missionId).orElseThrow(
                 () -> new MissionNotFoundException("해당 미션이 존재하지 않습니다.")
         );
-        if(!mission.getParentChild().getParent().equals(user)) return false;
-        if(mission.isParentConfirm()) return false;
-        mission.approveConfirm(true);
-        return true;
+        if(!mission.getParentChild().getParent().equals(user)) return 403;
+        if(mission.isParentConfirm()) return 400;
+        Account parentAccount = accountRepository.findByUser(user);
+        long missionReward = Integer.parseInt(mission.getReward());
+        User child = mission.getParentChild().getChild();
+        if(missionReward <= parentAccount.getBalance()){
+            mission.approveConfirm(true);
+            accountRepository.updateParentBalance(user.getId(), missionReward);
+            accountRepository.updateChildBalance(child.getId(), missionReward);
+            AccountHistory childHistory = AccountHistory.builder()
+                    .userId(child.getId())
+                    .isDeposit(1)
+                    .amount(missionReward)
+                    .targetName("부모")
+                    .category("리워드")
+                    .account(accountRepository.findByUser(child)).build();
+            accountHistoryRepository.save(childHistory);
+        } else{
+            return 422;
+        }
+        return 200;
     }
 
     @Override

@@ -63,8 +63,11 @@ public class MissionChildController {
     @PostMapping("/confirm")
     public ResponseEntity confirmMissionApproval(Authentication authentication, @RequestBody MissionDTO missionDTO){
         String email = getEmail(authentication);
-        boolean result = missionChildService.confirmMission(email, missionDTO.getMissionId());
-        if(!result) return ResponseEntity.badRequest().body("잘못된 접근입니다.");
+        int result = missionChildService.confirmMission(email, missionDTO.getMissionId());
+        if(result==403) return ResponseEntity.status(HttpStatus.FORBIDDEN).body("금지된 접근입니다.");
+        if(result==400) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("이미 성공인증된 미션입니다.");
+        if(result==422) return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
+                .body("잔액이 부족합니다");
         return ResponseEntity.ok("자녀 미션 성공 확인");
     }
 

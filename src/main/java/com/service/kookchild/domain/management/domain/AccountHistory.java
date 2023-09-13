@@ -1,10 +1,7 @@
 package com.service.kookchild.domain.management.domain;
 
 import com.service.kookchild.global.domain.BaseEntity;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 
@@ -29,11 +26,13 @@ public class AccountHistory extends BaseEntity {
     @JoinColumn(name = "account_id")
     private Account account;
 
-    public AccountHistory(Long userId, int isDeposit, Long amount, String targetName, String category) {
+    @Builder
+    public AccountHistory(Long userId, int isDeposit, Long amount, String targetName, String category, Account account) {
         this.userId = userId;
         this.isDeposit = isDeposit;
         this.amount = amount;
         this.targetName = targetName;
         this.category = category;
+        this.account = account;
     }
 }
