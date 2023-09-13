@@ -35,11 +35,11 @@ public class MissionChildServiceImpl implements MissionChildService{
     private final AccountHistoryRepository accountHistoryRepository;
     @Override
     @Transactional
-    public MissionChildListDTO getMissionList(String email, String state) {
+    public MissionChildListDTO getMissionList(String email, String state, String type) {
         User user = findUser(email);
         ParentChild child = findParentChildByChildId(user.getId());
 
-        List<Mission> missionList = sortMissionsByState(child, state);
+        List<Mission> missionList = sortMissionsByStateAndType(child, state, type);
         List<MissionViewDTO> missionDTOList = missionList.stream()
                 .map(MissionViewDTO::of)
                 .collect(Collectors.toList());
@@ -52,7 +52,7 @@ public class MissionChildServiceImpl implements MissionChildService{
 
     @Override
     @Transactional
-    public MissionParentListDTO getParentMissionList(String email, long child) {
+    public MissionParentListDTO getParentMissionList(String email, long child, String type) {
         User user = findUser(email);
         List<User> childList = parentChildRepository.findByParent(user)
                 .stream()
@@ -60,8 +60,8 @@ public class MissionChildServiceImpl implements MissionChildService{
                 .collect(Collectors.toList());
 
 
-        List<Mission> missionList = (child == 0) ? getMissionsForAllChildren(user)
-                : getMissionsForSpecificChild(child);
+        List<Mission> missionList = (child == 0) ? getMissionsForAllChildren(user, type)
+                : getMissionsForSpecificChild(child, type);
 
         List<MissionViewDTO> missionDTOList = toMissionViewDTOList(missionList);
         List<ChildListDTO> childListDTOList = childList.stream()
@@ -178,9 +178,24 @@ public class MissionChildServiceImpl implements MissionChildService{
         return true;
     }
 
-    private List<Mission> sortMissionsByState(ParentChild child, String state) {
-        return state.equals("newest") ? missionChildRepository.findByParentChildOrderByEndDateDesc(child)
-                : missionChildRepository.findByParentChildOrderByEndDate(child);
+    private List<Mission> sortMissionsByStateAndType(ParentChild child, String state, String type) {
+        if(type.equals("all")){
+            return state.equals("newest") ? missionChildRepository.findByParentChildOrderByEndDateDesc(child)
+                    : missionChildRepository.findByParentChildOrderByEndDate(child);
+        }
+        else if (type.equals("ongoing")){
+            if(state.equals("newest")){
+                return missionChildRepository.findByParentChildAndParentConfirmOrderByEndDateDesc(child, true);
+            } else{
+                return missionChildRepository.findByParentChildAndParentConfirmOrderByEndDate(child, true);
+            }
+        } else{
+            if(state.equals("newest")){
+               return missionChildRepository.findByParentChildAndParentConfirmOrderByEndDateDesc(child, false);
+            }else{
+                return missionChildRepository.findByParentChildAndParentConfirmOrderByEndDate(child, false);
+            }
+        }
     }
 
     private List<MissionViewDTO> toMissionViewDTOList(List<Mission> missionList) {
@@ -210,20 +225,24 @@ public class MissionChildServiceImpl implements MissionChildService{
     }
 
 
-    private List<Mission> getMissionsForAllChildren(User parent) {
+    private List<Mission> getMissionsForAllChildren(User parent, String type) {
         List<ParentChild> relations = findParentChildByParentId(parent);
         List<Long> parentChildIds = relations.stream()
                 .map(ParentChild::getId)
                 .collect(Collectors.toList());
-        return missionChildRepository.findByParentChildIdIn(parentChildIds);
+        if(type.equals("all")) return missionChildRepository.findByParentChildIdIn(parentChildIds);
+        else if(type.equals("ongoing")) return missionChildRepository.findByParentChildIdInAndParentConfirm(parentChildIds, false);
+        else return missionChildRepository.findByParentChildIdInAndParentConfirm(parentChildIds, true);
     }
 
-    private List<Mission> getMissionsForSpecificChild(long childId) {
+    private List<Mission> getMissionsForSpecificChild(long childId, String type) {
         User c = userRepository.findById(childId).orElseThrow(
                 () -> new EntityNotFoundException("해당 유저가 존재하지 않습니다.")
         );
         ParentChild selectedChild = findParentChildByChildId(c.getId());
-        return missionChildRepository.findByParentChild(selectedChild);
+        if(type.equals("all")) return missionChildRepository.findByParentChild(selectedChild);
+        if (type.equals("ongoing")) return missionChildRepository.findByParentChildAndParentConfirm(selectedChild, false);
+        else return missionChildRepository.findByParentChildAndParentConfirm(selectedChild, true);
     }
 
 }

@@ -15,6 +15,7 @@ public class MissionViewDTO {
     private String deadline;
     private boolean parentConfirm;
     private boolean childConfirm;
+    private long childId;
 
     public static MissionViewDTO of(Mission m) {
         DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
@@ -28,6 +29,7 @@ public class MissionViewDTO {
                 .deadline(deadline)
                 .parentConfirm(m.isParentConfirm())
                 .childConfirm(m.isChildConfirm())
+                .childId(m.getParentChild().getChild().getId())
                 .build();
     }
 

@@ -3,7 +3,7 @@ package com.service.kookchild.domain.mission.service;
 import com.service.kookchild.domain.mission.dto.*;
 
 public interface MissionChildService {
-    MissionChildListDTO getMissionList(String email, String state);
+    MissionChildListDTO getMissionList(String email, String state, String type);
     MissionDetailDTO getMission(String email, long missionId);
 
     boolean requestMissionConfirm(String email, long missionId);
@@ -12,7 +12,7 @@ public interface MissionChildService {
 
     boolean deleteMission(String email, MissionDTO missionDTO);
 
-    MissionParentListDTO getParentMissionList(String email, long child);
+    MissionParentListDTO getParentMissionList(String email, long child, String type);
 
     int confirmMission(String email, long missionId);
 }
