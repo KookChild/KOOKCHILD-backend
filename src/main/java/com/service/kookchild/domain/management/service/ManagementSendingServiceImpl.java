@@ -64,20 +64,26 @@ public class ManagementSendingServiceImpl implements ManagementSendingService {
     @Override
     public CheckChildMoneyResponse checkChildMoney(FindAccountInfoPair fi) {
         System.out.println("sendChildMoney");
-//        FindAccountDTO findAccountDTO = accountRepository.checkChildMoney(24L);
-        User user = userRepository.findById(Long.parseLong(fi.getChildId())).orElseThrow(
-                () -> new KookChildException(ExceptionStatus.NOT_EXIST_USER_EMAIL));
-        Account account= accountRepository.findByUserId(user.getId());
-        FindAccountDTO findAccountDTO = new FindAccountDTO(account.getBalance(),account.getAccountNum(), user.getName());
+        FindAccountDTO findAccountDTO = null;
+        CheckChildMoneyResponse checkChildMoneyResponse = null;
 
-        System.out.println("accountNum : " + findAccountDTO.getAccountNum());
-        Long amount = accountHistoryRepository.findAmount(Long.parseLong(fi.getChildId().trim()), "예금");
-        Long notInAmount = accountHistoryRepository.findNotInAmount(Long.parseLong(fi.getChildId().trim()), "예금");
-        System.out.println(amount+", "+ notInAmount);
+        findAccountDTO = accountRepository.checkChildMoney(Long.parseLong(fi.getChildId()));
+        if(findAccountDTO != null) {
+            String name = userRepository.findNameById(Long.parseLong(fi.getChildId()));
+            findAccountDTO.setUserName(name);
 
-        CheckChildMoneyResponse checkChildMoneyResponse =
-                CheckChildMoneyResponse.of(findAccountDTO.getAccountNum(),findAccountDTO.getUserName(), amount,notInAmount);
-        System.out.println(findAccountDTO.getAccountNum());
+
+            System.out.println("accountNum : " + findAccountDTO.getAccountNum());
+            Long amount = accountHistoryRepository.findAmount(Long.parseLong(fi.getChildId().trim()), "예금");
+            Long notInAmount = accountHistoryRepository.findNotInAmount(Long.parseLong(fi.getChildId().trim()), "예금");
+            System.out.println(amount + ", " + notInAmount);
+
+            checkChildMoneyResponse =
+                    CheckChildMoneyResponse.of(findAccountDTO.getAccountNum(), findAccountDTO.getUserName(), amount, notInAmount);
+            System.out.println(findAccountDTO.getAccountNum());
+        }
+
+
         return checkChildMoneyResponse;
     }
 

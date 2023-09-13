@@ -7,9 +7,8 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Setter
-public class FindAccountDTO {
+public class FindAccountUpdateDTO {
     //DB 리턴 전용 DTO
     private Long balance;
     private String accountNum;
-    private String userName;
 }

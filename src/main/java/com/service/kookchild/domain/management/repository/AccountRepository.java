@@ -33,8 +33,7 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 
     @Query("SELECT NEW com.service.kookchild.domain.management.dto.FindAccountDTO(a.balance AS balance, a.accountNum AS accountNum, u.name AS userName) " +
             "FROM Account a " +
-            "JOIN User u ON u.id = a.user.id " +
-            "WHERE u.id = :childId")
+            "JOIN User u ON u.id = a.user.id WHERE a.user.id = :childId")
     FindAccountDTO checkChildMoney(@Param("childId") Long childId);
 
 
