@@ -30,7 +30,6 @@ public class MissionChildController {
     @PostMapping("")
     public void registerMission(@RequestBody MissionCreateDTO m, Authentication authentication){
         String email = getEmail(authentication);
-        System.out.println(email);
         missionService.saveMission(m,email);
     }
 
