@@ -1,5 +1,7 @@
 package com.service.kookchild.domain.management.service;
 
+import java.util.ArrayList;
+import java.util.List;
 import com.service.kookchild.domain.management.domain.Account;
 import com.service.kookchild.domain.management.dto.FindAccountDTO;
 import com.service.kookchild.domain.management.dto.FindAccountResponse;
@@ -28,9 +30,9 @@ public class ManagementService {
         User user = userRepository.findByEmail(userEmail).orElseThrow(
                 ()-> new KookChildException(ExceptionStatus.NOT_EXIST_USER_EMAIL));
 
-        Account account = accountRepository.findAccountByUser(user);
+        ArrayList<Account> list = accountRepository.findAccountsByType1AndUserId(user.getId());
 
-        return FindAccountResponse.from(account);
+        return FindAccountResponse.from(list.get(0));
 //        return new FindAccountDTO();
     }
 }
