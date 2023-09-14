@@ -30,7 +30,7 @@ class KookChildApplicationTests {
 
 
 
-	}
+
 
 	@Autowired
 	private ChallengeRepository challengeRepository;
@@ -78,9 +78,9 @@ class KookChildApplicationTests {
 		missionServiceImpl.saveMission(m3);
 		missionServiceImpl.saveMission(m4);
 		*/
-
-		Mission mm = new Mission(23l, null,null,null,null,null,null,null,false,false);
-		missionServiceImpl.saveMission(mm); // 자동으로 jpa 들어감
+//
+//		Mission mm = new Mission(23l, null,null,null,null,null,null,null,false,false);
+//		missionServiceImpl.saveMission(mm); // 자동으로 jpa 들어감
 	}
 	/**
 	 * mission Test End

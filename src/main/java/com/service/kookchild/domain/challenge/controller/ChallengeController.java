@@ -135,18 +135,19 @@ public ResponseEntity select( @PathVariable Long challenge_id, Authentication au
     }
 }
     /* 자녀가 챌린지 참여요청 혹은 추천 챌린지 승인 */
-    @PutMapping ("/challenge/detail/{challenge_id}/childConfirm")
-    public ResponseEntity updateChildConfirm(Authentication authentication, @PathVariable  Long challenge_id) {
-        String email = getEmail(authentication);
-        User user = userRepository.findByEmail(email).get();
-        ParentChild parentChild = parentChildRepository.findByChildId(user.getId()).get();
-        try {
-            challengeStateService.updateChildConfirm(challenge_id, parentChild.getId());
-            return new ResponseEntity(HttpStatus.OK);
-        } catch(Exception e) {
-            return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+@PostMapping ("/challenge/detail/{challenge_id}/childConfirm")
+public ResponseEntity updateChildConfirm(Authentication authentication, @PathVariable  Long challenge_id) {
+    String email = getEmail(authentication);
+    User user = userRepository.findByEmail(email).get();
+    ParentChild parentChild = parentChildRepository.findByChildId(user.getId()).get();
+
+    try {
+        challengeStateService.updateChildConfirm(challenge_id, parentChild.getId());
+        return new ResponseEntity(HttpStatus.OK);
+    } catch(Exception e) {
+        return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
     }
+}
     public String getEmail(Authentication authentication) {
         CustomUserDetails principal = (CustomUserDetails) authentication.getPrincipal();
         return principal.getEmail();
