@@ -15,4 +15,7 @@ public interface MissionChildService {
     MissionParentListDTO getParentMissionList(String email, long child, String type);
 
     int confirmMission(String email, long missionId);
+
+    MissionHistoryDTO getMissionHistoryList(String email, String state);
+
 }

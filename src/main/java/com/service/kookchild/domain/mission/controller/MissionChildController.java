@@ -27,6 +27,15 @@ public class MissionChildController {
         return ResponseEntity.ok(missionChildListDTO);
     }
 
+    @GetMapping("/history")
+    public ResponseEntity getMissionHistoryList(
+            Authentication authentication,
+            @RequestParam(value = "sort", defaultValue = "newest") String state){
+        String email = getEmail(authentication);
+        MissionHistoryDTO missionHistoryDTO = missionChildService.getMissionHistoryList(email, state);
+        return ResponseEntity.ok(missionHistoryDTO);
+    }
+
     @PostMapping("")
     public void registerMission(@RequestBody MissionCreateDTO m, Authentication authentication){
         String email = getEmail(authentication);
