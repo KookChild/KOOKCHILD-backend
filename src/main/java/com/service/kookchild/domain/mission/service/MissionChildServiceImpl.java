@@ -186,7 +186,7 @@ public class MissionChildServiceImpl implements MissionChildService{
         if(state.equals("newest")){
             return missionChildRepository.findByParentChildAndParentConfirmAndChildConfirmOrderByEndDateDesc(child, false, false);
         } else{
-            return missionChildRepository.findByParentChildAndParentConfirmAndChildConfirmOrderByEndDate(child, false, true);
+            return missionChildRepository.findByParentChildAndParentConfirmAndChildConfirmOrderByEndDate(child, false, false);
         }
     }
 
