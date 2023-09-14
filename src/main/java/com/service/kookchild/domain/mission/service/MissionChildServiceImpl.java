@@ -160,6 +160,21 @@ public class MissionChildServiceImpl implements MissionChildService{
 
     @Override
     @Transactional
+    public MissionHistoryDTO getMissionHistoryList(String email, String state) {
+        User user = findUser(email);
+        ParentChild child = findParentChildByChildId(user.getId());
+
+        List<Mission> successMissionList = sortHistoryMissionsByState(child, state);
+        List<MissionViewDTO> successMissionDTOList = successMissionList.stream()
+                .map(MissionViewDTO::of)
+                .collect(Collectors.toList());
+
+        return MissionHistoryDTO.builder()
+                .successMissionList(successMissionDTOList).build();
+    }
+
+    @Override
+    @Transactional
     public boolean updateMission(String email, MissionUpdateDTO missionUpdateDTO) {
         Mission mission = missionChildRepository.findById(missionUpdateDTO.getMissionId()).orElseThrow(
                 () -> new MissionNotFoundException("해당 미션이 존재하지 않습니다.")
@@ -187,6 +202,14 @@ public class MissionChildServiceImpl implements MissionChildService{
             return missionChildRepository.findByParentChildAndParentConfirmAndChildConfirmOrderByEndDateDesc(child, false, false);
         } else{
             return missionChildRepository.findByParentChildAndParentConfirmAndChildConfirmOrderByEndDate(child, false, false);
+        }
+    }
+
+    private List<Mission> sortHistoryMissionsByState(ParentChild child, String state) {
+        if(state.equals("newest")){
+            return missionChildRepository.findByParentChildAndParentConfirmAndChildConfirmOrderByEndDateDesc(child, true, true);
+        } else{
+            return missionChildRepository.findByParentChildAndParentConfirmAndChildConfirmOrderByEndDate(child, true, true);
         }
     }
 
