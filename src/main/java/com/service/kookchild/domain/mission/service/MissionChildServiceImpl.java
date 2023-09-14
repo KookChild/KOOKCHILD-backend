@@ -230,7 +230,7 @@ public class MissionChildServiceImpl implements MissionChildService{
         List<Long> parentChildIds = relations.stream()
                 .map(ParentChild::getId)
                 .collect(Collectors.toList());
-        if(type.equals("all")) return missionChildRepository.findByParentChildIdIn(parentChildIds);
+        if(type.equals("requested")) return missionChildRepository.findByParentChildIdInAndParentConfirmAndAndChildConfirm(parentChildIds, false, true);
         else if(type.equals("ongoing")) return missionChildRepository.findByParentChildIdInAndParentConfirm(parentChildIds, false);
         else return missionChildRepository.findByParentChildIdInAndParentConfirm(parentChildIds, true);
     }
@@ -240,7 +240,7 @@ public class MissionChildServiceImpl implements MissionChildService{
                 () -> new EntityNotFoundException("해당 유저가 존재하지 않습니다.")
         );
         ParentChild selectedChild = findParentChildByChildId(c.getId());
-        if(type.equals("all")) return missionChildRepository.findByParentChild(selectedChild);
+        if(type.equals("requested")) return missionChildRepository.findByParentChildAndParentConfirmAndAndChildConfirm(selectedChild, false, true);
         if (type.equals("ongoing")) return missionChildRepository.findByParentChildAndParentConfirm(selectedChild, false);
         else return missionChildRepository.findByParentChildAndParentConfirm(selectedChild, true);
     }

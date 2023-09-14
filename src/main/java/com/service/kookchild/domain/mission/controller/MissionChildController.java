@@ -38,7 +38,7 @@ public class MissionChildController {
     public ResponseEntity getParentMissionList(
             Authentication authentication,
             @RequestParam Long child,
-            @RequestParam(value = "type", defaultValue = "all") String type){
+            @RequestParam(value = "type", defaultValue = "ongoing") String type){
         String email = getEmail(authentication);
         MissionParentListDTO missionParentListDTO = missionChildService.getParentMissionList(email, child, type);
         return ResponseEntity.ok(missionParentListDTO);
