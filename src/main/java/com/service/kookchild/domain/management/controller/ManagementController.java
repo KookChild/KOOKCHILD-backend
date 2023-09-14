@@ -52,24 +52,6 @@ public class ManagementController {
         return new ResponseEntity(findAccountDTO, HttpStatus.OK);
     }
 
-    @GetMapping("/{child_id}")
-    public ResponseEntity checkChildMoney (Authentication authentication, @PathVariable Long child_id){
-        System.out.println(child_id);
-
-        CheckChildMoneyResponse checkChildMoneyResponse = null;
-        try{
-            System.out.println("컨트롤러 진입");
-//            checkChildMoneyResponse = managementSendingService.checkChildMoney(new FindAccountInfoPair(child_id));
-        } catch (NumberFormatException e) {
-            System.out.println("Invalid child_id format: " + e.getMessage());
-            return new ResponseEntity(HttpStatus.BAD_REQUEST);
-        } catch (Exception e) {
-            System.out.println(e);
-            return new ResponseEntity(HttpStatus.BAD_REQUEST);
-        }
-        return new ResponseEntity(checkChildMoneyResponse, HttpStatus.OK);
-    }
-
 
     @GetMapping("/childName")
     public ResponseEntity getChildName(Authentication authentication){

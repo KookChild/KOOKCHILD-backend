@@ -47,7 +47,9 @@ public class ManagementSendingServiceImpl implements ManagementSendingService {
                 .isDeposit(1)
                 .category("예금")
                 .amount(fi.getAmount())
-                .targetName("").build();
+                .targetName("")
+                .build();
+
         accountHistoryRepository.save(accountHistory);
         findAccountDTO = accountRepository.checkChildMoney(fi.getChildId());
 
@@ -59,40 +61,6 @@ public class ManagementSendingServiceImpl implements ManagementSendingService {
         Long id = accountRepository.findUserId(email);
         return id;
     }
-
-    @Override
-    public String findUserNameById(Long id) {
-        String name = accountRepository.findUserNameById(id);
-        return name;
-    }
-
-
-//    @Override
-//    public CheckChildMoneyResponse checkChildMoney(FindAccountInfoPair fi) {
-//        System.out.println("sendChildMoney");
-//        FindAccountDTO findAccountDTO = null;
-//        CheckChildMoneyResponse checkChildMoneyResponse = null;
-//
-//        findAccountDTO = accountRepository.checkChildMoney(fi.getChildId());
-//        if(findAccountDTO != null) {
-//            String name = userRepository.findNameById(fi.getChildId());
-//            findAccountDTO.setUserName(name);
-//
-//            LocalDateTime now = LocalDateTime.now();
-//            System.out.println("accountNum : " + findAccountDTO.getAccountNum());
-//            Long amount = accountHistoryRepository.findAmount(fi.getChildId(), "예금", now);
-//            Long notInAmount = accountHistoryRepository.findNotInAmount(fi.getChildId(), "예금", now);
-//            System.out.println(amount + ", " + notInAmount);
-//
-//            checkChildMoneyResponse =
-//                    CheckChildMoneyResponse.of(findAccountDTO.getAccountNum(), findAccountDTO.getUserName(), amount, notInAmount);
-//            System.out.println(findAccountDTO.getAccountNum());
-//        }
-//
-//
-//        return checkChildMoneyResponse;
-//    }
-
 
     @Override
     public ArrayList<LocalDateTime> getLastDayOf() {
