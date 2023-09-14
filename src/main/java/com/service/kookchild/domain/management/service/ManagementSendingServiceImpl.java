@@ -1,5 +1,6 @@
 package com.service.kookchild.domain.management.service;
 
+import java.util.List;
 import com.service.kookchild.domain.management.domain.Account;
 import com.service.kookchild.domain.management.domain.AccountHistory;
 
@@ -16,7 +17,12 @@ import org.hibernate.annotations.Check;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.Month;
+import java.time.YearMonth;
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -31,8 +37,8 @@ public class ManagementSendingServiceImpl implements ManagementSendingService {
     @Override
     public FindAccountDTO sendChildMoney(FindAccountInfoPair fi) {
         FindAccountDTO findAccountDTO = null;
-        Long pId = Long.parseLong(fi.getParentId());
-        Long cId = Long.parseLong(fi.getChildId());
+        Long pId = fi.getParentId();
+        Long cId = fi.getChildId();
         accountRepository.updateParentBalance(pId, fi.getAmount());
         accountRepository.updateChildBalance(cId, fi.getAmount());
         Account a  = accountRepository.findByUserId(cId);
@@ -43,7 +49,7 @@ public class ManagementSendingServiceImpl implements ManagementSendingService {
                 .amount(fi.getAmount())
                 .targetName("").build();
         accountHistoryRepository.save(accountHistory);
-        findAccountDTO = accountRepository.checkChildMoney(Long.parseLong(fi.getChildId()));
+        findAccountDTO = accountRepository.checkChildMoney(fi.getChildId());
 
         return findAccountDTO;
     }
@@ -61,36 +67,104 @@ public class ManagementSendingServiceImpl implements ManagementSendingService {
     }
 
 
+//    @Override
+//    public CheckChildMoneyResponse checkChildMoney(FindAccountInfoPair fi) {
+//        System.out.println("sendChildMoney");
+//        FindAccountDTO findAccountDTO = null;
+//        CheckChildMoneyResponse checkChildMoneyResponse = null;
+//
+//        findAccountDTO = accountRepository.checkChildMoney(fi.getChildId());
+//        if(findAccountDTO != null) {
+//            String name = userRepository.findNameById(fi.getChildId());
+//            findAccountDTO.setUserName(name);
+//
+//            LocalDateTime now = LocalDateTime.now();
+//            System.out.println("accountNum : " + findAccountDTO.getAccountNum());
+//            Long amount = accountHistoryRepository.findAmount(fi.getChildId(), "예금", now);
+//            Long notInAmount = accountHistoryRepository.findNotInAmount(fi.getChildId(), "예금", now);
+//            System.out.println(amount + ", " + notInAmount);
+//
+//            checkChildMoneyResponse =
+//                    CheckChildMoneyResponse.of(findAccountDTO.getAccountNum(), findAccountDTO.getUserName(), amount, notInAmount);
+//            System.out.println(findAccountDTO.getAccountNum());
+//        }
+//
+//
+//        return checkChildMoneyResponse;
+//    }
+
+
     @Override
-    public CheckChildMoneyResponse checkChildMoney(FindAccountInfoPair fi) {
-        System.out.println("sendChildMoney");
-        FindAccountDTO findAccountDTO = null;
-        CheckChildMoneyResponse checkChildMoneyResponse = null;
+    public ArrayList<LocalDateTime> getLastDayOf() {
+        // 현재 날짜를 가져옵니다.
+        LocalDateTime currentDate = LocalDateTime.now();
 
-        findAccountDTO = accountRepository.checkChildMoney(Long.parseLong(fi.getChildId()));
-        if(findAccountDTO != null) {
-            String name = userRepository.findNameById(Long.parseLong(fi.getChildId()));
-            findAccountDTO.setUserName(name);
+        // 현재 날짜의 년과 월을 가져옵니다.
+        int currentYear = currentDate.getYear();
+        Month currentMonth = currentDate.getMonth();
 
+        // 다음 달을 계산합니다.
+        YearMonth nextMonthYearMonth = YearMonth.of(currentYear, currentMonth).plusMonths(1);
 
-            System.out.println("accountNum : " + findAccountDTO.getAccountNum());
-            Long amount = accountHistoryRepository.findAmount(Long.parseLong(fi.getChildId().trim()), "예금");
-            Long notInAmount = accountHistoryRepository.findNotInAmount(Long.parseLong(fi.getChildId().trim()), "예금");
-            System.out.println(amount + ", " + notInAmount);
+        // 다음 달의 년과 월을 가져옵니다.
+        int nextYear = nextMonthYearMonth.getYear();
+        Month nextMonth = nextMonthYearMonth.getMonth();
 
-            checkChildMoneyResponse =
-                    CheckChildMoneyResponse.of(findAccountDTO.getAccountNum(), findAccountDTO.getUserName(), amount, notInAmount);
-            System.out.println(findAccountDTO.getAccountNum());
-        }
+        // 현재 달의 년월을 출력합니다.
+        System.out.println("현재 달: " + currentYear + "년 " + currentMonth + "월");
 
+        // 다음 달의 년월을 출력합니다.
+        System.out.println("다음 달: " + nextYear + "년 " + nextMonth + "월");
 
-        return checkChildMoneyResponse;
+        // 현재 달과 다음 달의 년월을 LocalDateTime으로 변환합니다.
+        LocalDateTime currentMonthDateTime = LocalDateTime.of(currentYear, currentMonth, 1, 0, 0);
+        LocalDateTime nextMonthDateTime = LocalDateTime.of(nextYear, nextMonth, 1, 0, 0);
+
+        // 결과를 출력합니다.
+        System.out.println("현재 달의 LocalDateTime: " + currentMonthDateTime);
+        System.out.println("다음 달의 LocalDateTime: " + nextMonthDateTime);
+
+        ArrayList<LocalDateTime> list = new ArrayList<>();
+        list.add(currentMonthDateTime);
+        list.add(nextMonthDateTime);
+        return list;
     }
 
     @Override
-    public ArrayList<FindAccountChildNameId> findChildNamesByParentId(Long id) {
-        ArrayList<FindAccountChildNameId> list = null;
-        list = accountRepository.findChildNamesByParentId(id);
-        return list;
+    public FindAccountInformation findChildNamesByParentId(FindAccountInfoPair fi) {
+
+        FindAccountInformation findAccountInformation = null;
+
+        ArrayList<LocalDateTime> dates = getLastDayOf();
+
+        ArrayList<FindAccountChildNameId> list = accountRepository.findChildNamesByParentId(fi.getParentId());
+
+        List<Long> idList = list.stream()
+                .map(FindAccountChildNameId :: getId)
+                .collect(Collectors.toList());
+
+
+        List<String> savingAmountList = idList.stream()
+                .map(id -> accountHistoryRepository.findAmount(id, "예금", dates.get(0), dates.get(1)))
+                .collect(Collectors.toList());
+
+        List<String> spendingAmountList = idList.stream()
+                .map(id -> accountHistoryRepository.findNotInAmount(id, "예금", dates.get(0), dates.get(1)))
+                .collect(Collectors.toList());
+
+
+        for(int i=0;i<list.size();i++){
+            String savingAmount = savingAmountList.get(i);
+            String spendingAmount = spendingAmountList.get(i);
+
+            FindAccountChildNameId fc = list.get(i);
+            fc.setSavingAmount(savingAmount);
+            fc.setSpendingAmount(spendingAmount);
+        }
+
+        Account account = accountRepository.findByUserId(fi.getParentId());
+        findAccountInformation = new FindAccountInformation(account.getBalance(), list);
+
+        return findAccountInformation;
     }
 }

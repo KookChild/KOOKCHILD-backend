@@ -40,7 +40,7 @@ public class ManagementController {
         String email = getEmail(authentication);
         Long id = managementSendingService.findUserId(email);
 
-        fi.setParentId(String.valueOf(id));
+        fi.setParentId(id);
         FindAccountDTO findAccountDTO = null;
         try {
             findAccountDTO = managementSendingService.sendChildMoney(fi);
@@ -53,13 +53,13 @@ public class ManagementController {
     }
 
     @GetMapping("/{child_id}")
-    public ResponseEntity checkChildMoney (Authentication authentication, @PathVariable int child_id){
+    public ResponseEntity checkChildMoney (Authentication authentication, @PathVariable Long child_id){
         System.out.println(child_id);
 
         CheckChildMoneyResponse checkChildMoneyResponse = null;
         try{
             System.out.println("컨트롤러 진입");
-            checkChildMoneyResponse = managementSendingService.checkChildMoney(new FindAccountInfoPair(String.valueOf(child_id)));
+//            checkChildMoneyResponse = managementSendingService.checkChildMoney(new FindAccountInfoPair(child_id));
         } catch (NumberFormatException e) {
             System.out.println("Invalid child_id format: " + e.getMessage());
             return new ResponseEntity(HttpStatus.BAD_REQUEST);
@@ -73,11 +73,13 @@ public class ManagementController {
 
     @GetMapping("/childName")
     public ResponseEntity getChildName(Authentication authentication){
-        ArrayList list = null;
+        FindAccountInformation list = null;
         String email = getEmail(authentication);
         Long id = managementSendingService.findUserId(email);
+        FindAccountInfoPair fi = new FindAccountInfoPair();
+        fi.setParentId(id);
         try{
-            list = managementSendingService.findChildNamesByParentId(id);
+            list = managementSendingService.findChildNamesByParentId(fi);
         }catch(Exception e){
             System.out.println(e);
         }

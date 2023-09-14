@@ -2,14 +2,16 @@ package com.service.kookchild.domain.management.dto;
 
 import lombok.*;
 
+import java.util.ArrayList;
+
 @Getter
 @Builder
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Setter
-public class FindAccountDTO {
+public class FindAccountInformation {
     //DB 리턴 전용 DTO
-    private String balance;
-    private String accountNum;
-    private String userName;
+   private Long balance;
+   private ArrayList<FindAccountChildNameId> list;
+
 }

@@ -9,17 +9,17 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import javax.transaction.Transactional;
+import java.time.LocalDateTime;
 import java.util.List;
 @Repository
 @Transactional
 public interface AccountHistoryRepository extends JpaRepository<AccountHistory, Long> {
 
     List<AccountHistory> findAccountHistoriesByAccount(Account account);
-   @Query("SELECT NVL(SUM(a.amount), 0) FROM AccountHistory a WHERE a.category IN(:name) AND a.userId = :id")
-    Long findAmount(@Param("id") Long id, @Param("name") String name);
+   @Query("SELECT TO_CHAR(NVL(SUM(a.amount), 0), 'FM999,999,999,999') AS amount FROM AccountHistory a WHERE a.category IN(:name) AND a.userId = :id AND (a.createdDate <= :secondDate AND a.createdDate >= :firstDate) ")
+    String findAmount(@Param("id") Long id, @Param("name") String name, @Param("firstDate")LocalDateTime firstDate, @Param("secondDate")LocalDateTime secondDate);
 
-    @Query("SELECT NVL(SUM(a.amount), 0) FROM AccountHistory a WHERE a.category NOT IN(:name) AND a.userId = :id")
-    Long findNotInAmount(@Param("id") Long id, @Param("name") String name);
-
+    @Query("SELECT TO_CHAR(NVL(SUM(a.amount), 0),'FM999,999,999,999') AS amount FROM AccountHistory a WHERE a.category NOT IN(:name) AND a.userId = :id AND (a.createdDate <= :secondDate AND a.createdDate >= :firstDate) ")
+    String findNotInAmount(@Param("id") Long id, @Param("name") String name, @Param("firstDate")LocalDateTime firstDate, @Param("secondDate")LocalDateTime secondDate);
     List<AccountHistory> findAccountHistoriesByUserId(Long userId);
 }
