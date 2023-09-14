@@ -9,6 +9,6 @@ import java.util.List;
 @AllArgsConstructor
 public class MissionChildListDTO {
 
-    private long missionAmount;
-    private List<MissionViewDTO> missionLists;
+    private List<MissionViewDTO> requestMissionLists;
+    private List<MissionViewDTO> ongoingMissionLists;
 }

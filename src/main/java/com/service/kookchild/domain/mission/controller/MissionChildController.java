@@ -21,10 +21,9 @@ public class MissionChildController {
     @GetMapping("")
     public ResponseEntity getMissionList(
             Authentication authentication,
-            @RequestParam(value = "sort", defaultValue = "newest") String state,
-            @RequestParam(value = "type", defaultValue = "all") String type){
+            @RequestParam(value = "sort", defaultValue = "newest") String state){
         String email = getEmail(authentication);
-        MissionChildListDTO missionChildListDTO = missionChildService.getMissionList(email, state, type);
+        MissionChildListDTO missionChildListDTO = missionChildService.getMissionList(email, state);
         return ResponseEntity.ok(missionChildListDTO);
     }
 

@@ -35,18 +35,22 @@ public class MissionChildServiceImpl implements MissionChildService{
     private final AccountHistoryRepository accountHistoryRepository;
     @Override
     @Transactional
-    public MissionChildListDTO getMissionList(String email, String state, String type) {
+    public MissionChildListDTO getMissionList(String email, String state) {
         User user = findUser(email);
         ParentChild child = findParentChildByChildId(user.getId());
 
-        List<Mission> missionList = sortMissionsByStateAndType(child, state, type);
-        List<MissionViewDTO> missionDTOList = missionList.stream()
+        List<Mission> requestMissionList = missionChildRepository.findByParentChildAndParentConfirmAndAndChildConfirm(child, false, true);
+        List<Mission> ongoingMissionList = sortMissionsByState(child, state);
+        List<MissionViewDTO> requestMissionDTOList = requestMissionList.stream()
+                .map(MissionViewDTO::of)
+                .collect(Collectors.toList());
+        List<MissionViewDTO> ongoinMissionDTOList = ongoingMissionList.stream()
                 .map(MissionViewDTO::of)
                 .collect(Collectors.toList());
 
         return MissionChildListDTO.builder()
-                .missionAmount(missionDTOList.size())
-                .missionLists(missionDTOList)
+                .requestMissionLists(requestMissionDTOList)
+                .ongoingMissionLists(ongoinMissionDTOList)
                 .build();
     }
 
@@ -178,23 +182,11 @@ public class MissionChildServiceImpl implements MissionChildService{
         return true;
     }
 
-    private List<Mission> sortMissionsByStateAndType(ParentChild child, String state, String type) {
-        if(type.equals("all")){
-            return state.equals("newest") ? missionChildRepository.findByParentChildOrderByEndDateDesc(child)
-                    : missionChildRepository.findByParentChildOrderByEndDate(child);
-        }
-        else if (type.equals("ongoing")){
-            if(state.equals("newest")){
-                return missionChildRepository.findByParentChildAndParentConfirmOrderByEndDateDesc(child, true);
-            } else{
-                return missionChildRepository.findByParentChildAndParentConfirmOrderByEndDate(child, true);
-            }
+    private List<Mission> sortMissionsByState(ParentChild child, String state) {
+        if(state.equals("newest")){
+            return missionChildRepository.findByParentChildAndParentConfirmAndChildConfirmOrderByEndDateDesc(child, false, false);
         } else{
-            if(state.equals("newest")){
-               return missionChildRepository.findByParentChildAndParentConfirmOrderByEndDateDesc(child, false);
-            }else{
-                return missionChildRepository.findByParentChildAndParentConfirmOrderByEndDate(child, false);
-            }
+            return missionChildRepository.findByParentChildAndParentConfirmAndChildConfirmOrderByEndDate(child, false, true);
         }
     }
 
