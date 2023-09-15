@@ -1,6 +1,5 @@
 package com.service.kookchild.domain.quiz.service;
 
-import com.service.kookchild.domain.mission.dto.MissionViewDTO;
 import com.service.kookchild.domain.quiz.domain.Quiz;
 import com.service.kookchild.domain.quiz.domain.QuizState;
 import com.service.kookchild.domain.quiz.dto.*;
@@ -41,7 +40,7 @@ public class QuizServiceImpl implements QuizService{
         LocalDateTime endOfDay = LocalDateTime.of(LocalDate.now(), LocalTime.MAX);
         QuizState todayQuizState = quizStateRepository.findByCreatedDateBetweenAndParentChild(startOfDay, endOfDay, ps);
         if (todayQuizState == null) {
-            List<Long> solvedQuizIds = quizStateRepository.findQuizIdsByParentChild(ps);
+            List<Long> solvedQuizIds = quizStateRepository.findQuizIdsByParentChildAndIsCorrect(ps);
 
             Quiz randomQuiz;
             if (solvedQuizIds.isEmpty()) {
@@ -74,21 +73,21 @@ public class QuizServiceImpl implements QuizService{
 
     @Override
     @Transactional
-    public TodayQuizDetailDTO getTodayQuizDetail(String email, long quizId) {
+    public QuizDetailDTO getTodayQuizDetail(String email, long quizId) {
         User child = findUser(email);
         Quiz quiz = quizRepository.findById(quizId).orElseThrow(
                 () -> new EntityNotFoundException("해당 퀴즈가 존재하지 않습니다.")
         );
         ParentChild ps = parentChildRepository.findByChild(child);
         QuizState qs = quizStateRepository.findByQuizAndParentChild(quiz, ps);
-        TodayQuizDetailDTO todayQuizDetailDTO = TodayQuizDetailDTO.builder()
+        QuizDetailDTO quizDetailDTO = QuizDetailDTO.builder()
                 .title(quiz.getTitle())
                 .content(quiz.getContent())
                 .level(quiz.getLevel())
                 .totalReward(qs.getTotalReward())
                 .isCorrect(qs.isCorrect())
                 .build();
-        return todayQuizDetailDTO;
+        return quizDetailDTO;
     }
 
     @Override

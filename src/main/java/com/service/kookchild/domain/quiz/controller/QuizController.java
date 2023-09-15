@@ -25,8 +25,8 @@ public class QuizController {
     @GetMapping("/{quizId}")
     public ResponseEntity getTodayQuizDetail(Authentication authentication, @PathVariable long quizId){
         String email = getEmail(authentication);
-        TodayQuizDetailDTO todayQuizDetailDTO = quizService.getTodayQuizDetail(email, quizId);
-        return ResponseEntity.ok(todayQuizDetailDTO);
+        QuizDetailDTO quizDetailDTO = quizService.getTodayQuizDetail(email, quizId);
+        return ResponseEntity.ok(quizDetailDTO);
     }
 
     @PostMapping("")

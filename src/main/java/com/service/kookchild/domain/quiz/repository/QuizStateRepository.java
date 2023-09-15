@@ -16,8 +16,9 @@ public interface QuizStateRepository extends JpaRepository<QuizState, Long> {
 
     QuizState findByCreatedDateBetweenAndParentChild(LocalDateTime start, LocalDateTime end, ParentChild ps);
 
-    @Query(value = "SELECT qs.quiz.id FROM QuizState qs WHERE qs.parentChild = :parentChild")
-    List<Long> findQuizIdsByParentChild(@Param("parentChild") ParentChild parentChild);
+    @Query(value = "SELECT qs.quiz.id FROM QuizState qs WHERE qs.parentChild = :parentChild AND qs.isCorrect = true")
+    List<Long> findQuizIdsByParentChildAndIsCorrect(@Param("parentChild") ParentChild parentChild);
+
 
     QuizState findByQuizAndParentChild(Quiz quiz, ParentChild ps);
 

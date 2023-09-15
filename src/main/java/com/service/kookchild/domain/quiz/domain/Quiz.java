@@ -22,4 +22,6 @@ public class Quiz extends BaseEntity {
     @Column(name = "quiz_level")
     private int level;
     private int bankReward;
+    @Lob
+    private String explanation;
 }

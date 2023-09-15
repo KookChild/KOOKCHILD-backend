@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class TodayQuizDetailDTO {
+public class QuizDetailDTO {
     private String title;
     private String content;
     private int level;

@@ -5,7 +5,7 @@ import com.service.kookchild.domain.quiz.dto.*;
 public interface QuizService {
     QuizDTO getTodayQuiz(String email);
 
-    TodayQuizDetailDTO getTodayQuizDetail(String email, long quizId);
+    QuizDetailDTO getTodayQuizDetail(String email, long quizId);
 
     QuizResultDTO checkQuizAnswer(String email, QuizAnswerDTO quizAnswerDTO);
 
