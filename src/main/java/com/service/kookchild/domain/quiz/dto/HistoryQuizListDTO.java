@@ -5,15 +5,12 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Builder
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class TodayQuizDTO {
-
-    private Long id;
-    private String title;
-    private int level;
-    private int totalReward;
-    private boolean isCorrect;
+public class HistoryQuizListDTO {
+    private List<QuizDTO> historyQuizList;
 }

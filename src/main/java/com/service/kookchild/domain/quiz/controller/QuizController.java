@@ -1,10 +1,6 @@
 package com.service.kookchild.domain.quiz.controller;
 
-import com.service.kookchild.domain.mission.dto.MissionChildListDTO;
-import com.service.kookchild.domain.quiz.dto.QuizAnswerDTO;
-import com.service.kookchild.domain.quiz.dto.QuizResultDTO;
-import com.service.kookchild.domain.quiz.dto.TodayQuizDTO;
-import com.service.kookchild.domain.quiz.dto.TodayQuizDetailDTO;
+import com.service.kookchild.domain.quiz.dto.*;
 import com.service.kookchild.domain.quiz.service.QuizService;
 import com.service.kookchild.domain.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +18,7 @@ public class QuizController {
     @GetMapping("")
     public ResponseEntity getTodayQuiz(Authentication authentication){
         String email = getEmail(authentication);
-        TodayQuizDTO todayQuizDTO = quizService.getTodayQuiz(email);
+        QuizDTO todayQuizDTO = quizService.getTodayQuiz(email);
         return ResponseEntity.ok(todayQuizDTO);
     }
 
@@ -38,6 +34,31 @@ public class QuizController {
         String email = getEmail(authentication);
         QuizResultDTO quizResultDTO = quizService.checkQuizAnswer(email, quizAnswerDTO);
         return ResponseEntity.ok(quizResultDTO);
+    }
+
+    @GetMapping("/history")
+    public ResponseEntity getHistoryQuizList(Authentication authentication){
+        String email = getEmail(authentication);
+        HistoryQuizListDTO historyQuizListDTO = quizService.getHistoryQuizList(email);
+        return ResponseEntity.ok(historyQuizListDTO);
+    }
+
+    @GetMapping("/history/{quizId}")
+    public ResponseEntity getHistoryQuizDetail(Authentication authentication){
+        String email = getEmail(authentication);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/history/search")
+    public ResponseEntity searchQuiz(Authentication authentication){
+        String email = getEmail(authentication);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/parent")
+    public ResponseEntity getChildQuizList(Authentication authentication){
+        String email = getEmail(authentication);
+        return ResponseEntity.ok().build();
     }
 
     public String getEmail(Authentication authentication) {

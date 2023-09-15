@@ -10,8 +10,6 @@ import java.util.List;
 @Repository
 public interface MissionChildRepository extends JpaRepository<Mission, Long> {
     List<Mission> findByParentChildAndParentConfirmAndAndChildConfirm(ParentChild parentChild, boolean parentConfirm, boolean childConfirm);
-    List<Mission> findByParentChildOrderByEndDate(ParentChild parentChild);
-    List<Mission> findByParentChildOrderByEndDateDesc(ParentChild parentChild);
     List<Mission> findByParentChildIdInAndParentConfirmAndAndChildConfirm(List<Long> parentChildIds, boolean parentConfirm, boolean childConfirm);
 
     // type이 있을 때
