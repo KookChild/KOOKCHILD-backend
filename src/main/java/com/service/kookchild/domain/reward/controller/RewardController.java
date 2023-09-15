@@ -5,6 +5,7 @@ import com.service.kookchild.domain.management.service.AccountHistoryService;
 import com.service.kookchild.domain.management.service.ManagementSendingService;
 import com.service.kookchild.domain.management.service.ManagementSendingServiceImpl;
 import com.service.kookchild.domain.management.service.ManagementService;
+import com.service.kookchild.domain.reward.dto.NotCompleteMissionDto;
 import com.service.kookchild.domain.reward.dto.RewardInformationDTO;
 import com.service.kookchild.domain.reward.service.RewardService;
 import com.service.kookchild.domain.security.CustomUserDetails;
@@ -33,9 +34,21 @@ public class RewardController {
         return ResponseEntity.ok(rewardService.rewardInformation(id));
     }
 
+    @GetMapping("/notcomplete")
+    public ResponseEntity<NotCompleteMissionDto> getNotCompleteMissions(
+            Authentication authentication
+    ){
+        String email = getEmail(authentication);
+        Long id = managementSendingService.findUserId(email);
+
+        return ResponseEntity.ok(rewardService.notCompleteMissions(id));
+    }
+
     public String getEmail(Authentication authentication) {
         CustomUserDetails principal = (CustomUserDetails)authentication.getPrincipal();
 
         return principal.getEmail();
     }
+
+
 }

@@ -8,6 +8,7 @@ import javax.persistence.*;
 @Entity
 @Getter
 @AllArgsConstructor
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "account_history")
 public class AccountHistory extends BaseEntity {
@@ -20,7 +21,6 @@ public class AccountHistory extends BaseEntity {
     private Long amount;
     private String targetName;
     private String category;
-
 
     @ManyToOne
     @JoinColumn(name = "account_id")

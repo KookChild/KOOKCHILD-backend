@@ -1,8 +1,10 @@
 package com.service.kookchild.domain.management.repository;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 import com.service.kookchild.domain.management.domain.Account;
+import com.service.kookchild.domain.management.domain.AccountType;
 import com.service.kookchild.domain.management.dto.FindAccountChildNameId;
 import com.service.kookchild.domain.management.dto.FindAccountDTO;
 import com.service.kookchild.domain.user.domain.User;
@@ -19,6 +21,9 @@ import javax.transaction.Transactional;
 public interface AccountRepository extends JpaRepository<Account, Long> {
     @Query("SELECT a FROM Account a WHERE a.type = 1 AND a.user.id = :id")
     ArrayList<Account> findAccountsByType1AndUserId(@Param("id") Long id);
+
+    @Query("SELECT a FROM Account a WHERE a.type = 2 AND a.user.id = :id")
+    Optional<Account> findAccountByType2AndUserId(@Param("id") Long id);
     @Query("SELECT u.id FROM User u WHERE u.email = :email")
     Long findUserId(@Param("email") String email);
 

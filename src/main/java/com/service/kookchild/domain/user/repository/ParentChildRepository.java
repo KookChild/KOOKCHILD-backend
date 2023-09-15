@@ -13,4 +13,5 @@ public interface ParentChildRepository extends JpaRepository<ParentChild, Long> 
     List<ParentChild> findByParent(User parent);
 
     ParentChild findByParentAndChild(User parent, User child);
+    ParentChild findByChild(User child);
 }
