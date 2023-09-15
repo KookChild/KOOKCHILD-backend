@@ -15,7 +15,7 @@ import com.service.kookchild.domain.user.domain.User;
 import com.service.kookchild.domain.user.repository.ParentChildRepository;
 import com.service.kookchild.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.omg.CORBA.UserException;
+//import org.omg.CORBA.UserException;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
