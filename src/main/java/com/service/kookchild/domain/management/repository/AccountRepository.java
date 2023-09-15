@@ -20,7 +20,7 @@ import javax.transaction.Transactional;
 @Transactional
 public interface AccountRepository extends JpaRepository<Account, Long> {
     @Query("SELECT a FROM Account a WHERE a.type = 1 AND a.user.id = :id")
-    ArrayList<Account> findAccountsByType1AndUserId(@Param("id") Long id);
+    Optional<Account> findAccountsByType1AndUserId(@Param("id") Long id);
 
     @Query("SELECT a FROM Account a WHERE a.type = 2 AND a.user.id = :id")
     Optional<Account> findAccountByType2AndUserId(@Param("id") Long id);

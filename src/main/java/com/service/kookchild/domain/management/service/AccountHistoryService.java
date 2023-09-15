@@ -37,25 +37,34 @@ public class AccountHistoryService {
                 accountHistoryRepository.findAccountHistoriesByCategoryAndUserId("리워드", id);
 
         Long amount = 0L;
-        for(AccountHistory accountHistory: list){
-            amount += accountHistory.getAmount();
+
+        if(list.size() != 0) {
+            for (AccountHistory accountHistory : list) {
+                amount += accountHistory.getAmount();
+            }
+            System.out.println(amount);
+
+            List<AccountHistory> list2 =
+                    list
+                            .stream()
+                            .map(history -> {
+                                history.setCategory("리워드출금");
+                                return history;
+                            })
+                            .collect(Collectors.toList());
+
+            accountHistoryRepository.saveAll(list2);
+
+            Account account = accountRepository.findAccountByType2AndUserId(id).get();
+            account.setBalance(0L);
+
+            Account account1 = accountRepository.findAccountsByType1AndUserId(id).get();
+            account1.setBalance(account1.getBalance() + amount);
+
+            accountRepository.save(account);
+            accountRepository.save(account1);
         }
 
-        List<AccountHistory> list2 =
-                list
-                .stream()
-                .map(history -> {
-                    history.setCategory("리워드출금");
-                    return history;
-                })
-                .collect(Collectors.toList());
-
-        accountHistoryRepository.saveAll(list2);
-
-        Account account = accountRepository.findAccountByType2AndUserId(id).get();
-        account.setBalance(amount);
-
-        accountRepository.save(account);
     }
 
     private String getEmail(Authentication authentication) {

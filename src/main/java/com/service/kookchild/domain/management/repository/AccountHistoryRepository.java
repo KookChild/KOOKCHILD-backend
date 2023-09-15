@@ -28,6 +28,11 @@ public interface AccountHistoryRepository extends JpaRepository<AccountHistory, 
             "WHERE ah.category = '리워드' AND ah.userId = :userId AND ah.account.id = :accountId")
     String rewardCompleteAmount(@Param("userId") Long userId, @Param("accountId") Long accountId);
 
+    @Query("SELECT NVL(SUM(ah.amount), 0) as rewardCompleteAmount\n" +
+            "FROM AccountHistory ah \n" +
+            "WHERE ah.category = '리워드' AND ah.userId = :userId")
+    Long rewardCompleteAmountLong(@Param("userId") Long userId);
+
     List<AccountHistory> findAccountHistoriesByCategoryAndUserId(String category, Long userId);
 
 }

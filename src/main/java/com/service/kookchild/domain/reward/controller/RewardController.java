@@ -44,11 +44,21 @@ public class RewardController {
         return ResponseEntity.ok(rewardService.notCompleteMissions(id));
     }
 
+    @GetMapping("/withdraw")
+    public ResponseEntity<String> goWithdraw(
+            Authentication authentication
+    ){
+        String email = getEmail(authentication);
+        Long id = managementSendingService.findUserId(email);
+        rewardService.updateAccountHistoryIsWithdraw(id);
+
+        return ResponseEntity.ok("성공적으로 출금하였습니다.");
+    }
+
     public String getEmail(Authentication authentication) {
         CustomUserDetails principal = (CustomUserDetails)authentication.getPrincipal();
 
         return principal.getEmail();
     }
-
 
 }

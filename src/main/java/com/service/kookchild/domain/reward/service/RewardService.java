@@ -8,5 +8,6 @@ import com.service.kookchild.domain.user.domain.User;
 public interface RewardService {
     RewardInformationDTO rewardInformation(Long id);
     NotCompleteMissionDto notCompleteMissions(Long id);
+    public void updateAccountHistoryIsWithdraw(Long id);
 
 }

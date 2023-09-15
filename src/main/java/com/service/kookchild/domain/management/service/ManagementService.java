@@ -30,9 +30,9 @@ public class ManagementService {
         User user = userRepository.findByEmail(userEmail).orElseThrow(
                 ()-> new KookChildException(ExceptionStatus.NOT_EXIST_USER_EMAIL));
 
-        ArrayList<Account> list = accountRepository.findAccountsByType1AndUserId(user.getId());
+        Account account = accountRepository.findAccountsByType1AndUserId(user.getId()).get();
 
-        return FindAccountResponse.from(list.get(0));
+        return FindAccountResponse.from(account);
 //        return new FindAccountDTO();
     }
 }
