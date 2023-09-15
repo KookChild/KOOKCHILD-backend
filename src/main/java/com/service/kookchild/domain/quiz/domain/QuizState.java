@@ -2,10 +2,7 @@ package com.service.kookchild.domain.quiz.domain;
 
 import com.service.kookchild.global.domain.BaseEntity;
 import com.service.kookchild.domain.user.domain.ParentChild;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 
@@ -27,4 +24,17 @@ public class QuizState extends BaseEntity {
     private ParentChild parentChild;
 
     private boolean isCorrect;
+
+    private int totalReward;
+
+    @Builder
+    public QuizState(Quiz quiz, ParentChild parentChild, int totalReward){
+        this.quiz = quiz;
+        this.parentChild = parentChild;
+        this.totalReward = totalReward;
+    }
+
+    public void updateIsCorrect(boolean isCorrect){
+        this.isCorrect = isCorrect;
+    }
 }
