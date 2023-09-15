@@ -37,13 +37,15 @@ public class UserService {
     public RegisterResponseDTO register(RegisterRequestDTO registerRequestDTO){
         User parent = insertParent(registerRequestDTO, true);
         userRepository.save(parent);
-        createAccount(parent, registerRequestDTO.getAccountPassword());
+        createDepositAccount(parent, registerRequestDTO.getAccountPassword());
+        createRewardAccount(parent, registerRequestDTO.getAccountPassword());
         List<RegisterChildDTO> childList = registerRequestDTO.getChildList();
         for(RegisterChildDTO c : childList){
             User child = insertChild(c, false);
             userRepository.save(child);
 
-            createAccount(child, c.getAccountPassword());
+            createDepositAccount(child, c.getAccountPassword());
+            createRewardAccount(child, c.getAccountPassword());
 
             ParentChild parentChild = ParentChild.builder()
                     .parent(parent)
@@ -109,7 +111,7 @@ public class UserService {
                 .build();
     }
 
-    private void createAccount(User user, String password){
+    private void createDepositAccount(User user, String password){
         String accountNum = generateAccountNumber();
         Account account = Account.builder()
                 .user(user)
@@ -117,6 +119,18 @@ public class UserService {
                 .balance(1000000)
                 .password(password)
                 .type(AccountType.예금)
+                .accountNum(accountNum).build();
+        accountRepository.save(account);
+    }
+
+    private void createRewardAccount(User user, String password){
+        String accountNum = generateAccountNumber();
+        Account account = Account.builder()
+                .user(user)
+                .accountName(user.getName())
+                .balance(1000000)
+                .password(password)
+                .type(AccountType.보상금)
                 .accountNum(accountNum).build();
         accountRepository.save(account);
     }

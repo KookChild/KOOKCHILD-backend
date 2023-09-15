@@ -29,6 +29,7 @@ public class Mission extends BaseEntity {
     private LocalDateTime endDate;
     private boolean parentConfirm;
     private boolean childConfirm;
+    private boolean rewardReceive;
 
     @Builder
     public Mission(ParentChild parentChild, String title, String content, String reward, String image, LocalDateTime startDate,
