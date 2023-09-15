@@ -10,6 +10,7 @@ import com.service.kookchild.domain.mission.domain.Mission;
 import java.util.List;
 
 
+@Repository
 public interface MissionRepository extends JpaRepository<Mission, String>{
 	
 //	@Query(value = "SELECT id, password, name, address FROM member WHERE id=?", nativeQuery = true)

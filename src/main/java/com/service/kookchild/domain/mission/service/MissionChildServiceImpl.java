@@ -37,7 +37,7 @@ public class MissionChildServiceImpl implements MissionChildService{
     @Transactional
     public MissionChildListDTO getMissionList(String email, String state) {
         User user = findUser(email);
-        ParentChild child = findParentChildByChildId(user.getId());
+        ParentChild child = findParentChildByChild(user);
 
         List<Mission> requestMissionList = missionChildRepository.findByParentChildAndParentConfirmAndAndChildConfirm(child, false, true);
         List<Mission> ongoingMissionList = sortMissionsByState(child, state);
@@ -121,7 +121,7 @@ public class MissionChildServiceImpl implements MissionChildService{
     @Transactional
     public boolean requestMissionConfirm(String email, long missionId) {
         User user = findUser(email);
-        ParentChild child = findParentChildByChildId(user.getId());
+        ParentChild child = findParentChildByChild(user);
         Mission mission = findMissionByParentChild(missionId, child);
         if(mission.isChildConfirm()) return false;
         mission.requestConfirm(true);
@@ -162,7 +162,7 @@ public class MissionChildServiceImpl implements MissionChildService{
     @Transactional
     public MissionHistoryDTO getMissionHistoryList(String email, String state) {
         User user = findUser(email);
-        ParentChild child = findParentChildByChildId(user.getId());
+        ParentChild child = findParentChildByChild(user);
 
         List<Mission> successMissionList = sortHistoryMissionsByState(child, state);
         List<MissionViewDTO> successMissionDTOList = successMissionList.stream()
@@ -225,9 +225,8 @@ public class MissionChildServiceImpl implements MissionChildService{
         );
     }
 
-    private ParentChild findParentChildByChildId(long childId){
-        return parentChildRepository.findByChildId(childId)
-                .orElseThrow(() -> new EntityNotFoundException("주어진 childId에 해당하는 ParentChild가 존재하지 않습니다."));
+    private ParentChild findParentChildByChild(User child){
+        return parentChildRepository.findByChild(child);
     }
 
 
@@ -254,7 +253,7 @@ public class MissionChildServiceImpl implements MissionChildService{
         User c = userRepository.findById(childId).orElseThrow(
                 () -> new EntityNotFoundException("해당 유저가 존재하지 않습니다.")
         );
-        ParentChild selectedChild = findParentChildByChildId(c.getId());
+        ParentChild selectedChild = findParentChildByChild(c);
         if(type.equals("requested")) return missionChildRepository.findByParentChildAndParentConfirmAndAndChildConfirm(selectedChild, false, true);
         if (type.equals("ongoing")) return missionChildRepository.findByParentChildAndParentConfirm(selectedChild, false);
         else return missionChildRepository.findByParentChildAndParentConfirm(selectedChild, true);
