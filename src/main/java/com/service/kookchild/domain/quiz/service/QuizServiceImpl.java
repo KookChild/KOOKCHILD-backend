@@ -1,11 +1,9 @@
 package com.service.kookchild.domain.quiz.service;
 
+import com.service.kookchild.domain.mission.dto.MissionViewDTO;
 import com.service.kookchild.domain.quiz.domain.Quiz;
 import com.service.kookchild.domain.quiz.domain.QuizState;
-import com.service.kookchild.domain.quiz.dto.QuizAnswerDTO;
-import com.service.kookchild.domain.quiz.dto.QuizResultDTO;
-import com.service.kookchild.domain.quiz.dto.TodayQuizDTO;
-import com.service.kookchild.domain.quiz.dto.TodayQuizDetailDTO;
+import com.service.kookchild.domain.quiz.dto.*;
 import com.service.kookchild.domain.quiz.repository.QuizRepository;
 import com.service.kookchild.domain.quiz.repository.QuizStateRepository;
 import com.service.kookchild.domain.user.domain.ParentChild;
@@ -22,6 +20,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -34,7 +33,7 @@ public class QuizServiceImpl implements QuizService{
 
     @Override
     @Transactional
-    public TodayQuizDTO getTodayQuiz(String email) {
+    public QuizDTO getTodayQuiz(String email) {
         User child = findUser(email);
         ParentChild ps = parentChildRepository.findByChild(child);
 
@@ -64,7 +63,7 @@ public class QuizServiceImpl implements QuizService{
                 quizStateRepository.save(todayQuizState);
             }
         }
-        TodayQuizDTO todayQuizDTO = TodayQuizDTO.builder()
+        QuizDTO todayQuizDTO = QuizDTO.builder()
                 .id(todayQuizState.getQuiz().getId())
                 .title(todayQuizState.getQuiz().getTitle())
                 .level(todayQuizState.getQuiz().getLevel())
@@ -107,6 +106,20 @@ public class QuizServiceImpl implements QuizService{
         QuizResultDTO quizResultDTO = QuizResultDTO.builder()
                 .isCorrect(qs.isCorrect()).build();
         return quizResultDTO;
+    }
+
+    @Override
+    @Transactional
+    public HistoryQuizListDTO getHistoryQuizList(String email) {
+        User child = findUser(email);
+        ParentChild pc = parentChildRepository.findByChild(child);
+        List<QuizState> quizStateList = quizStateRepository.findByParentChildAndIsCorrect(pc, true);
+        List<QuizDTO> quizListDTOList = quizStateList.stream()
+                .map(QuizDTO::of)
+                .collect(Collectors.toList());
+        HistoryQuizListDTO historyQuizListDTO = HistoryQuizListDTO.builder()
+                .historyQuizList(quizListDTOList).build();
+        return historyQuizListDTO;
     }
 
     private User findUser(String email){

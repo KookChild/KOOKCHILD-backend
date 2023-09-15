@@ -21,4 +21,6 @@ public interface QuizStateRepository extends JpaRepository<QuizState, Long> {
 
     QuizState findByQuizAndParentChild(Quiz quiz, ParentChild ps);
 
+    List<QuizState> findByParentChildAndIsCorrect(ParentChild pc, boolean isCorrect);
+
 }
