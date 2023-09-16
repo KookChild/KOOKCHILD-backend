@@ -43,9 +43,10 @@ public class QuizController {
     }
 
     @GetMapping("/history")
-    public ResponseEntity getHistoryQuizList(Authentication authentication){
+    public ResponseEntity getHistoryQuizList(Authentication authentication,
+                                             @RequestParam(value = "search", required = false) String search){
         String email = getEmail(authentication);
-        HistoryQuizListDTO historyQuizListDTO = quizService.getHistoryQuizList(email);
+        HistoryQuizListDTO historyQuizListDTO = quizService.getHistoryQuizList(email, search);
         return ResponseEntity.ok(historyQuizListDTO);
     }
 
@@ -54,12 +55,6 @@ public class QuizController {
         String email = getEmail(authentication);
         QuizDetailDTO quizDetailDTO = quizService.getHistoryQuizDetail(email, quizId);
         return ResponseEntity.ok(quizDetailDTO);
-    }
-
-    @GetMapping("/history/search")
-    public ResponseEntity searchQuiz(Authentication authentication){
-        String email = getEmail(authentication);
-        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/parent")

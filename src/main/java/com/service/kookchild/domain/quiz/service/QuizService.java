@@ -9,7 +9,7 @@ public interface QuizService {
 
     QuizResultDTO checkQuizAnswer(String email, QuizAnswerDTO quizAnswerDTO);
 
-    HistoryQuizListDTO getHistoryQuizList(String email);
+    HistoryQuizListDTO getHistoryQuizList(String email, String search);
 
     QuizExplanationResponseDTO explainQuiz(Long quizId);
 

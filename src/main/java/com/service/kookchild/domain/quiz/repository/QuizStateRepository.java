@@ -24,4 +24,7 @@ public interface QuizStateRepository extends JpaRepository<QuizState, Long> {
 
     List<QuizState> findByParentChildAndIsCorrect(ParentChild pc, boolean isCorrect);
 
+    @Query("SELECT qs FROM QuizState qs WHERE qs.parentChild = :parentChild AND qs.isCorrect = true AND qs.quiz.answer LIKE '%' || :search || '%'")
+    List<QuizState> findByParentChildAndIsCorrectAndQuizAnswerContaining(@Param("parentChild") ParentChild parentChild, @Param("search") String search);
+
 }

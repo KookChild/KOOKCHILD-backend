@@ -15,6 +15,7 @@ public class QuizDTO {
 
     private Long id;
     private String title;
+    private String answer;
     private int level;
     private int totalReward;
     private boolean isCorrect;
@@ -24,6 +25,7 @@ public class QuizDTO {
         return QuizDTO.builder()
                 .id(q.getId())
                 .title(q.getTitle())
+                .answer(q.getAnswer())
                 .level(q.getLevel())
                 .totalReward(qs.getTotalReward())
                 .isCorrect(qs.isCorrect()).build();

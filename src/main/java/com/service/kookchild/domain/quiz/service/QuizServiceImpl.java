@@ -121,11 +121,16 @@ public class QuizServiceImpl implements QuizService{
     }
 
     @Override
-    @Transactional
-    public HistoryQuizListDTO getHistoryQuizList(String email) {
-        User child = findUser(email);
-        ParentChild pc = parentChildRepository.findByChild(child);
-        List<QuizState> quizStateList = quizStateRepository.findByParentChildAndIsCorrect(pc, true);
+    public HistoryQuizListDTO getHistoryQuizList(String email, String search) {
+        ParentChild pc = parentChildRepository.findByChild(findUser(email));
+
+        List<QuizState> quizStateList;
+        if (search != null && !search.trim().isEmpty()) {
+            quizStateList = quizStateRepository.findByParentChildAndIsCorrectAndQuizAnswerContaining(pc, search);
+        } else {
+            quizStateList = quizStateRepository.findByParentChildAndIsCorrect(pc, true);
+        }
+
         List<QuizDTO> quizListDTOList = quizStateList.stream()
                 .map(QuizDTO::of)
                 .collect(Collectors.toList());
@@ -133,6 +138,7 @@ public class QuizServiceImpl implements QuizService{
                 .historyQuizList(quizListDTOList).build();
         return historyQuizListDTO;
     }
+
 
     @Override
     public QuizExplanationResponseDTO explainQuiz(Long quizId) {
