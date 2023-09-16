@@ -2,6 +2,7 @@ package com.service.kookchild.domain.quiz.dto;
 
 import com.service.kookchild.domain.quiz.domain.Quiz;
 import com.service.kookchild.domain.quiz.domain.QuizState;
+import com.service.kookchild.domain.user.domain.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -11,23 +12,19 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class QuizDTO {
-
-    private Long id;
-    private String title;
-    private String answer;
-    private int level;
+public class QuizChildDTO {
+    private String childName;
     private int totalReward;
     private boolean isCorrect;
+    private String quizContent;
 
-    public static QuizDTO of(QuizState qs) {
+    public static QuizChildDTO of(QuizState qs) {
         Quiz q = qs.getQuiz();
-        return QuizDTO.builder()
-                .id(q.getId())
-                .title(q.getTitle())
-                .answer(q.getAnswer())
-                .level(q.getLevel())
+        User child = qs.getParentChild().getChild();
+        return QuizChildDTO.builder()
+                .childName(child.getName())
                 .totalReward(qs.getTotalReward())
-                .isCorrect(qs.isCorrect()).build();
+                .isCorrect(qs.isCorrect())
+                .quizContent(q.getContent()).build();
     }
 }

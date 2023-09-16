@@ -5,16 +5,18 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+
 @Builder
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class QuizDetailDTO {
+public class TodayQuizDetailDTO {
     private String title;
     private String content;
-    private String answer;
-    private String explanation;
     private int level;
     private int totalReward;
     private boolean isCorrect;
+    private String firstChoice;
+    private String secondChoice;
+    private String thirdChoice;
 }

@@ -45,10 +45,8 @@ public class QuizServiceImpl implements QuizService{
     public QuizDTO getTodayQuiz(String email) {
         User child = findUser(email);
         ParentChild ps = parentChildRepository.findByChild(child);
+        QuizState todayQuizState = findTodayQuiz(ps);
 
-        LocalDateTime startOfDay = LocalDateTime.of(LocalDate.now(), LocalTime.MIN);
-        LocalDateTime endOfDay = LocalDateTime.of(LocalDate.now(), LocalTime.MAX);
-        QuizState todayQuizState = quizStateRepository.findByCreatedDateBetweenAndParentChild(startOfDay, endOfDay, ps);
         if (todayQuizState == null) {
             List<Long> solvedQuizIds = quizStateRepository.findQuizIdsByParentChildAndIsCorrect(ps);
 
@@ -83,14 +81,14 @@ public class QuizServiceImpl implements QuizService{
 
     @Override
     @Transactional
-    public QuizDetailDTO getTodayQuizDetail(String email, long quizId) {
+    public TodayQuizDetailDTO getTodayQuizDetail(String email, long quizId) {
         User child = findUser(email);
         Quiz quiz = quizRepository.findById(quizId).orElseThrow(
                 () -> new EntityNotFoundException("해당 퀴즈가 존재하지 않습니다.")
         );
         ParentChild ps = parentChildRepository.findByChild(child);
         QuizState qs = quizStateRepository.findByQuizAndParentChild(quiz, ps);
-        QuizDetailDTO quizDetailDTO = QuizDetailDTO.builder()
+        TodayQuizDetailDTO todayQuizDetailDTO = TodayQuizDetailDTO.builder()
                 .title(quiz.getTitle())
                 .content(quiz.getContent())
                 .level(quiz.getLevel())
@@ -100,7 +98,7 @@ public class QuizServiceImpl implements QuizService{
                 .secondChoice(quiz.getSecondChoice())
                 .thirdChoice(quiz.getThirdChoice())
                 .build();
-        return quizDetailDTO;
+        return todayQuizDetailDTO;
     }
 
     @Override
@@ -121,11 +119,16 @@ public class QuizServiceImpl implements QuizService{
     }
 
     @Override
-    @Transactional
-    public HistoryQuizListDTO getHistoryQuizList(String email) {
-        User child = findUser(email);
-        ParentChild pc = parentChildRepository.findByChild(child);
-        List<QuizState> quizStateList = quizStateRepository.findByParentChildAndIsCorrect(pc, true);
+    public HistoryQuizListDTO getHistoryQuizList(String email, String search) {
+        ParentChild pc = parentChildRepository.findByChild(findUser(email));
+
+        List<QuizState> quizStateList;
+        if (search != null && !search.trim().isEmpty()) {
+            quizStateList = quizStateRepository.findByParentChildAndIsCorrectAndQuizAnswerContaining(pc, search);
+        } else {
+            quizStateList = quizStateRepository.findByParentChildAndIsCorrect(pc, true);
+        }
+
         List<QuizDTO> quizListDTOList = quizStateList.stream()
                 .map(QuizDTO::of)
                 .collect(Collectors.toList());
@@ -134,9 +137,10 @@ public class QuizServiceImpl implements QuizService{
         return historyQuizListDTO;
     }
 
+
     @Override
     public QuizExplanationResponseDTO explainQuiz(Long quizId) {
-        Quiz quiz = quizRepository.findById(quizId).orElseThrow(() -> new RuntimeException("Quiz not found"));
+        Quiz quiz = quizRepository.findById(quizId).orElseThrow(() -> new EntityNotFoundException("퀴즈가 존재하지 않습니다."));
 
         String content = quiz.getContent();
         String answer = quiz.getAnswer();
@@ -163,6 +167,38 @@ public class QuizServiceImpl implements QuizService{
 
         return quizExplanationResponseDTO;
     }
+
+    @Override
+    public QuizDetailDTO getHistoryQuizDetail(String email, long quizId) {
+        ParentChild pc = parentChildRepository.findByChild(findUser(email));
+        Quiz quiz = quizRepository.findById(quizId).orElseThrow(() -> new EntityNotFoundException("퀴즈가 존재하지 않습니다."));
+        QuizState qs = quizStateRepository.findByQuizAndParentChild(quiz, pc);
+        QuizDetailDTO quizDetailDTO = QuizDetailDTO.builder()
+                .title(quiz.getTitle())
+                .content(quiz.getContent())
+                .answer(quiz.getAnswer())
+                .explanation(quiz.getExplanation())
+                .level(quiz.getLevel())
+                .totalReward(qs.getTotalReward())
+                .isCorrect(qs.isCorrect()).build();
+        return quizDetailDTO;
+    }
+
+    @Override
+    public QuizParentListDTO getChildQuizList(String email) {
+        List<ParentChild> childList = parentChildRepository.findByParent(findUser(email));
+        List<Long> parentChildIds = childList.stream()
+                .map(ParentChild::getId)
+                .collect(Collectors.toList());
+        List<QuizState> quizStateList = quizStateRepository.findByParentChildIdIn(parentChildIds);
+        List<QuizChildDTO> quizChildList = quizStateList.stream()
+                .map(QuizChildDTO::of)
+                .collect(Collectors.toList());
+        QuizParentListDTO quizParentListDTO = QuizParentListDTO.builder()
+                .childLists(quizChildList).build();
+        return quizParentListDTO;
+    }
+
     private String sendRequestToChatGPT(String question) {
         HttpHeaders headers = new HttpHeaders();
         headers.set(ChatGptConfig.AUTHORIZATION, ChatGptConfig.BEARER + apiKey);
@@ -208,6 +244,11 @@ public class QuizServiceImpl implements QuizService{
         }
     }
 
+    private QuizState findTodayQuiz(ParentChild ps) {
+        LocalDateTime startOfDay = LocalDateTime.of(LocalDate.now(), LocalTime.MIN);
+        LocalDateTime endOfDay = LocalDateTime.of(LocalDate.now(), LocalTime.MAX);
+        return quizStateRepository.findByCreatedDateBetweenAndParentChild(startOfDay, endOfDay, ps);
+    }
 
     private User findUser(String email){
             return userRepository.findByEmail(email).orElseThrow(
