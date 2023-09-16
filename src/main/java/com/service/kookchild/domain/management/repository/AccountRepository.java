@@ -51,4 +51,13 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 
     Account findByUser(User user);
 
+    @Modifying
+    @Query("UPDATE Account a SET a.balance = a.balance - :amount WHERE a.type = 2 AND a.user.id = (SELECT u.id FROM User u WHERE u.isParent = true AND u.id = :parentId)")
+    void updateParentType2Balance(@Param("parentId") Long parentId, @Param("amount") Long amount);
+
+    @Modifying
+    @Query("UPDATE Account a SET a.balance = a.balance + :amount WHERE a.type = 2 AND a.user.id = (SELECT u.id FROM User u WHERE u.isParent = false AND u.id = :childId)")
+    void updateChildType2Balance(@Param("childId") Long childId, @Param("amount") Long amount);
+
+
 }
