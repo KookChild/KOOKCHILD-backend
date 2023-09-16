@@ -1,7 +1,7 @@
 package com.service.kookchild.domain.quiz.domain;
 
-import com.service.kookchild.global.domain.BaseEntity;
 import com.service.kookchild.domain.user.domain.ParentChild;
+import com.service.kookchild.global.domain.BaseEntity;
 import lombok.*;
 
 import javax.persistence.*;

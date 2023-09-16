@@ -33,8 +33,9 @@ public class QuizController {
     public ResponseEntity checkQuizAnswer(Authentication authentication, @RequestBody QuizAnswerDTO quizAnswerDTO){
         String email = getEmail(authentication);
         QuizResultDTO quizResultDTO = quizService.checkQuizAnswer(email, quizAnswerDTO);
-        return ResponseEntity.ok(quizResultDTO);
+        return ResponseEntity.status(quizResultDTO.getStatusCode()).body(quizResultDTO);
     }
+
 
     @GetMapping("/{quizId}/explanation")
     public ResponseEntity explainQuiz(@PathVariable Long quizId) {

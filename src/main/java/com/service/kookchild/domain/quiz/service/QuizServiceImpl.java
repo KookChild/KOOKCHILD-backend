@@ -1,5 +1,9 @@
 package com.service.kookchild.domain.quiz.service;
 
+import com.service.kookchild.domain.management.domain.Account;
+import com.service.kookchild.domain.management.domain.AccountHistory;
+import com.service.kookchild.domain.management.repository.AccountHistoryRepository;
+import com.service.kookchild.domain.management.repository.AccountRepository;
 import com.service.kookchild.domain.quiz.domain.Quiz;
 import com.service.kookchild.domain.quiz.domain.QuizState;
 import com.service.kookchild.domain.quiz.dto.*;
@@ -36,6 +40,8 @@ public class QuizServiceImpl implements QuizService{
         private final QuizStateRepository quizStateRepository;
         private final UserRepository userRepository;
         private final ParentChildRepository parentChildRepository;
+        private final AccountRepository accountRepository;
+        private final AccountHistoryRepository accountHistoryRepository;
 
     @Value("${CHATGPT-API-KEY}")
     private String apiKey;
@@ -110,13 +116,40 @@ public class QuizServiceImpl implements QuizService{
         );
         ParentChild pc = parentChildRepository.findByChild(child);
         QuizState qs = quizStateRepository.findByQuizAndParentChild(quiz, pc);
-        if(quiz.getAnswer().equals(quizAnswerDTO.getAnswer())){
+        boolean isCorrect = quiz.getAnswer().equals(quizAnswerDTO.getAnswer());
+
+        if (isCorrect) {
             qs.updateIsCorrect(true);
+            User parent = pc.getParent();
+            Account parentAccount = accountRepository.findByUser(parent);
+            long quizReward = qs.getTotalReward();
+
+            if (quizReward <= parentAccount.getBalance()) {
+                accountRepository.updateParentBalance(parent.getId(), quizReward);
+                accountRepository.updateChildBalance(child.getId(), quizReward);
+
+                AccountHistory childHistory = AccountHistory.builder()
+                        .userId(child.getId())
+                        .isDeposit(1)
+                        .amount(quizReward)
+                        .targetName("부모")
+                        .category("리워드")
+                        .account(accountRepository.findByUser(child)).build();
+                accountHistoryRepository.save(childHistory);
+            } else {
+                return QuizResultDTO.builder()
+                        .statusCode(422)
+                        .isCorrect(false)
+                        .build();
+            }
         }
-        QuizResultDTO quizResultDTO = QuizResultDTO.builder()
-                .isCorrect(qs.isCorrect()).build();
-        return quizResultDTO;
+
+        return QuizResultDTO.builder()
+                .statusCode(200)
+                .isCorrect(isCorrect)
+                .build();
     }
+
 
     @Override
     public HistoryQuizListDTO getHistoryQuizList(String email, String search) {

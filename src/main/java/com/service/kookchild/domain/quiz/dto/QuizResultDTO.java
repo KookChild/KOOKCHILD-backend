@@ -11,4 +11,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class QuizResultDTO {
     private boolean isCorrect;
+    private int statusCode;
 }
