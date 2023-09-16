@@ -96,6 +96,9 @@ public class QuizServiceImpl implements QuizService{
                 .level(quiz.getLevel())
                 .totalReward(qs.getTotalReward())
                 .isCorrect(qs.isCorrect())
+                .firstChoice(quiz.getFirstChoice())
+                .secondChoice(quiz.getSecondChoice())
+                .thirdChoice(quiz.getThirdChoice())
                 .build();
         return quizDetailDTO;
     }
