@@ -24,6 +24,7 @@ public class QuizState extends BaseEntity {
     private ParentChild parentChild;
 
     private boolean isCorrect;
+    private boolean isSolved;
 
     private int totalReward;
 
@@ -36,5 +37,8 @@ public class QuizState extends BaseEntity {
 
     public void updateIsCorrect(boolean isCorrect){
         this.isCorrect = isCorrect;
+    }
+    public void updateIsSolved(boolean isSolved){
+        this.isSolved = isSolved;
     }
 }

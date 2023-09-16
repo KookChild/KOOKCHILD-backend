@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 public class QuizExplanationResponseDTO {
     private String title;
     private String content;
+    private int level;
     private String answer;
     private String explanation;
     private String firstChoice;

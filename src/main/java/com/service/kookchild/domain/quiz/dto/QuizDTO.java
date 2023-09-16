@@ -19,6 +19,7 @@ public class QuizDTO {
     private int level;
     private int totalReward;
     private boolean isCorrect;
+    private boolean isSolved;
 
     public static QuizDTO of(QuizState qs) {
         Quiz q = qs.getQuiz();
