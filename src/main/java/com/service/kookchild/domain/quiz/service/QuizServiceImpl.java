@@ -83,14 +83,14 @@ public class QuizServiceImpl implements QuizService{
 
     @Override
     @Transactional
-    public QuizDetailDTO getTodayQuizDetail(String email, long quizId) {
+    public TodayQuizDetailDTO getTodayQuizDetail(String email, long quizId) {
         User child = findUser(email);
         Quiz quiz = quizRepository.findById(quizId).orElseThrow(
                 () -> new EntityNotFoundException("해당 퀴즈가 존재하지 않습니다.")
         );
         ParentChild ps = parentChildRepository.findByChild(child);
         QuizState qs = quizStateRepository.findByQuizAndParentChild(quiz, ps);
-        QuizDetailDTO quizDetailDTO = QuizDetailDTO.builder()
+        TodayQuizDetailDTO todayQuizDetailDTO = TodayQuizDetailDTO.builder()
                 .title(quiz.getTitle())
                 .content(quiz.getContent())
                 .level(quiz.getLevel())
@@ -100,7 +100,7 @@ public class QuizServiceImpl implements QuizService{
                 .secondChoice(quiz.getSecondChoice())
                 .thirdChoice(quiz.getThirdChoice())
                 .build();
-        return quizDetailDTO;
+        return todayQuizDetailDTO;
     }
 
     @Override
@@ -136,7 +136,7 @@ public class QuizServiceImpl implements QuizService{
 
     @Override
     public QuizExplanationResponseDTO explainQuiz(Long quizId) {
-        Quiz quiz = quizRepository.findById(quizId).orElseThrow(() -> new RuntimeException("Quiz not found"));
+        Quiz quiz = quizRepository.findById(quizId).orElseThrow(() -> new EntityNotFoundException("퀴즈가 존재하지 않습니다."));
 
         String content = quiz.getContent();
         String answer = quiz.getAnswer();
@@ -163,6 +163,23 @@ public class QuizServiceImpl implements QuizService{
 
         return quizExplanationResponseDTO;
     }
+
+    @Override
+    public QuizDetailDTO getHistoryQuizDetail(String email, long quizId) {
+        ParentChild pc = parentChildRepository.findByChild(findUser(email));
+        Quiz quiz = quizRepository.findById(quizId).orElseThrow(() -> new EntityNotFoundException("퀴즈가 존재하지 않습니다."));
+        QuizState qs = quizStateRepository.findByQuizAndParentChild(quiz, pc);
+        QuizDetailDTO quizDetailDTO = QuizDetailDTO.builder()
+                .title(quiz.getTitle())
+                .content(quiz.getContent())
+                .answer(quiz.getAnswer())
+                .explanation(quiz.getExplanation())
+                .level(quiz.getLevel())
+                .totalReward(qs.getTotalReward())
+                .isCorrect(qs.isCorrect()).build();
+        return quizDetailDTO;
+    }
+
     private String sendRequestToChatGPT(String question) {
         HttpHeaders headers = new HttpHeaders();
         headers.set(ChatGptConfig.AUTHORIZATION, ChatGptConfig.BEARER + apiKey);

@@ -25,8 +25,8 @@ public class QuizController {
     @GetMapping("/{quizId}")
     public ResponseEntity getTodayQuizDetail(Authentication authentication, @PathVariable long quizId){
         String email = getEmail(authentication);
-        QuizDetailDTO quizDetailDTO = quizService.getTodayQuizDetail(email, quizId);
-        return ResponseEntity.ok(quizDetailDTO);
+        TodayQuizDetailDTO todayQuizDetailDTO = quizService.getTodayQuizDetail(email, quizId);
+        return ResponseEntity.ok(todayQuizDetailDTO);
     }
 
     @PostMapping("")
@@ -36,7 +36,7 @@ public class QuizController {
         return ResponseEntity.ok(quizResultDTO);
     }
 
-    @PostMapping("/{quizId}/explanation")
+    @GetMapping("/{quizId}/explanation")
     public ResponseEntity explainQuiz(@PathVariable Long quizId) {
         QuizExplanationResponseDTO quizExplanationResponseDTO = quizService.explainQuiz(quizId);
         return ResponseEntity.ok(quizExplanationResponseDTO);
@@ -50,9 +50,10 @@ public class QuizController {
     }
 
     @GetMapping("/history/{quizId}")
-    public ResponseEntity getHistoryQuizDetail(Authentication authentication){
+    public ResponseEntity getHistoryQuizDetail(Authentication authentication, @PathVariable long quizId){
         String email = getEmail(authentication);
-        return ResponseEntity.ok().build();
+        QuizDetailDTO quizDetailDTO = quizService.getHistoryQuizDetail(email, quizId);
+        return ResponseEntity.ok(quizDetailDTO);
     }
 
     @GetMapping("/history/search")
