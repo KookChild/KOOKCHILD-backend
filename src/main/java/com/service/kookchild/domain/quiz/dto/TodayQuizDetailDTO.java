@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 public class TodayQuizDetailDTO {
     private String title;
     private String content;
+    private String answer;
     private int level;
     private int totalReward;
     private boolean isCorrect;

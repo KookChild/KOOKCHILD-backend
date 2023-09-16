@@ -81,7 +81,8 @@ public class QuizServiceImpl implements QuizService{
                 .title(todayQuizState.getQuiz().getTitle())
                 .level(todayQuizState.getQuiz().getLevel())
                 .totalReward(todayQuizState.getTotalReward())
-                .isCorrect(todayQuizState.isCorrect()).build();
+                .isCorrect(todayQuizState.isCorrect())
+                .isSolved(todayQuizState.isSolved()).build();
         return todayQuizDTO;
     }
 
@@ -97,6 +98,7 @@ public class QuizServiceImpl implements QuizService{
         TodayQuizDetailDTO todayQuizDetailDTO = TodayQuizDetailDTO.builder()
                 .title(quiz.getTitle())
                 .content(quiz.getContent())
+                .answer(quiz.getAnswer())
                 .level(quiz.getLevel())
                 .totalReward(qs.getTotalReward())
                 .isCorrect(qs.isCorrect())
@@ -116,8 +118,9 @@ public class QuizServiceImpl implements QuizService{
         );
         ParentChild pc = parentChildRepository.findByChild(child);
         QuizState qs = quizStateRepository.findByQuizAndParentChild(quiz, pc);
-        boolean isCorrect = quiz.getAnswer().equals(quizAnswerDTO.getAnswer());
-
+        boolean isCorrect = false;
+        if(quizAnswerDTO.getAnswer()!=null) isCorrect = quizAnswerDTO.getAnswer().equals("answer");
+        qs.updateIsSolved(true);
         if (isCorrect) {
             qs.updateIsCorrect(true);
             User parent = pc.getParent();
@@ -145,7 +148,6 @@ public class QuizServiceImpl implements QuizService{
                         .build();
             }
         }
-
         return QuizResultDTO.builder()
                 .statusCode(200)
                 .isCorrect(isCorrect)
@@ -194,6 +196,7 @@ public class QuizServiceImpl implements QuizService{
         QuizExplanationResponseDTO quizExplanationResponseDTO = QuizExplanationResponseDTO.builder()
                 .title(quiz.getTitle())
                 .content(content)
+                .level(quiz.getLevel())
                 .answer(answer)
                 .explanation(explanation)
                 .firstChoice(quiz.getFirstChoice())
