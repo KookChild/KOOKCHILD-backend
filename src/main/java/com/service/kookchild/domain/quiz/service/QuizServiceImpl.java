@@ -5,20 +5,27 @@ import com.service.kookchild.domain.quiz.domain.QuizState;
 import com.service.kookchild.domain.quiz.dto.*;
 import com.service.kookchild.domain.quiz.repository.QuizRepository;
 import com.service.kookchild.domain.quiz.repository.QuizStateRepository;
+import com.service.kookchild.domain.security.ChatGptConfig;
 import com.service.kookchild.domain.user.domain.ParentChild;
 import com.service.kookchild.domain.user.domain.User;
 import com.service.kookchild.domain.user.repository.ParentChildRepository;
 import com.service.kookchild.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.*;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
 import javax.persistence.EntityNotFoundException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,6 +36,9 @@ public class QuizServiceImpl implements QuizService{
         private final QuizStateRepository quizStateRepository;
         private final UserRepository userRepository;
         private final ParentChildRepository parentChildRepository;
+
+    @Value("${CHATGPT-API-KEY}")
+    private String apiKey;
 
     @Override
     @Transactional
@@ -120,6 +130,81 @@ public class QuizServiceImpl implements QuizService{
                 .historyQuizList(quizListDTOList).build();
         return historyQuizListDTO;
     }
+
+    @Override
+    public QuizExplanationResponseDTO explainQuiz(Long quizId) {
+        Quiz quiz = quizRepository.findById(quizId).orElseThrow(() -> new RuntimeException("Quiz not found"));
+
+        String content = quiz.getContent();
+        String answer = quiz.getAnswer();
+        String explanation = quiz.getExplanation();
+
+        if(explanation==null) {
+
+            String questionToGPT = content + "의 답은 " + answer + "입니다. 초등학생부터 고등학생까지의 학생들이 쉽게 이해할 수 있도록, 친근하면서도 공손한 평어체로 "+answer+"에 대해 3줄로 설명해주세요.";
+
+            explanation = sendRequestToChatGPT(questionToGPT);
+
+            quiz.updateExplanation(explanation);
+            quizRepository.save(quiz);
+        }
+
+        QuizExplanationResponseDTO quizExplanationResponseDTO = QuizExplanationResponseDTO.builder()
+                .title(quiz.getTitle())
+                .content(content)
+                .answer(answer)
+                .explanation(explanation)
+                .firstChoice(quiz.getFirstChoice())
+                .secondChoice(quiz.getSecondChoice())
+                .thirdChoice(quiz.getThirdChoice()).build();
+
+        return quizExplanationResponseDTO;
+    }
+    private String sendRequestToChatGPT(String question) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(ChatGptConfig.AUTHORIZATION, ChatGptConfig.BEARER + apiKey);
+        headers.setContentType(MediaType.valueOf(ChatGptConfig.MEDIA_TYPE));
+
+        Map<String, Object> message = new HashMap<>();
+        message.put("role", ChatGptConfig.ROLE);
+        message.put("content", question);
+
+        List<Map<String, Object>> messages = new ArrayList<>();
+        messages.add(message);
+
+        Map<String, Object> requestBody = new HashMap<>();
+        requestBody.put("model", ChatGptConfig.MODEL);
+        requestBody.put("messages", messages);
+        requestBody.put("max_tokens", ChatGptConfig.MAX_TOKEN);
+        requestBody.put("temperature", ChatGptConfig.TEMPERATURE);
+
+        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
+
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<Map> responseEntity = restTemplate.postForEntity(ChatGptConfig.URL, entity, Map.class);
+
+        if (responseEntity.getStatusCode() == HttpStatus.OK) {
+            Map<String, Object> responseBody = responseEntity.getBody();
+
+            List<?> choices = (List<?>) responseBody.get("choices");
+            if (choices.isEmpty()) {
+                throw new RuntimeException("Choices list is empty!");
+            }
+
+            Object choiceObject = choices.get(0);
+            if (!(choiceObject instanceof Map)) {
+                throw new RuntimeException("Expected a Map but found: " + choiceObject.getClass());
+            }
+
+            Map<String, Object> choiceMap = (Map<String, Object>) choiceObject;
+            Map<String, Object> messageMap = (Map<String, Object>) choiceMap.get("message");
+            String content = (String) messageMap.get("content");
+            return content;
+        } else {
+            throw new RuntimeException("Failed to get response from OpenAI");
+        }
+    }
+
 
     private User findUser(String email){
             return userRepository.findByEmail(email).orElseThrow(

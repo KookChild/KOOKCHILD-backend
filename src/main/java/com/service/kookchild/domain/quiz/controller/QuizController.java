@@ -36,6 +36,12 @@ public class QuizController {
         return ResponseEntity.ok(quizResultDTO);
     }
 
+    @PostMapping("/{quizId}/explanation")
+    public ResponseEntity explainQuiz(@PathVariable Long quizId) {
+        QuizExplanationResponseDTO quizExplanationResponseDTO = quizService.explainQuiz(quizId);
+        return ResponseEntity.ok(quizExplanationResponseDTO);
+    }
+
     @GetMapping("/history")
     public ResponseEntity getHistoryQuizList(Authentication authentication){
         String email = getEmail(authentication);

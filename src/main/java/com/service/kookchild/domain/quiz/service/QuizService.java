@@ -10,4 +10,6 @@ public interface QuizService {
     QuizResultDTO checkQuizAnswer(String email, QuizAnswerDTO quizAnswerDTO);
 
     HistoryQuizListDTO getHistoryQuizList(String email);
+
+    QuizExplanationResponseDTO explainQuiz(Long quizId);
 }

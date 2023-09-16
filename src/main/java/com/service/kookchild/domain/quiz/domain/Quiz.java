@@ -24,4 +24,11 @@ public class Quiz extends BaseEntity {
     private int bankReward;
     @Lob
     private String explanation;
+    private String firstChoice;
+    private String secondChoice;
+    private String thirdChoice;
+
+    public void updateExplanation(String explanation){
+        this.explanation = explanation;
+    }
 }
