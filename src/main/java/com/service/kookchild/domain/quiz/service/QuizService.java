@@ -14,4 +14,6 @@ public interface QuizService {
     QuizExplanationResponseDTO explainQuiz(Long quizId);
 
     QuizDetailDTO getHistoryQuizDetail(String email, long quizId);
+
+    QuizParentListDTO getChildQuizList(String email);
 }

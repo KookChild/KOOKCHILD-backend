@@ -45,10 +45,8 @@ public class QuizServiceImpl implements QuizService{
     public QuizDTO getTodayQuiz(String email) {
         User child = findUser(email);
         ParentChild ps = parentChildRepository.findByChild(child);
+        QuizState todayQuizState = findTodayQuiz(ps);
 
-        LocalDateTime startOfDay = LocalDateTime.of(LocalDate.now(), LocalTime.MIN);
-        LocalDateTime endOfDay = LocalDateTime.of(LocalDate.now(), LocalTime.MAX);
-        QuizState todayQuizState = quizStateRepository.findByCreatedDateBetweenAndParentChild(startOfDay, endOfDay, ps);
         if (todayQuizState == null) {
             List<Long> solvedQuizIds = quizStateRepository.findQuizIdsByParentChildAndIsCorrect(ps);
 
@@ -186,6 +184,21 @@ public class QuizServiceImpl implements QuizService{
         return quizDetailDTO;
     }
 
+    @Override
+    public QuizParentListDTO getChildQuizList(String email) {
+        List<ParentChild> childList = parentChildRepository.findByParent(findUser(email));
+        List<Long> parentChildIds = childList.stream()
+                .map(ParentChild::getId)
+                .collect(Collectors.toList());
+        List<QuizState> quizStateList = quizStateRepository.findByParentChildIdIn(parentChildIds);
+        List<QuizChildDTO> quizChildList = quizStateList.stream()
+                .map(QuizChildDTO::of)
+                .collect(Collectors.toList());
+        QuizParentListDTO quizParentListDTO = QuizParentListDTO.builder()
+                .childLists(quizChildList).build();
+        return quizParentListDTO;
+    }
+
     private String sendRequestToChatGPT(String question) {
         HttpHeaders headers = new HttpHeaders();
         headers.set(ChatGptConfig.AUTHORIZATION, ChatGptConfig.BEARER + apiKey);
@@ -231,6 +244,11 @@ public class QuizServiceImpl implements QuizService{
         }
     }
 
+    private QuizState findTodayQuiz(ParentChild ps) {
+        LocalDateTime startOfDay = LocalDateTime.of(LocalDate.now(), LocalTime.MIN);
+        LocalDateTime endOfDay = LocalDateTime.of(LocalDate.now(), LocalTime.MAX);
+        return quizStateRepository.findByCreatedDateBetweenAndParentChild(startOfDay, endOfDay, ps);
+    }
 
     private User findUser(String email){
             return userRepository.findByEmail(email).orElseThrow(
