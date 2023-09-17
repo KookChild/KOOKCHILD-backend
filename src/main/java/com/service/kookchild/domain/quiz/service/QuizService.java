@@ -15,5 +15,5 @@ public interface QuizService {
 
     QuizDetailDTO getHistoryQuizDetail(String email, long quizId);
 
-    QuizParentListDTO getChildQuizList(String email);
+    QuizParentListDTO getChildQuizList(String email, long child);
 }

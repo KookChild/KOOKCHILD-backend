@@ -59,9 +59,9 @@ public class QuizController {
     }
 
     @GetMapping("/parent")
-    public ResponseEntity getChildQuizList(Authentication authentication){
+    public ResponseEntity getChildQuizList(Authentication authentication, @RequestParam Long child){
         String email = getEmail(authentication);
-        QuizParentListDTO quizParentListDTO = quizService.getChildQuizList(email);
+        QuizParentListDTO quizParentListDTO = quizService.getChildQuizList(email, child);
         return ResponseEntity.ok(quizParentListDTO);
     }
 

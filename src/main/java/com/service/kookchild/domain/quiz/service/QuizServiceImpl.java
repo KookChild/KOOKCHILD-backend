@@ -184,7 +184,7 @@ public class QuizServiceImpl implements QuizService{
 
         if(explanation==null) {
 
-            String questionToGPT = content + "의 답은 " + answer + "입니다. 초등학생부터 고등학생까지의 학생들이 쉽게 이해할 수 있도록, 친근하면서도 공손한 평어체로 "+answer+"에 대해 3줄로 설명해주세요.";
+            String questionToGPT = content + "의 답은 " + answer + "입니다. 초등학생부터 고등학생까지의 학생들이 쉽게 이해할 수 있도록, 친근하면서도 공손한 대화체로 "+answer+"에 대해 3줄로 설명해주세요.";
 
             explanation = sendRequestToChatGPT(questionToGPT);
 
@@ -217,12 +217,20 @@ public class QuizServiceImpl implements QuizService{
     }
 
     @Override
-    public QuizParentListDTO getChildQuizList(String email) {
-        List<ParentChild> childList = parentChildRepository.findByParent(findUser(email));
-        List<Long> parentChildIds = childList.stream()
-                .map(ParentChild::getId)
-                .collect(Collectors.toList());
-        List<QuizState> quizStateList = quizStateRepository.findByParentChildIdIn(parentChildIds);
+    public QuizParentListDTO getChildQuizList(String email, long child) {
+        LocalDateTime startOfDay = LocalDateTime.of(LocalDate.now(), LocalTime.MIN);
+        LocalDateTime endOfDay = LocalDateTime.of(LocalDate.now(), LocalTime.MAX);
+        List<QuizState> quizStateList = new ArrayList<>();
+        if(child==0) {
+            List<ParentChild> childList = parentChildRepository.findByParent(findUser(email));
+            List<Long> parentChildIds = childList.stream()
+                    .map(ParentChild::getId)
+                    .collect(Collectors.toList());
+            quizStateList = quizStateRepository.findByCreatedDateBetweenAndParentChildIdIn(startOfDay, endOfDay, parentChildIds);
+        }else{
+            ParentChild parentChild = parentChildRepository.findByChildId(child).get();
+            quizStateList = quizStateRepository.findByCreatedDateBetweenAndParentChildId(startOfDay, endOfDay, parentChild.getId());
+        }
         List<QuizChildDTO> quizChildList = quizStateList.stream()
                 .map(QuizChildDTO::of)
                 .collect(Collectors.toList());
