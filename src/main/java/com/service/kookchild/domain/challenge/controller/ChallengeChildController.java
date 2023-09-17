@@ -1,17 +1,14 @@
 package com.service.kookchild.domain.challenge.controller;
 
 import com.service.kookchild.domain.challenge.domain.Challenge;
-import com.service.kookchild.domain.challenge.repository.ChallengeStateRepository;
+import com.service.kookchild.domain.challenge.dto.ChallengeParentConfirmDTO;
 import com.service.kookchild.domain.challenge.service.ChallengeService;
 import com.service.kookchild.domain.challenge.service.ChallengeStateService;
 import com.service.kookchild.domain.user.domain.ParentChild;
 import com.service.kookchild.domain.security.CustomUserDetails;
-import com.service.kookchild.domain.user.domain.ParentChild;
 import com.service.kookchild.domain.user.domain.User;
 import com.service.kookchild.domain.user.repository.ParentChildRepository;
 import com.service.kookchild.domain.user.repository.UserRepository;
-import com.service.kookchild.global.exception.ExceptionStatus;
-import com.service.kookchild.global.exception.KookChildException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,17 +16,15 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import java.util.List;
 
 @Controller
-public class ChallengeController {
+public class ChallengeChildController {
 
     @Autowired
     private ChallengeService challengeService;
@@ -121,19 +116,31 @@ public class ChallengeController {
         }
     }
 /* (자녀가) 챌린지  0) 참여하기 1) 대기중 2) 승인하기 3) 진행중  */
-@GetMapping("/challenge/check/{challenge_id}")
-public ResponseEntity select( @PathVariable Long challenge_id, Authentication authentication){
-    String email = getEmail(authentication);
-    User user = userRepository.findByEmail(email).get();
+@GetMapping(value={"/challenge/check/{challenge_id}/{child_id}","/challenge/check/{challenge_id}"})
+public ResponseEntity select(
+        @PathVariable Long challenge_id,
+        @PathVariable(required = false) Long child_id,
+        Authentication authentication
+) {
+    Long id=null;
+    if(child_id == null){
+        String email = getEmail(authentication);
+        User user = userRepository.findByEmail(email).get();
+        id = user.getId();
+    }
+    else{
+        id = child_id;
+    }
     int result = 0;
     try{
-        result = challengeStateService.getChallengeType(challenge_id, user.getId());
+        result = challengeStateService.getChallengeType(challenge_id,id);
         return new ResponseEntity(result,HttpStatus.OK);
     }
     catch(Exception e){
         return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
+
     /* 자녀가 챌린지 참여요청 혹은 추천 챌린지 승인 */
 @PostMapping ("/challenge/detail/{challenge_id}/childConfirm")
 public ResponseEntity updateChildConfirm(Authentication authentication, @PathVariable  Long challenge_id) {
@@ -148,23 +155,14 @@ public ResponseEntity updateChildConfirm(Authentication authentication, @PathVar
         return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
+
+
+
     public String getEmail(Authentication authentication) {
         CustomUserDetails principal = (CustomUserDetails) authentication.getPrincipal();
         return principal.getEmail();
     }
-    /* 부모가 챌린지에 대한 confirm을 업데이트 */
-//    @PutMapping("/challenge/{challenge_id}/parent_confirm")
-//    public ResponseEntity updateParentConfirm(@PathVariable Long challenge_id,
-//                                              @RequestParam ParentChild parentChild, // 적절한 방법으로 ParentChild 객체를 얻습니다.
-//                                              @RequestParam int parentReward) {
-//        try {
-//            challengeStateService.updateParentConfirm(challenge_id, parentChild, parentReward);
-//            return new ResponseEntity(HttpStatus.OK);
-//        } catch(Exception e) {
-//            return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
-//        }
-//        return principal.getEmail();
-//    }
+
 
 
 

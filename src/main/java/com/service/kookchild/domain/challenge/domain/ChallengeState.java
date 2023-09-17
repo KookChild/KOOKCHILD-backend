@@ -1,11 +1,9 @@
 package com.service.kookchild.domain.challenge.domain;
 
+import com.service.kookchild.domain.mission.dto.MissionUpdateDTO;
 import com.service.kookchild.global.domain.BaseEntity;
 import com.service.kookchild.domain.user.domain.ParentChild;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 
@@ -31,8 +29,12 @@ public class ChallengeState extends BaseEntity {
     private boolean isSuccess;
 
 
-    public void setChildConfirm(boolean childConfirm) {
+
+    public void updateParentConfirm(boolean parentConfirm){
         this.childConfirm = childConfirm;
     }
 
+    public void updateChildConfirm(boolean childConfirm){
+        this.parentConfirm = parentConfirm;
+    }
 }
