@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class QuizExplanationResponseDTO {
-    private String title;
     private String content;
     private int level;
     private String answer;

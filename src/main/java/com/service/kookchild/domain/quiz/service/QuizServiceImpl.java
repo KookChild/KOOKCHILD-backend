@@ -94,7 +94,7 @@ public class QuizServiceImpl implements QuizService{
                 () -> new EntityNotFoundException("해당 퀴즈가 존재하지 않습니다.")
         );
         ParentChild ps = parentChildRepository.findByChild(child);
-        QuizState qs = quizStateRepository.findByQuizAndParentChild(quiz, ps);
+        QuizState qs = findTodayQuiz(ps);
         TodayQuizDetailDTO todayQuizDetailDTO = TodayQuizDetailDTO.builder()
                 .title(quiz.getTitle())
                 .content(quiz.getContent())
@@ -117,7 +117,7 @@ public class QuizServiceImpl implements QuizService{
                 () -> new EntityNotFoundException("해당 퀴즈가 존재하지 않습니다.")
         );
         ParentChild pc = parentChildRepository.findByChild(child);
-        QuizState qs = quizStateRepository.findByQuizAndParentChild(quiz, pc);
+        QuizState qs = findTodayQuiz(pc);
         boolean isCorrect = false;
         if(quizAnswerDTO.getAnswer()!=null) isCorrect = quizAnswerDTO.getAnswer().equals("answer");
         qs.updateIsSolved(true);
@@ -163,7 +163,7 @@ public class QuizServiceImpl implements QuizService{
         if (search != null && !search.trim().isEmpty()) {
             quizStateList = quizStateRepository.findByParentChildAndIsCorrectAndQuizAnswerContaining(pc, search);
         } else {
-            quizStateList = quizStateRepository.findByParentChildAndIsCorrect(pc, true);
+            quizStateList = quizStateRepository.findByParentChildAndIsCorrectOrderByModifiedDateDesc(pc, true);
         }
 
         List<QuizDTO> quizListDTOList = quizStateList.stream()
@@ -210,7 +210,7 @@ public class QuizServiceImpl implements QuizService{
     public QuizDetailDTO getHistoryQuizDetail(String email, long quizId) {
         ParentChild pc = parentChildRepository.findByChild(findUser(email));
         Quiz quiz = quizRepository.findById(quizId).orElseThrow(() -> new EntityNotFoundException("퀴즈가 존재하지 않습니다."));
-        QuizState qs = quizStateRepository.findByQuizAndParentChild(quiz, pc);
+        QuizState qs = quizStateRepository.findByQuizAndParentChildAndIsCorrect(quiz, pc, true);
         QuizDetailDTO quizDetailDTO = QuizDetailDTO.builder()
                 .title(quiz.getTitle())
                 .content(quiz.getContent())

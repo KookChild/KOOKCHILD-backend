@@ -16,7 +16,6 @@ public class TodayQuizDetailDTO {
     private String answer;
     private int level;
     private int totalReward;
-    private boolean isCorrect;
     private String firstChoice;
     private String secondChoice;
     private String thirdChoice;
