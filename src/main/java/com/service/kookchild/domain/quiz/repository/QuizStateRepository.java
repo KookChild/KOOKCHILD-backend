@@ -20,11 +20,11 @@ public interface QuizStateRepository extends JpaRepository<QuizState, Long> {
     List<Long> findQuizIdsByParentChildAndIsCorrect(@Param("parentChild") ParentChild parentChild);
 
 
-    QuizState findByQuizAndParentChild(Quiz quiz, ParentChild ps);
+    QuizState findByQuizAndParentChildAndIsCorrect(Quiz quiz, ParentChild ps, boolean isCorrect);
 
-    List<QuizState> findByParentChildAndIsCorrect(ParentChild pc, boolean isCorrect);
+    List<QuizState> findByParentChildAndIsCorrectOrderByModifiedDateDesc(ParentChild pc, boolean isCorrect);
 
-    @Query("SELECT qs FROM QuizState qs WHERE qs.parentChild = :parentChild AND qs.isCorrect = true AND qs.quiz.answer LIKE '%' || :search || '%'")
+    @Query("SELECT qs FROM QuizState qs WHERE qs.parentChild = :parentChild AND qs.isCorrect = true AND qs.quiz.answer LIKE '%' || :search || '%' ORDER BY qs.modifiedDate DESC")
     List<QuizState> findByParentChildAndIsCorrectAndQuizAnswerContaining(@Param("parentChild") ParentChild parentChild, @Param("search") String search);
 
     List<QuizState> findByParentChildIdIn(List<Long> parentChildIds);

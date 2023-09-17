@@ -7,6 +7,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Builder
 @Getter
 @NoArgsConstructor
@@ -20,6 +22,7 @@ public class QuizDTO {
     private int totalReward;
     private boolean isCorrect;
     private boolean isSolved;
+    private LocalDateTime solvedDate;
 
     public static QuizDTO of(QuizState qs) {
         Quiz q = qs.getQuiz();
@@ -29,6 +32,7 @@ public class QuizDTO {
                 .answer(q.getAnswer())
                 .level(q.getLevel())
                 .totalReward(qs.getTotalReward())
-                .isCorrect(qs.isCorrect()).build();
+                .isCorrect(qs.isCorrect())
+                .solvedDate(qs.getModifiedDate()).build();
     }
 }
