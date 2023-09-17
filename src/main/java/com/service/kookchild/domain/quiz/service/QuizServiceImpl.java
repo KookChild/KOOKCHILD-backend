@@ -101,7 +101,6 @@ public class QuizServiceImpl implements QuizService{
                 .answer(quiz.getAnswer())
                 .level(quiz.getLevel())
                 .totalReward(qs.getTotalReward())
-                .isCorrect(qs.isCorrect())
                 .firstChoice(quiz.getFirstChoice())
                 .secondChoice(quiz.getSecondChoice())
                 .thirdChoice(quiz.getThirdChoice())
@@ -194,7 +193,6 @@ public class QuizServiceImpl implements QuizService{
         }
 
         QuizExplanationResponseDTO quizExplanationResponseDTO = QuizExplanationResponseDTO.builder()
-                .title(quiz.getTitle())
                 .content(content)
                 .level(quiz.getLevel())
                 .answer(answer)
@@ -212,13 +210,9 @@ public class QuizServiceImpl implements QuizService{
         Quiz quiz = quizRepository.findById(quizId).orElseThrow(() -> new EntityNotFoundException("퀴즈가 존재하지 않습니다."));
         QuizState qs = quizStateRepository.findByQuizAndParentChildAndIsCorrect(quiz, pc, true);
         QuizDetailDTO quizDetailDTO = QuizDetailDTO.builder()
-                .title(quiz.getTitle())
-                .content(quiz.getContent())
                 .answer(quiz.getAnswer())
                 .explanation(quiz.getExplanation())
-                .level(quiz.getLevel())
-                .totalReward(qs.getTotalReward())
-                .isCorrect(qs.isCorrect()).build();
+                .level(quiz.getLevel()).build();
         return quizDetailDTO;
     }
 
