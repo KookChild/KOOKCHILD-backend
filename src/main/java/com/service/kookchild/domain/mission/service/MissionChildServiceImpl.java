@@ -1,5 +1,6 @@
 package com.service.kookchild.domain.mission.service;
 
+import com.service.kookchild.domain.chatgpt.service.ChatGptService;
 import com.service.kookchild.domain.management.domain.Account;
 import com.service.kookchild.domain.management.domain.AccountHistory;
 import com.service.kookchild.domain.management.repository.AccountHistoryRepository;
@@ -33,6 +34,7 @@ public class MissionChildServiceImpl implements MissionChildService{
     private final UserRepository userRepository;
     private final AccountRepository accountRepository;
     private final AccountHistoryRepository accountHistoryRepository;
+    private final ChatGptService chatGptService;
     @Override
     @Transactional
     public MissionChildListDTO getMissionList(String email, String state) {
@@ -186,6 +188,30 @@ public class MissionChildServiceImpl implements MissionChildService{
         mission.receiveReward(true);
         return true;
 
+    }
+
+    @Override
+    @Transactional
+    public MissionRecommendDTO recommendMission() {
+        String questionToGPT = "학생인 자녀에게 시킬 수 있을 만한 미션 제목과 상세내용을 10~30자 이내로 1개 추천해줘. (특정 물건을 사오는 것, 집안일 등 매우 다양하게 생각해줘)";
+        String explanation = chatGptService.sendRequestToChatGPT(questionToGPT);
+
+        String missionTitleKey = "미션 제목: \"";
+        String missionContentKey = "상세내용: \"";
+
+        int titleStart = explanation.indexOf(missionTitleKey) + missionTitleKey.length();
+        int titleEnd = explanation.indexOf("\"", titleStart);
+
+        int contentStart = explanation.indexOf(missionContentKey) + missionContentKey.length();
+        int contentEnd = explanation.indexOf("\"", contentStart);
+
+        String missionTitle = explanation.substring(titleStart, titleEnd);
+        String missionContent = explanation.substring(contentStart, contentEnd);
+
+        return MissionRecommendDTO.builder()
+                .missionTitle(missionTitle)
+                .missionContent(missionContent)
+                .build();
     }
 
     @Override

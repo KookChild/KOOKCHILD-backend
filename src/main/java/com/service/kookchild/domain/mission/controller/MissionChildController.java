@@ -104,6 +104,12 @@ public class MissionChildController {
         return ResponseEntity.ok("보상금을 확인했습니다!");
     }
 
+    @GetMapping("/recommend")
+    public ResponseEntity recommendMission(Authentication authentication){
+        MissionRecommendDTO missionRecommendDTO = missionChildService.recommendMission();
+        return ResponseEntity.ok(missionRecommendDTO);
+    }
+
     public String getEmail(Authentication authentication) {
         CustomUserDetails principal = (CustomUserDetails)authentication.getPrincipal();
         return principal.getEmail();

@@ -1,4 +1,4 @@
-package com.service.kookchild.domain.security;
+package com.service.kookchild.domain.chatgpt.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
