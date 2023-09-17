@@ -39,19 +39,22 @@ public class MissionChildServiceImpl implements MissionChildService{
         User user = findUser(email);
         ParentChild child = findParentChildByChild(user);
 
+        List<Mission> rewardReceivedList = missionChildRepository.findByParentChildAndParentConfirmAndRewardReceive(child, true, false);
         List<Mission> requestMissionList = missionChildRepository.findByParentChildAndParentConfirmAndAndChildConfirm(child, false, true);
         List<Mission> ongoingMissionList = sortMissionsByState(child, state);
-        List<MissionViewDTO> requestMissionDTOList = requestMissionList.stream()
-                .map(MissionViewDTO::of)
-                .collect(Collectors.toList());
-        List<MissionViewDTO> ongoinMissionDTOList = ongoingMissionList.stream()
-                .map(MissionViewDTO::of)
-                .collect(Collectors.toList());
+        List<MissionViewDTO> rewardReceivedDTOList = generateDTO(rewardReceivedList);
+        List<MissionViewDTO> requestMissionDTOList = generateDTO(requestMissionList);
+        List<MissionViewDTO> ongoinMissionDTOList = generateDTO(ongoingMissionList);
 
         return MissionChildListDTO.builder()
+                .rewardReceivedLists(rewardReceivedDTOList)
                 .requestMissionLists(requestMissionDTOList)
                 .ongoingMissionLists(ongoinMissionDTOList)
                 .build();
+    }
+
+    private List<MissionViewDTO> generateDTO(List<Mission> list){
+        return list.stream().map(MissionViewDTO::of).collect(Collectors.toList());
     }
 
     @Override
@@ -167,12 +170,22 @@ public class MissionChildServiceImpl implements MissionChildService{
         ParentChild child = findParentChildByChild(user);
 
         List<Mission> successMissionList = sortHistoryMissionsByState(child, state);
-        List<MissionViewDTO> successMissionDTOList = successMissionList.stream()
-                .map(MissionViewDTO::of)
-                .collect(Collectors.toList());
+        List<MissionViewDTO> successMissionDTOList = generateDTO(successMissionList);
 
         return MissionHistoryDTO.builder()
                 .successMissionList(successMissionDTOList).build();
+    }
+
+    @Override
+    @Transactional
+    public boolean receiveReward(String email, MissionDTO missionDTO) {
+        User user = findUser(email);
+        ParentChild child = findParentChildByChild(user);
+        Mission mission = missionChildRepository.findById(missionDTO.getMissionId()).get();
+        if(!mission.getParentChild().equals(child)) return false;
+        mission.receiveReward(true);
+        return true;
+
     }
 
     @Override
@@ -201,17 +214,17 @@ public class MissionChildServiceImpl implements MissionChildService{
 
     private List<Mission> sortMissionsByState(ParentChild child, String state) {
         if(state.equals("newest")){
-            return missionChildRepository.findByParentChildAndParentConfirmAndChildConfirmOrderByEndDateDesc(child, false, false);
+            return missionChildRepository.findByParentChildAndChildConfirmOrderByEndDateDesc(child, false);
         } else{
-            return missionChildRepository.findByParentChildAndParentConfirmAndChildConfirmOrderByEndDate(child, false, false);
+            return missionChildRepository.findByParentChildAndChildConfirmOrderByEndDate(child, false);
         }
     }
 
     private List<Mission> sortHistoryMissionsByState(ParentChild child, String state) {
         if(state.equals("newest")){
-            return missionChildRepository.findByParentChildAndParentConfirmAndChildConfirmOrderByEndDateDesc(child, true, true);
+            return missionChildRepository.findByParentChildAndParentConfirmAndRewardReceiveOrderByEndDateDesc(child, true, true);
         } else{
-            return missionChildRepository.findByParentChildAndParentConfirmAndChildConfirmOrderByEndDate(child, true, true);
+            return missionChildRepository.findByParentChildAndParentConfirmAndRewardReceiveOrderByEndDate(child, true, true);
         }
     }
 

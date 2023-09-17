@@ -14,12 +14,16 @@ public interface MissionChildRepository extends JpaRepository<Mission, Long> {
 
     // type이 있을 때
     List<Mission> findByParentChildAndParentConfirm(ParentChild parentChild, boolean parentConfirm);
-    List<Mission> findByParentChildAndParentConfirmAndChildConfirmOrderByEndDate(ParentChild parentChild, boolean parentConfirm, boolean childConfirm);
-    List<Mission> findByParentChildAndParentConfirmAndChildConfirmOrderByEndDateDesc(ParentChild parentChild, boolean parentConfirm, boolean childConfirm);
+    List<Mission> findByParentChildAndParentConfirmAndRewardReceiveOrderByEndDate(ParentChild parentChild, boolean parentConfirm, boolean rewardReceive);
+    List<Mission> findByParentChildAndParentConfirmAndRewardReceiveOrderByEndDateDesc(ParentChild parentChild, boolean parentConfirm, boolean rewardReceive);
 
     Mission findByIdAndParentChild(long missionId, ParentChild parentChild);
     List<Mission> findByParentChildIdInAndParentConfirm(List<Long> parentChildIds, boolean parentConfirm);
 
+    List<Mission> findByParentChildAndParentConfirmAndRewardReceive(ParentChild parentChild, boolean parentConfirm, boolean rewardReceive);
 
 
+    List<Mission> findByParentChildAndChildConfirmOrderByEndDateDesc(ParentChild child, boolean childConfirm);
+
+    List<Mission> findByParentChildAndChildConfirmOrderByEndDate(ParentChild child, boolean childConfirm);
 }

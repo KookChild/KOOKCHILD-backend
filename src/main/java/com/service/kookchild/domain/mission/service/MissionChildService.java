@@ -18,4 +18,5 @@ public interface MissionChildService {
 
     MissionHistoryDTO getMissionHistoryList(String email, String state);
 
+    boolean receiveReward(String email, MissionDTO missionDTO);
 }

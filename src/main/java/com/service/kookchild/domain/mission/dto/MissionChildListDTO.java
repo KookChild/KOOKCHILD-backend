@@ -11,4 +11,5 @@ public class MissionChildListDTO {
 
     private List<MissionViewDTO> requestMissionLists;
     private List<MissionViewDTO> ongoingMissionLists;
+    private List<MissionViewDTO> rewardReceivedLists;
 }

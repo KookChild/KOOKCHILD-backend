@@ -155,6 +155,7 @@ public class QuizServiceImpl implements QuizService{
 
 
     @Override
+    @Transactional
     public HistoryQuizListDTO getHistoryQuizList(String email, String search) {
         ParentChild pc = parentChildRepository.findByChild(findUser(email));
 
@@ -175,6 +176,7 @@ public class QuizServiceImpl implements QuizService{
 
 
     @Override
+    @Transactional
     public QuizExplanationResponseDTO explainQuiz(Long quizId) {
         Quiz quiz = quizRepository.findById(quizId).orElseThrow(() -> new EntityNotFoundException("퀴즈가 존재하지 않습니다."));
 
@@ -205,6 +207,7 @@ public class QuizServiceImpl implements QuizService{
     }
 
     @Override
+    @Transactional
     public QuizDetailDTO getHistoryQuizDetail(String email, long quizId) {
         ParentChild pc = parentChildRepository.findByChild(findUser(email));
         Quiz quiz = quizRepository.findById(quizId).orElseThrow(() -> new EntityNotFoundException("퀴즈가 존재하지 않습니다."));
@@ -217,6 +220,7 @@ public class QuizServiceImpl implements QuizService{
     }
 
     @Override
+    @Transactional
     public QuizParentListDTO getChildQuizList(String email, long child) {
         LocalDateTime startOfDay = LocalDateTime.of(LocalDate.now(), LocalTime.MIN);
         LocalDateTime endOfDay = LocalDateTime.of(LocalDate.now(), LocalTime.MAX);

@@ -57,4 +57,7 @@ public class Mission extends BaseEntity {
     public void approveConfirm(boolean parentConfirm){
         this.parentConfirm = parentConfirm;
     }
+    public void receiveReward(boolean rewardReceive){
+        this.rewardReceive = rewardReceive;
+    }
 }

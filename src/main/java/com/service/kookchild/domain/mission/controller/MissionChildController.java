@@ -96,6 +96,14 @@ public class MissionChildController {
         return ResponseEntity.ok("미션이 성공적으로 삭제되었습니다.");
     }
 
+    @PostMapping("/receive")
+    public ResponseEntity receiveReward(Authentication authentication, @RequestBody MissionDTO missionDTO){
+        String email = getEmail(authentication);
+        boolean result = missionChildService.receiveReward(email, missionDTO);
+        if(!result) return ResponseEntity.badRequest().body("보상금 확인 실패");
+        return ResponseEntity.ok("보상금을 확인했습니다!");
+    }
+
     public String getEmail(Authentication authentication) {
         CustomUserDetails principal = (CustomUserDetails)authentication.getPrincipal();
         return principal.getEmail();
