@@ -4,6 +4,7 @@ import com.service.kookchild.domain.challenge.domain.ChallengeState;
 import com.service.kookchild.domain.challenge.repository.ChallengeStateRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ChallengeStateServiceImpl implements ChallengeStateService {
@@ -12,11 +13,19 @@ public class ChallengeStateServiceImpl implements ChallengeStateService {
     private ChallengeStateRepository challengeStateRepository;
 
     @Override
+    @Transactional
     public void updateChildConfirm(Long challengeId, Long parentChildId) {
         challengeStateRepository.updateChildConfirm(challengeId, parentChildId);
 
     }
-/*(자녀가) 챌린지  0) 참여하기 1) 대기중 2) 추천 - 승인하기 3) 진행중 */
+
+    @Override
+    @Transactional
+    public void updateParentConfirm(Long id, int parentReward) {
+        challengeStateRepository.updateParentConfirm(id,parentReward);
+    }
+
+    /*(자녀가) 챌린지  0) 참여하기 1) 대기중 2) 추천 - 승인하기 3) 진행중 */
     @Override
     public int getChallengeType(Long challengeId, Long childId) {
         ChallengeState challengeState = challengeStateRepository.getChallengeType(challengeId,childId);
