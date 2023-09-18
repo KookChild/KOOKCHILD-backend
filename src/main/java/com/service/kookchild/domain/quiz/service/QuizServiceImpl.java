@@ -122,13 +122,13 @@ public class QuizServiceImpl implements QuizService{
         if (isCorrect) {
             qs.updateIsCorrect(true);
             User parent = pc.getParent();
-            Account parentAccount = accountRepository.findAccountByType2AndUserId(parent.getId()).orElseThrow(
+            Account parentAccount = accountRepository.findAccountsByType1AndUserId(parent.getId()).orElseThrow(
                     () -> new EntityNotFoundException("해당 계좌가 존재하지 않습니다.")
             );
             long quizReward = qs.getTotalReward();
 
             if (quizReward <= parentAccount.getBalance()) {
-                accountRepository.updateParentType2Balance(parent.getId(), quizReward);
+                accountRepository.updateParentType1Balance(parent.getId(), quizReward);
                 accountRepository.updateChildType2Balance(child.getId(), quizReward);
 
                 AccountHistory childHistory = AccountHistory.builder()
