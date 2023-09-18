@@ -9,6 +9,7 @@ import com.service.kookchild.domain.security.CustomUserDetails;
 import com.service.kookchild.domain.user.domain.User;
 import com.service.kookchild.domain.user.repository.ParentChildRepository;
 import com.service.kookchild.domain.user.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,19 +25,16 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @Controller
+@RequiredArgsConstructor
 public class ChallengeChildController {
 
-    @Autowired
-    private ChallengeService challengeService;
+    private final ChallengeService challengeService;
 
-    @Autowired
-    private ChallengeStateService challengeStateService;
+    private final ChallengeStateService challengeStateService;
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    @Autowired
-    private ParentChildRepository parentChildRepository;
+    private final ParentChildRepository parentChildRepository;
 
     @RequestMapping(value = "/test/hello")
     @ResponseBody

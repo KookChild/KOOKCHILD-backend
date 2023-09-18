@@ -2,15 +2,20 @@ package com.service.kookchild.domain.challenge.service;
 
 import com.service.kookchild.domain.challenge.domain.ChallengeState;
 import com.service.kookchild.domain.challenge.repository.ChallengeStateRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
 @Service
+@RequiredArgsConstructor
 public class ChallengeStateServiceImpl implements ChallengeStateService {
 
-    @Autowired
-    private ChallengeStateRepository challengeStateRepository;
+    private final ChallengeStateRepository challengeStateRepository;
 
     @Override
     @Transactional
@@ -30,7 +35,7 @@ public class ChallengeStateServiceImpl implements ChallengeStateService {
     public int getChallengeType(Long challengeId, Long childId) {
         ChallengeState challengeState = challengeStateRepository.getChallengeType(challengeId,childId);
         if(challengeState!=null) {
-            if(challengeState.isChildConfirm() && !challengeState.isParentConfirm()){ // 대기중
+            if(challengeState.isChildConfirm()&& !challengeState.isParentConfirm()){ // 대기중
                 return 1;
             }
             if(!challengeState.isChildConfirm() && challengeState.isParentConfirm()){ //추천
@@ -43,4 +48,39 @@ public class ChallengeStateServiceImpl implements ChallengeStateService {
         }
         return 0; // 참여하기
     }
+
+    @Override
+    public List<ChallengeState> getChallengeList(Long parentChildId, String type) {
+
+
+        List<ChallengeState> result = null;
+        List<ChallengeState> challengeStates = challengeStateRepository.findByParentChildId(parentChildId);
+        for (ChallengeState state : challengeStates) {
+            System.out.println("result: " + state.toString() );
+        }
+
+        final String finalType = type;
+
+        result = challengeStates.stream()
+                .map(challengeState -> {
+
+                    if ("all".equals(finalType)) {
+                        return challengeState;
+                    } else if ("ongoing".equals(finalType) && challengeState.isChildConfirm() && challengeState.isParentConfirm()) {
+                        return challengeState;
+                    } else if ("recommend".equals(finalType) && !challengeState.isChildConfirm() && challengeState.isParentConfirm()) {
+                        return challengeState;
+                    } else if ("request".equals(finalType) && challengeState.isChildConfirm() && !challengeState.isParentConfirm()) {
+                        return challengeState;
+                    } else {
+                        return null;
+                    }
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+        System.out.println("result" + result);
+        return result;
+
+    }
+
 }

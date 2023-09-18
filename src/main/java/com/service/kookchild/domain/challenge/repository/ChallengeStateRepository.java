@@ -4,6 +4,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.List;
+
 public interface ChallengeStateRepository extends JpaRepository<ChallengeState,Long> {
     @Modifying
     @Query(value = "UPDATE challenge_state  SET  child_confirm = 1 WHERE challenge_id = :challengeId AND parent_child_id = :parentChildId", nativeQuery = true)
@@ -19,4 +21,8 @@ public interface ChallengeStateRepository extends JpaRepository<ChallengeState,L
 
 
     ChallengeState findByParentChildIdAndChallengeId(Long parentChildId, Long challengeId);
+
+    List<ChallengeState> findByParentChildId(Long parentChildId);
+
+
 }

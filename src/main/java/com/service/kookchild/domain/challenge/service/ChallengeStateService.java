@@ -1,6 +1,7 @@
 package com.service.kookchild.domain.challenge.service;
 
 import com.service.kookchild.domain.challenge.domain.ChallengeState;
+import java.util.List;
 
 public interface ChallengeStateService {
 
@@ -9,5 +10,5 @@ public interface ChallengeStateService {
     void updateParentConfirm( Long id, int parentReward);
     int getChallengeType(Long challengeId, Long childId);
 
-
+    List<ChallengeState> getChallengeList (Long parentChildId, String type);
 }

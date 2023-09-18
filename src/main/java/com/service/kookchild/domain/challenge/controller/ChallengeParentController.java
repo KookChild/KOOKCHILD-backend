@@ -14,9 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 @Controller
@@ -43,6 +41,21 @@ public class ChallengeParentController {
             ChallengeState challengeState = challengeStateRepository.findByParentChildIdAndChallengeId(parentChild.getId(), challenge_id);
             challengeStateService.updateParentConfirm(challengeState.getId(),challengeParentConfirmDTO.getParentReward() );
             return new ResponseEntity(HttpStatus.OK);
+        } catch(Exception e) {
+            return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/challenge/parent")
+    public ResponseEntity getChallengeList(Authentication authentication, @RequestParam Long child, @RequestParam (value = "type", defaultValue = "all") String type){
+        List<ChallengeState> challengeStates = null;
+
+        try {
+            ParentChild parentChild = parentChildRepository.findByChildId(child).get();
+            challengeStates =  challengeStateService.getChallengeList(parentChild.getId(),type);
+
+            System.out.println(challengeStates);
+            return new ResponseEntity(challengeStates,HttpStatus.OK);
         } catch(Exception e) {
             return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
         }

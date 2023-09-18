@@ -28,13 +28,16 @@ public class ChallengeState extends BaseEntity {
     private boolean childConfirm;
     private boolean isSuccess;
 
-
-
-    public void updateParentConfirm(boolean parentConfirm){
-        this.childConfirm = childConfirm;
-    }
-
-    public void updateChildConfirm(boolean childConfirm){
-        this.parentConfirm = parentConfirm;
+    @Override
+    public String toString() {
+        return "ChallengeState{" +
+                "id=" + id +
+                ", challenge=" + challenge +
+                ", parentChild=" + parentChild +
+                ", parentReward=" + parentReward +
+                ", parentConfirm=" + parentConfirm +
+                ", childConfirm=" + childConfirm +
+                ", isSuccess=" + isSuccess +
+                '}';
     }
 }
