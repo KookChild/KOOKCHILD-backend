@@ -7,6 +7,8 @@ import com.service.kookchild.domain.management.domain.AccountType;
 import com.service.kookchild.domain.management.repository.AccountHistoryRepository;
 import com.service.kookchild.domain.management.repository.AccountRepository;
 import com.service.kookchild.domain.mission.domain.Mission;
+import com.service.kookchild.domain.mission.dto.MissionTitleDateTimeDTO;
+import com.service.kookchild.domain.mission.dto.MissionTitleDatesDTO;
 import com.service.kookchild.domain.mission.repository.MissionRepository;
 import com.service.kookchild.domain.reward.dto.NotCompleteMissionDto;
 import com.service.kookchild.domain.reward.dto.RewardInformationDTO;
@@ -17,8 +19,12 @@ import com.service.kookchild.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 //import org.omg.CORBA.UserException;
 import org.springframework.stereotype.Service;
+
+import java.text.DecimalFormat;
+import java.time.LocalDate;
+import java.time.Period;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -39,6 +45,7 @@ public class RewardServiceImpl implements RewardService {
             Long amount = accountHistoryRepository.rewardCompleteAmountLong(userId);
             System.out.println(amount);
             account.setBalance(amount);
+            accountRepository.save(account);
             System.out.println(account.getBalance());
         }catch(Exception e){
             System.out.println(e);
@@ -56,11 +63,13 @@ public class RewardServiceImpl implements RewardService {
        User u = userRepository.findById(id).get();
 
         ParentChild parentChild = parentChildRepository.findByChild(u);
+        DecimalFormat df = new DecimalFormat("###,###,###");
         List<Mission> missions = missionRepository.findByParentChildIdAndChildConfirm(parentChild.getId(), false);
-        List<String> list =
+        List<MissionTitleDateTimeDTO> list =
                 missions.stream()
-                        .map(Mission::getContent)
-                        .collect(Collectors.toList());
+                .map(mission->
+                        new MissionTitleDateTimeDTO(mission.getTitle(), df.format(Integer.parseInt(mission.getReward()))))
+                .collect(Collectors.toList());
 
         String amount = missionRepository.notCompletedMissionAmount(id);
 

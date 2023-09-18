@@ -39,9 +39,12 @@ public class ManagementSendingServiceImpl implements ManagementSendingService {
         FindAccountDTO findAccountDTO = null;
         Long pId = fi.getParentId();
         Long cId = fi.getChildId();
+        System.out.println("check---1");
         accountRepository.updateParentBalance(pId, fi.getAmount());
+        System.out.println("check---2");
         accountRepository.updateChildBalance(cId, fi.getAmount());
-        Account a  = accountRepository.findByUserId(cId);
+        System.out.println("check---3");
+
         AccountHistory accountHistory = AccountHistory.builder()
                 .userId(cId)
                 .isDeposit(1)
@@ -51,7 +54,9 @@ public class ManagementSendingServiceImpl implements ManagementSendingService {
                 .build();
 
         accountHistoryRepository.save(accountHistory);
+        System.out.println("check---5");
         findAccountDTO = accountRepository.checkChildMoney(fi.getChildId());
+        System.out.println("check---6");
 
         return findAccountDTO;
     }
@@ -78,12 +83,6 @@ public class ManagementSendingServiceImpl implements ManagementSendingService {
         int nextYear = nextMonthYearMonth.getYear();
         Month nextMonth = nextMonthYearMonth.getMonth();
 
-        // 현재 달의 년월을 출력합니다.
-        System.out.println("현재 달: " + currentYear + "년 " + currentMonth + "월");
-
-        // 다음 달의 년월을 출력합니다.
-        System.out.println("다음 달: " + nextYear + "년 " + nextMonth + "월");
-
         // 현재 달과 다음 달의 년월을 LocalDateTime으로 변환합니다.
         LocalDateTime currentMonthDateTime = LocalDateTime.of(currentYear, currentMonth, 1, 0, 0);
         LocalDateTime nextMonthDateTime = LocalDateTime.of(nextYear, nextMonth, 1, 0, 0);
@@ -105,9 +104,8 @@ public class ManagementSendingServiceImpl implements ManagementSendingService {
 
         ArrayList<LocalDateTime> dates = getLastDayOf();
 
-        System.out.println("in");
         ArrayList<FindAccountChildNameId> list = accountRepository.findChildNamesByParentId(fi.getParentId());
-        System.out.println("out");
+
         List<Long> idList = list.stream()
                 .map(FindAccountChildNameId :: getId)
                 .collect(Collectors.toList());

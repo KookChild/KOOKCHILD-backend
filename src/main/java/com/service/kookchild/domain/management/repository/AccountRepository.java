@@ -35,7 +35,7 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
     void updateParentBalance(@Param("parentId") Long parentId, @Param("amount") Long amount);
 
     @Modifying
-    @Query("UPDATE Account a SET a.balance = a.balance + :amount WHERE a.user.id = (SELECT u.id FROM User u WHERE u.isParent = false AND u.id = :childId)")
+    @Query("UPDATE Account a SET a.balance = a.balance + :amount WHERE a.user.id = (SELECT u.id FROM User u WHERE u.isParent = false AND u.id = :childId) AND a.type=1")
     void updateChildBalance(@Param("childId") Long childId, @Param("amount") Long amount);
 
     @Query("SELECT NEW com.service.kookchild.domain.management.dto.FindAccountDTO(TO_CHAR(a.balance, 'FM999,999,999,999') AS balance, a.accountNum AS accountNum, u.name AS userName) " +
