@@ -118,7 +118,7 @@ public class UserService {
                 .accountName(user.getName())
                 .balance(1000000)
                 .password(password)
-                .type(AccountType.예금)
+                .type(AccountType.입출금)
                 .accountNum(accountNum).build();
         accountRepository.save(account);
     }

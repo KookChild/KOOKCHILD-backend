@@ -43,7 +43,7 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
             "JOIN User u ON u.id = a.user.id WHERE a.user.id = :childId AND a.type = 1")
     FindAccountDTO checkChildMoney(@Param("childId") Long childId);
 
-    @Query ("SELECT NEW com.service.kookchild.domain.management.dto.FindAccountChildNameId(u.name, a.accountNum, u.id) FROM User u JOIN Account a ON u.id = a.user.id WHERE u.id IN (SELECT pc.child.id FROM ParentChild pc WHERE pc.parent.id = :id) AND a.type = 1")
+    @Query ("SELECT DISTINCT NEW com.service.kookchild.domain.management.dto.FindAccountChildNameId(u.name, a.accountNum, u.id) FROM User u JOIN Account a ON u.id = a.user.id WHERE u.id IN (SELECT pc.child.id FROM ParentChild pc WHERE pc.parent.id = :id) AND a.type = 1")
     ArrayList<FindAccountChildNameId> findChildNamesByParentId(@Param("id") Long id);
 
     @Query("SELECT a FROM Account a WHERE a.user.id = :id")
