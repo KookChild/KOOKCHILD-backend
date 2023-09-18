@@ -47,13 +47,14 @@ public class ChallengeChildController {
     public ResponseEntity<List<Challenge>> select(Authentication authentication, @RequestParam(value = "state", defaultValue = "all") String state) {
         String email = getEmail(authentication);
         User user = userRepository.findByEmail(email).get();
+        ParentChild parentChild = parentChildRepository.findByChildId(user.getId()).get();
         try {
             List<Challenge> challengeList = null;
 
             switch (state) {
 
                 case "all":
-                    challengeList = challengeService.getAllChallenge(user.getId());
+                    challengeList = challengeService.getAllChallenge(parentChild.getId());
                     break;
                 case "proceeding":
                     user = userRepository.findByEmail(email).get();

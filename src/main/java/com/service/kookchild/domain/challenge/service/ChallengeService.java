@@ -6,7 +6,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface ChallengeService {
-    List<Challenge> getAllChallenge(Long id);
+    List<Challenge> getAllChallenge(Long parentChildId);
     Challenge findChallengeById(Long id);
     List<Challenge> getChallengeListByChildId(Long childId);
 

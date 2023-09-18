@@ -17,8 +17,9 @@ public class ChallengeServiceImpl implements ChallengeService{
     @Autowired
     private UserRepository userRepository;
     @Override
-    public List<Challenge> getAllChallenge(Long id) {
-        return challengeRepository.getAllChallenge(id);
+    public List<Challenge> getAllChallenge(Long parentChildId) {
+        System.out.println(parentChildId);
+        return challengeRepository.getAllChallenge(parentChildId);
     }
 
 
