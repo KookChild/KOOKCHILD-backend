@@ -33,10 +33,13 @@ public class RewardServiceImpl implements RewardService {
 
     @Override
     public RewardInformationDTO rewardInformation(Long userId) {
+        System.out.println(userId);
         Account account = accountRepository.findAccountByType2AndUserId(userId).get();
         try {
             Long amount = accountHistoryRepository.rewardCompleteAmountLong(userId);
+            System.out.println(amount);
             account.setBalance(amount);
+            System.out.println(account.getBalance());
         }catch(Exception e){
             System.out.println(e);
         }
@@ -82,21 +85,19 @@ public class RewardServiceImpl implements RewardService {
                 list
                         .stream()
                         .map(history -> {
-                            history.setCategory("리워드출금");
+                            history.setCategory("예금");
+                            history.setIsDeposit(1);
                             return history;
                         })
                         .collect(Collectors.toList());
-
-        accountHistoryRepository.saveAll(list2);
 
         Account account = accountRepository.findAccountByType2AndUserId(id).get();
         account.setBalance(0L);
 
         Account account1 = accountRepository.findAccountsByType1AndUserId(id).get();
         account1.setBalance(account1.getBalance()+amount);
+        accountRepository.save(account1);
 
-//        accountRepository.save(account);
-//        accountRepository.save(account1);
     }
 
 

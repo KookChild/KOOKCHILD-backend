@@ -105,21 +105,22 @@ public class ManagementSendingServiceImpl implements ManagementSendingService {
 
         ArrayList<LocalDateTime> dates = getLastDayOf();
 
+        System.out.println("in");
         ArrayList<FindAccountChildNameId> list = accountRepository.findChildNamesByParentId(fi.getParentId());
-
+        System.out.println("out");
         List<Long> idList = list.stream()
                 .map(FindAccountChildNameId :: getId)
                 .collect(Collectors.toList());
 
-
+        System.out.println("check---1");
         List<String> savingAmountList = idList.stream()
                 .map(id -> accountHistoryRepository.findAmount(id, "예금", dates.get(0), dates.get(1)))
                 .collect(Collectors.toList());
-
+        System.out.println("check---2");
         List<String> spendingAmountList = idList.stream()
                 .map(id -> accountHistoryRepository.findNotInAmount(id, "예금", dates.get(0), dates.get(1)))
                 .collect(Collectors.toList());
-
+        System.out.println("check---3");
 
         for(int i=0;i<list.size();i++){
             String savingAmount = savingAmountList.get(i);
@@ -129,8 +130,9 @@ public class ManagementSendingServiceImpl implements ManagementSendingService {
             fc.setSavingAmount(savingAmount);
             fc.setSpendingAmount(spendingAmount);
         }
-
+        System.out.println("check---4");
         Account account = accountRepository.findByUserId(fi.getParentId());
+        System.out.println("check---5");
         findAccountInformation = new FindAccountInformation(account.getBalance(), list);
 
         return findAccountInformation;
