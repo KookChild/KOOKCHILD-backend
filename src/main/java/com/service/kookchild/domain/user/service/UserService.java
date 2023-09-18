@@ -38,7 +38,6 @@ public class UserService {
         User parent = insertParent(registerRequestDTO, true);
         userRepository.save(parent);
         createDepositAccount(parent, registerRequestDTO.getAccountPassword());
-        createRewardAccount(parent, registerRequestDTO.getAccountPassword());
         List<RegisterChildDTO> childList = registerRequestDTO.getChildList();
         for(RegisterChildDTO c : childList){
             User child = insertChild(c, false);

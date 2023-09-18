@@ -142,14 +142,14 @@ public class MissionChildServiceImpl implements MissionChildService{
         );
         if(!mission.getParentChild().getParent().equals(user)) return 403;
         if(mission.isParentConfirm()) return 400;
-        Account parentAccount = accountRepository.findAccountByType2AndUserId(user.getId()).orElseThrow(
+        Account parentAccount = accountRepository.findAccountsByType1AndUserId(user.getId()).orElseThrow(
                 () -> new EntityNotFoundException("해당 계좌가 존재하지 않습니다.")
         );
         long missionReward = Integer.parseInt(mission.getReward());
         User child = mission.getParentChild().getChild();
         if(missionReward <= parentAccount.getBalance()){
             mission.approveConfirm(true);
-            accountRepository.updateParentType2Balance(user.getId(), missionReward);
+            accountRepository.updateParentType1Balance(user.getId(), missionReward);
             accountRepository.updateChildType2Balance(child.getId(), missionReward);
             AccountHistory childHistory = AccountHistory.builder()
                     .userId(child.getId())
