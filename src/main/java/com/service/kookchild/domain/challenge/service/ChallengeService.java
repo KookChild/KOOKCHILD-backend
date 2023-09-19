@@ -8,9 +8,7 @@ import java.util.List;
 public interface ChallengeService {
     List<Challenge> getAllChallenge(Long parentChildId);
     Challenge findChallengeById(Long id);
-    List<Challenge> getChallengeListByChildId(Long childId);
 
-    List<Challenge> getRecommendedChallenges(Long userId);
 
 
 

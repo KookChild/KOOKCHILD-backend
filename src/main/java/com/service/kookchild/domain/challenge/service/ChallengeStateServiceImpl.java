@@ -77,7 +77,7 @@ public class ChallengeStateServiceImpl implements ChallengeStateService {
                 })
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
-        
+
         return result;
 
     }

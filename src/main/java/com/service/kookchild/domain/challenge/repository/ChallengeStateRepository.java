@@ -26,4 +26,7 @@ public interface ChallengeStateRepository extends JpaRepository<ChallengeState,L
 
     List<ChallengeState> findByParentChildIdIn(List<Long> parentChildId);
 
+
+
+
 }

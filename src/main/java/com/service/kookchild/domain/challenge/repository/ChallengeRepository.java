@@ -3,6 +3,7 @@ package com.service.kookchild.domain.challenge.repository;
 
         import com.service.kookchild.domain.challenge.domain.Challenge;
         import com.service.kookchild.domain.challenge.domain.ChallengeState;
+        import com.service.kookchild.domain.challenge.dto.ChallengeDTO;
         import org.springframework.data.jpa.repository.JpaRepository;
         import org.springframework.data.jpa.repository.Query;
         import org.springframework.data.repository.query.Param;
@@ -45,7 +46,8 @@ public interface ChallengeRepository extends JpaRepository<Challenge,Long> {
     Challenge findChallengeById(Long id);
 
     /* 3. (자녀가) 자신이 참여 중인 전체 챌린지 조회 (인자: child_id ) */
-    @Query(value="SELECT * FROM challenge c " +
+
+    @Query(value="SELECT  c.id, c.title, c.child_content, c.parent_content, c.image, c.bank_reward, c.start_date, c.end_date, cs.parent_reward FROM challenge c " +
             "JOIN challenge_state cs ON c.id = cs.challenge_id " +
             "JOIN parent_child p ON cs.parent_child_id = p.id " +
             "WHERE p.child_id = ? " +
@@ -55,22 +57,33 @@ public interface ChallengeRepository extends JpaRepository<Challenge,Long> {
             "AND cs.child_confirm=1"+
             "AND cs.is_success = 0",
             nativeQuery = true)
-    List<Challenge> getChallengeListByChildId(Long childId);
+    List<Object[]> getChallengeListByChildId(Long childId);
 
 
     /* 4. (자녀가) 부모에게 추천받은 챌린지 조회 */
 
-    @Query(value = "SELECT * FROM Challenge c " +
+//    @Query(value = "SELECT * FROM Challenge c " +
+//            "JOIN challenge_state cs ON c.id = cs.challenge_id " +
+//            "JOIN parent_child p ON cs.parent_child_id = p.id " +
+//            "WHERE p.child_id = ? " +
+//            "AND c.start_date <= sysdate " +
+//            "AND c.end_date >= sysdate " +
+//            "AND cs.parent_confirm = 1 " +
+//            "AND cs.child_confirm = 0 " +
+//            "AND cs.is_success=0", nativeQuery = true)
+//    List<Challenge> getRecommendedChallenges(Long childId);
+
+    @Query(value = "SELECT c.id, c.title, c.child_content, c.parent_content, c.image, c.bank_reward, c.start_date, c.end_date, cs.parent_reward " +
+            "FROM Challenge c " +
             "JOIN challenge_state cs ON c.id = cs.challenge_id " +
             "JOIN parent_child p ON cs.parent_child_id = p.id " +
-            "WHERE p.child_id = ? " +
+            "WHERE p.child_id = ?1 " +
             "AND c.start_date <= sysdate " +
             "AND c.end_date >= sysdate " +
             "AND cs.parent_confirm = 1 " +
             "AND cs.child_confirm = 0 " +
             "AND cs.is_success=0", nativeQuery = true)
-    List<Challenge> getRecommendedChallenges(Long childId);
-
+    List<Object[]> getRecommendedChallenges(Long childId);
 
 
     /* 챌린지 추천 */

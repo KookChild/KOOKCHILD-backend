@@ -1,19 +1,18 @@
-package com.service.kookchild.domain.challenge.domain;
+package com.service.kookchild.domain.challenge.dto;
 
-import com.service.kookchild.global.domain.BaseEntity;
+import com.service.kookchild.domain.challenge.domain.Challenge;
 import lombok.*;
 
-import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
-@Entity
 @Getter
+@Setter
 @AllArgsConstructor
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 @ToString
-public class Challenge extends BaseEntity {
+public class ChallengeDTO {
 
-    @Id @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
     private String title;
     private String childContent;
@@ -22,4 +21,5 @@ public class Challenge extends BaseEntity {
     private int bankReward;
     LocalDateTime startDate;
     LocalDateTime endDate;
+    private int parentReward;
 }

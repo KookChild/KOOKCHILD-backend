@@ -56,7 +56,7 @@ public class ChallengeParentController {
         User user = userRepository.findByEmail(email).get();
         List<Long> parentChildIds = new ArrayList<>();;
         try {
-            if(child==0){
+            if(child==0){ //0인 경우에는
                 List<ParentChild> parentChilds = parentChildRepository.findByParent(user);
                 parentChildIds = parentChilds.stream()
                         .map(ParentChild::getId)

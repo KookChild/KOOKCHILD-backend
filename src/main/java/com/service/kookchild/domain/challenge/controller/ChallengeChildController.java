@@ -1,7 +1,9 @@
 package com.service.kookchild.domain.challenge.controller;
 
 import com.service.kookchild.domain.challenge.domain.Challenge;
+import com.service.kookchild.domain.challenge.dto.ChallengeDTO;
 import com.service.kookchild.domain.challenge.dto.ChallengeParentConfirmDTO;
+import com.service.kookchild.domain.challenge.repository.ChallengeRepository;
 import com.service.kookchild.domain.challenge.service.ChallengeService;
 import com.service.kookchild.domain.challenge.service.ChallengeStateService;
 import com.service.kookchild.domain.user.domain.ParentChild;
@@ -22,6 +24,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -36,6 +41,7 @@ public class ChallengeChildController {
 
     private final ParentChildRepository parentChildRepository;
 
+    private final ChallengeRepository challengeRepository;
     @RequestMapping(value = "/test/hello")
     @ResponseBody
     public String helloKookchild(Model model) {
@@ -50,28 +56,59 @@ public class ChallengeChildController {
         ParentChild parentChild = parentChildRepository.findByChildId(user.getId()).get();
         try {
             List<Challenge> challengeList = null;
+            List<ChallengeDTO> challengeDTOList = null;
 
             switch (state) {
-
                 case "all":
                     challengeList = challengeService.getAllChallenge(parentChild.getId());
                     break;
                 case "proceeding":
-                    user = userRepository.findByEmail(email).get();
-
-                    /* 임시 :: 아직 로그인 로직 구현안됨 */
-                    challengeList = challengeService.getChallengeListByChildId(user.getId());
+//                    challengeList = challengeService.getChallengeListByChildId(user.getId());
+                    List<Object[]> proceedingResult = challengeRepository.getChallengeListByChildId(user.getId());
+                    challengeDTOList = new ArrayList<>();
+                    for (Object[] row : proceedingResult) {
+                        ChallengeDTO dto = new ChallengeDTO();
+                        dto.setId(((BigDecimal) row[0]).longValue());
+                        dto.setTitle((String) row[1]);
+                        dto.setChildContent((String) row[2]);
+                        dto.setParentContent((String) row[3]);
+                        dto.setImage((String) row[4]);
+                        dto.setBankReward(((BigDecimal) row[5]).intValue());
+                        dto.setStartDate(((Timestamp) row[6]).toLocalDateTime());
+                        dto.setEndDate(((Timestamp) row[7]).toLocalDateTime());
+                        dto.setParentReward(((BigDecimal) row[8]).intValue());
+                        challengeDTOList.add(dto);
+                    }
                     break;
                 case "parentConfirmed":
-                    user = userRepository.findByEmail(email).get();
-                    /* 임시 :: 아직 로그인 로직 구현안됨 */
-                    challengeList = challengeService.getRecommendedChallenges(user.getId());
+//                    challengeList = challengeService.getRecommendedChallenges(user.getId());
+                    List<Object[]> recommendResult = challengeRepository.getRecommendedChallenges(user.getId());
+                    challengeDTOList = new ArrayList<>();
+                    for (Object[] row : recommendResult) {
+                        ChallengeDTO dto = new ChallengeDTO();
+                        dto.setId(((BigDecimal) row[0]).longValue());
+                        dto.setTitle((String) row[1]);
+                        dto.setChildContent((String) row[2]);
+                        dto.setParentContent((String) row[3]);
+                        dto.setImage((String) row[4]);
+                        dto.setBankReward(((BigDecimal) row[5]).intValue());
+                        dto.setStartDate(((Timestamp) row[6]).toLocalDateTime());
+                        dto.setEndDate(((Timestamp) row[7]).toLocalDateTime());
+                        dto.setParentReward(((BigDecimal) row[8]).intValue());
+                        challengeDTOList.add(dto);
+                    }
                     break;
                 default:
                     challengeList = challengeService.getAllChallenge(user.getId());
             }
 
-            return new ResponseEntity<>(challengeList, HttpStatus.OK);
+            if (challengeDTOList != null) {
+                return new ResponseEntity(challengeDTOList, HttpStatus.OK);
+            } else if (challengeList != null) {
+                return new ResponseEntity(challengeList, HttpStatus.OK);
+            } else {
+                return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
 
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -80,23 +117,61 @@ public class ChallengeChildController {
 
     /* (부모가) 자녀별로 참여하고 있는 챌린지 및 추천한 챌린지 조회 */
     @GetMapping("/challenge/{child_id}")
-    public ResponseEntity select(HttpServletRequest request, @PathVariable Long child_id,
+    public ResponseEntity select( @PathVariable Long child_id,
                                  @RequestParam(value = "state", defaultValue = "parentConfirmed") String state){
+
         try{
             List<Challenge> challengeList = null;
+            List<ChallengeDTO> challengeDTOList = null;
             switch (state) {
                 /* (자녀가) 현재 참여중인 챌린지 */
                 case "proceeding":
-                    challengeList = challengeService.getChallengeListByChildId(child_id);
+                    List<Object[]> proceedingResult = challengeRepository.getChallengeListByChildId(child_id);
+                    challengeDTOList = new ArrayList<>();
+                    for (Object[] row : proceedingResult) {
+                        ChallengeDTO dto = new ChallengeDTO();
+                        dto.setId(((BigDecimal) row[0]).longValue());
+                        dto.setTitle((String) row[1]);
+                        dto.setChildContent((String) row[2]);
+                        dto.setParentContent((String) row[3]);
+                        dto.setImage((String) row[4]);
+                        dto.setBankReward(((BigDecimal) row[5]).intValue());
+                        dto.setStartDate(((Timestamp) row[6]).toLocalDateTime());
+                        dto.setEndDate(((Timestamp) row[7]).toLocalDateTime());
+                        dto.setParentReward(((BigDecimal) row[8]).intValue());
+                        challengeDTOList.add(dto);
+                    }
+                    break;
                     /* (자녀에게) 추천을 한 챌린지 */
                 case "parentConfirmed":
-                    challengeList = challengeService.getRecommendedChallenges(child_id);
+//                    challengeList = challengeService.getRecommendedChallenges(child_id);
+                    List<Object[]> result = challengeRepository.getRecommendedChallenges(child_id);
+                    challengeDTOList = new ArrayList<>();
+                    for (Object[] row : result) {
+                        ChallengeDTO dto = new ChallengeDTO();
+                        dto.setId(((BigDecimal) row[0]).longValue());
+                        dto.setTitle((String) row[1]);
+                        dto.setChildContent((String) row[2]);
+                        dto.setParentContent((String) row[3]);
+                        dto.setImage((String) row[4]);
+                        dto.setBankReward(((BigDecimal) row[5]).intValue());
+                        dto.setStartDate(((Timestamp) row[6]).toLocalDateTime());
+                        dto.setEndDate(((Timestamp) row[7]).toLocalDateTime());
+                        dto.setParentReward(((BigDecimal) row[8]).intValue());
+                        challengeDTOList.add(dto);
+                    }
                     break;
-                /* default: 전체 챌린지 목록? --논의필요 */
+
                 default:
                     challengeList = challengeService.getAllChallenge(child_id);
             }
-            return new ResponseEntity(challengeList,HttpStatus.OK);
+            if (challengeDTOList != null) {
+                return new ResponseEntity(challengeDTOList, HttpStatus.OK);
+            } else if (challengeList != null) {
+                return new ResponseEntity(challengeList, HttpStatus.OK);
+            } else {
+                return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
         }
         catch(Exception e){
             return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
