@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 import com.service.kookchild.domain.management.domain.Account;
+import com.service.kookchild.domain.management.domain.AccountHistory;
 import com.service.kookchild.domain.management.domain.AccountType;
 import com.service.kookchild.domain.management.dto.FindAccountChildNameId;
 import com.service.kookchild.domain.management.dto.FindAccountDTO;
@@ -48,6 +49,8 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 
     @Query("SELECT a FROM Account a WHERE a.user.id = :id")
     Account findByUserId(@Param("id") Long id);
+
+    Account findByUserIdAndType(Long userId, AccountType type);
 
     Account findByUser(User user);
 

@@ -15,7 +15,7 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 public class ChatGptService {
-    @Value("${CHATGPT-API-KEY}")
+//    @Value("${CHATGPT-API-KEY}")
     private String apiKey;
 
     public String sendRequestToChatGPT(String question) {
