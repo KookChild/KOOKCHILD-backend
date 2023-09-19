@@ -8,42 +8,40 @@ import com.service.kookchild.domain.management.repository.AccountRepository;
 import com.service.kookchild.domain.quiz.domain.Quiz;
 import com.service.kookchild.domain.quiz.domain.QuizState;
 import com.service.kookchild.domain.quiz.dto.*;
+import com.service.kookchild.domain.quiz.exception.InsufficientBalanceException;
 import com.service.kookchild.domain.quiz.repository.QuizRepository;
 import com.service.kookchild.domain.quiz.repository.QuizStateRepository;
-import com.service.kookchild.domain.chatgpt.config.ChatGptConfig;
 import com.service.kookchild.domain.user.domain.ParentChild;
 import com.service.kookchild.domain.user.domain.User;
 import com.service.kookchild.domain.user.repository.ParentChildRepository;
 import com.service.kookchild.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.*;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
 
 import javax.persistence.EntityNotFoundException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class QuizServiceImpl implements QuizService{
 
-        private final QuizRepository quizRepository;
-        private final QuizStateRepository quizStateRepository;
-        private final UserRepository userRepository;
-        private final ParentChildRepository parentChildRepository;
-        private final AccountRepository accountRepository;
-        private final AccountHistoryRepository accountHistoryRepository;
-        private final ChatGptService chatGptService;
+    private static final String CORRECT_ANSWER = "answer";
+
+    private final QuizRepository quizRepository;
+    private final QuizStateRepository quizStateRepository;
+    private final UserRepository userRepository;
+    private final ParentChildRepository parentChildRepository;
+    private final AccountRepository accountRepository;
+    private final AccountHistoryRepository accountHistoryRepository;
+    private final ChatGptService chatGptService;
 
     @Override
     @Transactional
@@ -109,48 +107,58 @@ public class QuizServiceImpl implements QuizService{
 
     @Override
     @Transactional
-    public QuizResultDTO checkQuizAnswer(String email, QuizAnswerDTO quizAnswerDTO) {
+    public boolean checkQuizAnswer(String email, QuizAnswerDTO quizAnswerDTO) {
         User child = findUser(email);
-        Quiz quiz = quizRepository.findById(quizAnswerDTO.getId()).orElseThrow(
-                () -> new EntityNotFoundException("해당 퀴즈가 존재하지 않습니다.")
-        );
-        ParentChild pc = parentChildRepository.findByChild(child);
+        Quiz quiz = findQuiz(quizAnswerDTO.getId());
+        ParentChild pc = findParentChildByChild(child);
         QuizState qs = findTodayQuiz(pc);
-        boolean isCorrect = false;
-        if(quizAnswerDTO.getAnswer()!=null) isCorrect = quizAnswerDTO.getAnswer().equals("answer");
+
+        boolean isCorrect = Optional.ofNullable(quizAnswerDTO.getAnswer()).orElse("").equals(CORRECT_ANSWER);
         qs.updateIsSolved(true);
+
         if (isCorrect) {
             qs.updateIsCorrect(true);
-            User parent = pc.getParent();
-            Account parentAccount = accountRepository.findAccountsByType1AndUserId(parent.getId()).orElseThrow(
-                    () -> new EntityNotFoundException("해당 계좌가 존재하지 않습니다.")
-            );
-            long quizReward = qs.getTotalReward();
-
-            if (quizReward <= parentAccount.getBalance()) {
-                accountRepository.updateParentType1Balance(parent.getId(), quizReward);
-                accountRepository.updateChildType2Balance(child.getId(), quizReward);
-
-                AccountHistory childHistory = AccountHistory.builder()
-                        .userId(child.getId())
-                        .isDeposit(1)
-                        .amount(quizReward)
-                        .targetName("부모")
-                        .category("리워드")
-                        .account(accountRepository.findAccountByType2AndUserId(child.getId()).get()).build();
-                accountHistoryRepository.save(childHistory);
-            } else {
-                return QuizResultDTO.builder()
-                        .statusCode(422)
-                        .isCorrect(false)
-                        .build();
-            }
+            handleReward(pc, child, qs.getTotalReward());
         }
-        return QuizResultDTO.builder()
-                .statusCode(200)
-                .isCorrect(isCorrect)
-                .build();
+
+        return isCorrect;
     }
+
+    private ParentChild findParentChildByChild(User child) {
+        return parentChildRepository.findByChild(child);
+    }
+
+    private Quiz findQuiz(Long id) {
+        return quizRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("해당 퀴즈가 존재하지 않습니다."));
+    }
+
+    private void handleReward(ParentChild pc, User child, long quizReward) {
+        User parent = pc.getParent();
+        Account parentAccount = accountRepository.findAccountsByType1AndUserId(parent.getId())
+                .orElseThrow(() -> new EntityNotFoundException("해당 계좌가 존재하지 않습니다."));
+
+        if (quizReward <= parentAccount.getBalance()) {
+            accountRepository.updateParentType1Balance(parent.getId(), quizReward);
+            accountRepository.updateChildType2Balance(child.getId(), quizReward);
+            createAccountHistory(child, quizReward);
+        } else {
+            throw new InsufficientBalanceException("잔액이 부족합니다.");
+        }
+    }
+
+    private void createAccountHistory(User child, long amount) {
+        Account childAccount = accountRepository.findAccountByType2AndUserId(child.getId()).get();
+        AccountHistory childHistory = AccountHistory.builder()
+                .userId(child.getId())
+                .isDeposit(1)
+                .amount(amount)
+                .targetName("부모")
+                .category("리워드")
+                .account(childAccount).build();
+        accountHistoryRepository.save(childHistory);
+    }
+
 
 
     @Override
