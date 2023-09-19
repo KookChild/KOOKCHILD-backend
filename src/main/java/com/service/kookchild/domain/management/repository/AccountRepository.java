@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 import com.service.kookchild.domain.management.domain.Account;
+import com.service.kookchild.domain.management.domain.AccountHistory;
 import com.service.kookchild.domain.management.domain.AccountType;
 import com.service.kookchild.domain.management.dto.FindAccountChildNameId;
 import com.service.kookchild.domain.management.dto.FindAccountDTO;
@@ -49,15 +50,17 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
     @Query("SELECT a FROM Account a WHERE a.user.id = :id")
     Account findByUserId(@Param("id") Long id);
 
+    Account findByUserIdAndType(Long userId, AccountType type);
+
     Account findByUser(User user);
 
     @Modifying
-    @Query("UPDATE Account a SET a.balance = a.balance - :amount WHERE a.type = 2 AND a.user.id = (SELECT u.id FROM User u WHERE u.isParent = true AND u.id = :parentId)")
+    @Query("UPDATE Account a SET a.balance = a.balance - :amount WHERE a.type = 2 AND a.user.id = :parentId")
     void updateParentType1Balance(@Param("parentId") Long parentId, @Param("amount") Long amount);
 
 
     @Modifying
-    @Query("UPDATE Account a SET a.balance = a.balance + :amount WHERE a.type = 2 AND a.user.id = (SELECT u.id FROM User u WHERE u.isParent = false AND u.id = :childId)")
+    @Query("UPDATE Account a SET a.balance = a.balance + :amount WHERE a.type = 2 AND a.user.id = :childId")
     void updateChildType2Balance(@Param("childId") Long childId, @Param("amount") Long amount);
 
 

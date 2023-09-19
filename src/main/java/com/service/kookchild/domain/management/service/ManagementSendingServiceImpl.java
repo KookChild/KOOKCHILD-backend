@@ -4,6 +4,7 @@ import java.util.List;
 import com.service.kookchild.domain.management.domain.Account;
 import com.service.kookchild.domain.management.domain.AccountHistory;
 
+import com.service.kookchild.domain.management.domain.AccountType;
 import com.service.kookchild.domain.management.dto.*;
 import com.service.kookchild.domain.management.repository.AccountHistoryRepository;
 import com.service.kookchild.domain.management.repository.AccountRepository;
@@ -32,9 +33,9 @@ public class ManagementSendingServiceImpl implements ManagementSendingService {
 
     private final AccountRepository accountRepository;
     private final AccountHistoryRepository accountHistoryRepository;
-    private final UserRepository userRepository;
 
     @Override
+    @Transactional
     public FindAccountDTO sendChildMoney(FindAccountInfoPair fi) {
         FindAccountDTO findAccountDTO = null;
         Long pId = fi.getParentId();
@@ -45,14 +46,14 @@ public class ManagementSendingServiceImpl implements ManagementSendingService {
         accountRepository.updateChildBalance(cId, fi.getAmount());
         System.out.println("check---3");
 
+        Account account = accountRepository.findByUserIdAndType(cId, AccountType.입출금);
         AccountHistory accountHistory = AccountHistory.builder()
                 .userId(cId)
                 .isDeposit(1)
-                .category("예금")
                 .amount(fi.getAmount())
                 .targetName("")
+                .category("예금")
                 .build();
-
         accountHistoryRepository.save(accountHistory);
         System.out.println("check---5");
         findAccountDTO = accountRepository.checkChildMoney(fi.getChildId());
@@ -68,6 +69,7 @@ public class ManagementSendingServiceImpl implements ManagementSendingService {
     }
 
     @Override
+    @Transactional
     public ArrayList<LocalDateTime> getLastDayOf() {
         // 현재 날짜를 가져옵니다.
         LocalDateTime currentDate = LocalDateTime.now();
@@ -98,6 +100,7 @@ public class ManagementSendingServiceImpl implements ManagementSendingService {
     }
 
     @Override
+    @Transactional
     public FindAccountInformation findChildNamesByParentId(FindAccountInfoPair fi) {
 
         FindAccountInformation findAccountInformation = null;
@@ -112,7 +115,9 @@ public class ManagementSendingServiceImpl implements ManagementSendingService {
 
         System.out.println("check---1");
         List<String> savingAmountList = idList.stream()
-                .map(id -> accountHistoryRepository.findAmount(id, "예금", dates.get(0), dates.get(1)))
+                .map(id ->
+                        accountHistoryRepository.findAmount(id, "예금", dates.get(0), dates.get(1))
+                )
                 .collect(Collectors.toList());
         System.out.println("check---2");
         List<String> spendingAmountList = idList.stream()

@@ -25,8 +25,8 @@ public interface AccountHistoryRepository extends JpaRepository<AccountHistory, 
 
     @Query("SELECT TO_CHAR(NVL(SUM(ah.amount), 0), 'FM999,999,999,999') as rewardCompleteAmount\n" +
             "FROM AccountHistory ah \n" +
-            "WHERE ah.category = '리워드' AND ah.userId = :userId AND ah.account.id = :accountId")
-    String rewardCompleteAmount(@Param("userId") Long userId, @Param("accountId") Long accountId);
+            "WHERE ah.category = '리워드' AND ah.userId = :userId")
+    String rewardCompleteAmount(@Param("userId") Long userId);
 
     @Query("SELECT NVL(SUM(ah.amount), 0) as rewardCompleteAmount\n" +
             "FROM AccountHistory ah \n" +
