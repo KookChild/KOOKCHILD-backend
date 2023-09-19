@@ -10,5 +10,5 @@ public interface ChallengeStateService {
     void updateParentConfirm( Long id, int parentReward);
     int getChallengeType(Long challengeId, Long childId);
 
-    List<ChallengeState> getChallengeList (Long parentChildId, String type);
+    List<ChallengeState> getChallengeList (List<Long> parentChildId, String type);
 }

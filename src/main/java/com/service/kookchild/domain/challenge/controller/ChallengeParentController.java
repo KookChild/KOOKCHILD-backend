@@ -16,7 +16,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
 @Controller
 public class ChallengeParentController {
 
@@ -49,12 +52,22 @@ public class ChallengeParentController {
     @GetMapping("/challenge/parent")
     public ResponseEntity getChallengeList(Authentication authentication, @RequestParam Long child, @RequestParam (value = "type", defaultValue = "all") String type){
         List<ChallengeState> challengeStates = null;
-
+        String email = getEmail(authentication);
+        User user = userRepository.findByEmail(email).get();
+        List<Long> parentChildIds = new ArrayList<>();;
         try {
-            ParentChild parentChild = parentChildRepository.findByChildId(child).get();
-            challengeStates =  challengeStateService.getChallengeList(parentChild.getId(),type);
+            if(child==0){
+                List<ParentChild> parentChilds = parentChildRepository.findByParent(user);
+                parentChildIds = parentChilds.stream()
+                        .map(ParentChild::getId)
+                        .collect(Collectors.toList());
+            }
+            else {
+                ParentChild parentChild = parentChildRepository.findByChildId(child).get();
+                parentChildIds.add(parentChild.getId());
+            }
+            challengeStates =  challengeStateService.getChallengeList(parentChildIds,type);
 
-            System.out.println(challengeStates);
             return new ResponseEntity(challengeStates,HttpStatus.OK);
         } catch(Exception e) {
             return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);

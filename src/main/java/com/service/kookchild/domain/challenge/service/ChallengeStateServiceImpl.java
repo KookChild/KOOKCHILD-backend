@@ -3,7 +3,6 @@ package com.service.kookchild.domain.challenge.service;
 import com.service.kookchild.domain.challenge.domain.ChallengeState;
 import com.service.kookchild.domain.challenge.repository.ChallengeStateRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,11 +49,11 @@ public class ChallengeStateServiceImpl implements ChallengeStateService {
     }
 
     @Override
-    public List<ChallengeState> getChallengeList(Long parentChildId, String type) {
+    public List<ChallengeState> getChallengeList(List<Long> parentChildId, String type) {
 
 
         List<ChallengeState> result = null;
-        List<ChallengeState> challengeStates = challengeStateRepository.findByParentChildId(parentChildId);
+        List<ChallengeState> challengeStates = challengeStateRepository.findByParentChildIdIn(parentChildId);
         for (ChallengeState state : challengeStates) {
             System.out.println("result: " + state.toString() );
         }
@@ -78,7 +77,7 @@ public class ChallengeStateServiceImpl implements ChallengeStateService {
                 })
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
-        System.out.println("result" + result);
+        
         return result;
 
     }
