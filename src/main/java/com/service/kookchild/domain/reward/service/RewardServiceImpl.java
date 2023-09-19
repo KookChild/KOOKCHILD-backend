@@ -52,7 +52,7 @@ public class RewardServiceImpl implements RewardService {
         }
 
         return RewardInformationDTO.builder()
-                .rewardCompleteAmount(accountHistoryRepository.rewardCompleteAmount(userId, account.getId()))
+                .rewardCompleteAmount(accountHistoryRepository.rewardCompleteAmount(userId))
                 .rewardConfirmWaitAmount(missionRepository.rewardConfirmWaitAmount(userId))
                 .thisMonthInterestIncome(10L)
                 .build();
