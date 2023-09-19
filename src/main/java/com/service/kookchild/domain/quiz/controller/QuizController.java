@@ -1,9 +1,11 @@
 package com.service.kookchild.domain.quiz.controller;
 
 import com.service.kookchild.domain.quiz.dto.*;
+import com.service.kookchild.domain.quiz.exception.InsufficientBalanceException;
 import com.service.kookchild.domain.quiz.service.QuizService;
 import com.service.kookchild.domain.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -30,10 +32,15 @@ public class QuizController {
     }
 
     @PostMapping("")
-    public ResponseEntity checkQuizAnswer(Authentication authentication, @RequestBody QuizAnswerDTO quizAnswerDTO){
+    public ResponseEntity<QuizResultDTO> checkQuizAnswer(Authentication authentication, @RequestBody QuizAnswerDTO quizAnswerDTO){
         String email = getEmail(authentication);
-        QuizResultDTO quizResultDTO = quizService.checkQuizAnswer(email, quizAnswerDTO);
-        return ResponseEntity.status(quizResultDTO.getStatusCode()).body(quizResultDTO);
+        try {
+            boolean isCorrect = quizService.checkQuizAnswer(email, quizAnswerDTO);
+            return ResponseEntity.ok(QuizResultDTO.builder().isCorrect(isCorrect).statusCode(200).build());
+        } catch (InsufficientBalanceException e) {
+            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
+                    .body(QuizResultDTO.builder().isCorrect(false).statusCode(422).build());
+        }
     }
 
 

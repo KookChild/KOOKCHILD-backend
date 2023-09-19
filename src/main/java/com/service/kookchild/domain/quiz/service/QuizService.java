@@ -7,7 +7,7 @@ public interface QuizService {
 
     TodayQuizDetailDTO getTodayQuizDetail(String email, long quizId);
 
-    QuizResultDTO checkQuizAnswer(String email, QuizAnswerDTO quizAnswerDTO);
+    boolean checkQuizAnswer(String email, QuizAnswerDTO quizAnswerDTO);
 
     HistoryQuizListDTO getHistoryQuizList(String email, String search);
 
