@@ -85,6 +85,11 @@ public class UserService {
         return FindUserResponseDTO.from(user);
     }
 
+    @Transactional
+    public boolean isEmailAvailable(String email) {
+        return !userRepository.existsByEmail(email);
+    }
+
 
     private User insertParent(RegisterRequestDTO request, boolean isParent){
         return User.builder()

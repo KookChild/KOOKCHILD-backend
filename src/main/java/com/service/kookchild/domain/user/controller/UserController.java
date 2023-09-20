@@ -30,6 +30,12 @@ public class UserController {
         return new ResponseEntity<>(userService.register(request), HttpStatus.OK);
     }
 
+    @GetMapping("/check-email-availability")
+    public ResponseEntity<Boolean> checkEmailAvailability(@RequestParam String email) {
+        boolean isAvailable = userService.isEmailAvailable(email);
+        return ResponseEntity.ok(isAvailable);
+    }
+
     @GetMapping("/user")
     public ResponseEntity<FindUserResponseDTO> findUserInfo(Authentication authentication){
         log.info("/main/parent Controller 진입");
