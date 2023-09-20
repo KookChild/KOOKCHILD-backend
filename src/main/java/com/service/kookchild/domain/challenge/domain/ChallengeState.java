@@ -11,6 +11,7 @@ import javax.persistence.*;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Builder
 public class ChallengeState extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.SEQUENCE)

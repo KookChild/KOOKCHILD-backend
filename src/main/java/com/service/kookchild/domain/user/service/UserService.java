@@ -82,7 +82,9 @@ public class UserService {
         User user = userRepository.findByEmail(email).orElseThrow(
                 () -> new KookChildException(ExceptionStatus.NOT_EXIST_USER_EMAIL));
 
-        return FindUserResponseDTO.from(user);
+        Account account = accountRepository.findAccountsByType1AndUserId(user.getId()).get();
+
+        return FindUserResponseDTO.from(user, account);
     }
 
     @Transactional

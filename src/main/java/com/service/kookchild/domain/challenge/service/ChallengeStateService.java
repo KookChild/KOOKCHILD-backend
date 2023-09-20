@@ -11,4 +11,8 @@ public interface ChallengeStateService {
     int getChallengeType(Long challengeId, Long childId);
 
     List<ChallengeState> getChallengeList (List<Long> parentChildId, String type);
+
+    Long createNewChallengeState(Long challengeId, Long childId, int parentReward);
+
+
 }

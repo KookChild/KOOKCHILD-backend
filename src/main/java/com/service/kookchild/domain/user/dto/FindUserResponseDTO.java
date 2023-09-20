@@ -1,5 +1,6 @@
 package com.service.kookchild.domain.user.dto;
 
+import com.service.kookchild.domain.management.domain.Account;
 import com.service.kookchild.domain.user.domain.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,8 +23,10 @@ public class FindUserResponseDTO {
     private LocalDateTime birthdate;
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
+    private String accountNum;
+    private Long accountBalance;
 
-    public static FindUserResponseDTO from(User user){
+    public static FindUserResponseDTO from(User user, Account account){
         return FindUserResponseDTO.builder()
                 .email(user.getEmail())
                 .name(user.getName())
@@ -33,6 +36,8 @@ public class FindUserResponseDTO {
                 .birthdate(user.getBirthdate())
                 .createdDate(user.getCreatedDate())
                 .modifiedDate(user.getModifiedDate())
+                .accountBalance(account.getBalance())
+                .accountNum(account.getAccountNum())
                 .build();
 
     }

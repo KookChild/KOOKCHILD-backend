@@ -18,7 +18,6 @@ public class ChallengeServiceImpl implements ChallengeService{
 
     @Override
     public List<Challenge> getAllChallenge(Long parentChildId) {
-        System.out.println(parentChildId);
         return challengeRepository.getAllChallenge(parentChildId);
     }
 
@@ -27,8 +26,5 @@ public class ChallengeServiceImpl implements ChallengeService{
         return challengeRepository.findChallengeById(id);
     }
 
-    public List<ChallengeDTO> getAllChallengeWithParentReward(Long childId){
-        List<ChallengeDTO> challengeDTOs = new ArrayList<>();
-        return challengeDTOs;
-    }
+
 }

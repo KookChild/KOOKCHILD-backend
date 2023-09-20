@@ -1,9 +1,11 @@
 package com.service.kookchild.domain.challenge.controller;
 
 import com.service.kookchild.domain.challenge.domain.Challenge;
+import com.service.kookchild.domain.challenge.domain.ChallengeState;
 import com.service.kookchild.domain.challenge.dto.ChallengeDTO;
 import com.service.kookchild.domain.challenge.dto.ChallengeParentConfirmDTO;
 import com.service.kookchild.domain.challenge.repository.ChallengeRepository;
+import com.service.kookchild.domain.challenge.repository.ChallengeStateRepository;
 import com.service.kookchild.domain.challenge.service.ChallengeService;
 import com.service.kookchild.domain.challenge.service.ChallengeStateService;
 import com.service.kookchild.domain.user.domain.ParentChild;
@@ -42,6 +44,9 @@ public class ChallengeChildController {
     private final ParentChildRepository parentChildRepository;
 
     private final ChallengeRepository challengeRepository;
+
+    private  final ChallengeStateRepository challengeStateRepository;
+
     @RequestMapping(value = "/test/hello")
     @ResponseBody
     public String helloKookchild(Model model) {
@@ -223,7 +228,14 @@ public ResponseEntity updateChildConfirm(Authentication authentication, @PathVar
     ParentChild parentChild = parentChildRepository.findByChildId(user.getId()).get();
 
     try {
-        challengeStateService.updateChildConfirm(challenge_id, parentChild.getId());
+        ChallengeState challengeState = null;
+        challengeState = challengeStateRepository.findByParentChildIdAndChallengeId(parentChild.getId(),challenge_id);
+        if(challengeState !=null){
+        challengeStateService.updateChildConfirm(challenge_id, parentChild.getId());}
+        else{
+            challengeStateService.createNewChallengeState(challenge_id,user.getId(),0);
+        }
+
         return new ResponseEntity(HttpStatus.OK);
     } catch(Exception e) {
         return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
