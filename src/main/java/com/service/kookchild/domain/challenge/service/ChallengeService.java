@@ -7,6 +7,7 @@ import java.util.List;
 
 public interface ChallengeService {
     List<Challenge> getAllChallenge(Long parentChildId);
+
     Challenge findChallengeById(Long id);
 
 

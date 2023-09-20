@@ -38,6 +38,15 @@ public interface ChallengeRepository extends JpaRepository<Challenge,Long> {
             "AND c.end_date >= sysdate", nativeQuery = true)
     List<Challenge> getAllChallenge(Long parentChildId);
 
+    @Query(value = "SELECT DISTINCT c.* FROM Challenge c " +
+            "WHERE NOT EXISTS (" +
+            "  SELECT 1 FROM challenge_state cs " +
+            "  WHERE c.id = cs.challenge_id " +
+            "  AND cs.parent_child_id IN :parentChildIds" +
+            ") " +
+            "AND c.start_date <= sysdate " +
+            "AND c.end_date >= sysdate", nativeQuery = true)
+    List<Challenge> getAllChallengesByParentChildIdIn(@Param("parentChildIds") List<Long> parentChildIds);
 
 
 

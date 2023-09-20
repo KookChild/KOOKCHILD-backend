@@ -1,7 +1,12 @@
 package com.service.kookchild.domain.challenge.service;
 
+import com.service.kookchild.domain.challenge.domain.Challenge;
 import com.service.kookchild.domain.challenge.domain.ChallengeState;
+import com.service.kookchild.domain.challenge.dto.ChallengeDTO;
+import com.service.kookchild.domain.challenge.repository.ChallengeRepository;
 import com.service.kookchild.domain.challenge.repository.ChallengeStateRepository;
+import com.service.kookchild.domain.user.domain.ParentChild;
+import com.service.kookchild.domain.user.repository.ParentChildRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +20,8 @@ import java.util.stream.Collectors;
 public class ChallengeStateServiceImpl implements ChallengeStateService {
 
     private final ChallengeStateRepository challengeStateRepository;
+    private final ChallengeRepository challengeRepository;
+    private final ParentChildRepository parentChildRepository;
 
     @Override
     @Transactional
@@ -51,9 +58,10 @@ public class ChallengeStateServiceImpl implements ChallengeStateService {
     @Override
     public List<ChallengeState> getChallengeList(List<Long> parentChildId, String type) {
 
-
+/* 만약 type 이 all 이면 parentChildId List 에 해당하는 getAllChallenge  */
         List<ChallengeState> result = null;
         List<ChallengeState> challengeStates = challengeStateRepository.findByParentChildIdIn(parentChildId);
+//        List<Challenge> challenges = challengeRepository.getAllChallenge()
         for (ChallengeState state : challengeStates) {
             System.out.println("result: " + state.toString() );
         }
@@ -62,7 +70,6 @@ public class ChallengeStateServiceImpl implements ChallengeStateService {
 
         result = challengeStates.stream()
                 .map(challengeState -> {
-
                     if ("all".equals(finalType)) {
                         return challengeState;
                     } else if ("ongoing".equals(finalType) && challengeState.isChildConfirm() && challengeState.isParentConfirm()) {
@@ -79,6 +86,26 @@ public class ChallengeStateServiceImpl implements ChallengeStateService {
                 .collect(Collectors.toList());
 
         return result;
+
+    }
+
+    public Long createNewChallengeState(Long challengeId, Long childId, int parentReward){
+        Challenge challenge = challengeRepository.findById(challengeId).get();
+        ParentChild parentChild = parentChildRepository.findByChildId(childId).get();
+        boolean final_childConfirm = !(parentReward>0); /* parentReward가 0이면 child UI */
+        boolean final_parentConfirm = parentReward>0;
+
+        ChallengeState challengeState = ChallengeState.builder()
+                .childConfirm(final_childConfirm)
+                .parentConfirm(final_parentConfirm)
+                .isSuccess(false)
+                .parentReward(parentReward)
+                .challenge(challenge)
+                .parentChild(parentChild)
+                .build();
+
+        challengeStateRepository.save(challengeState);
+        return 1L;
 
     }
 
