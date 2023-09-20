@@ -39,7 +39,7 @@ public class RewardServiceImpl implements RewardService {
 
     @Override
     public RewardInformationDTO rewardInformation(Long userId) {
-        System.out.println(userId);
+        User user = userRepository.findById(userId).get();
         Account account = accountRepository.findAccountByType2AndUserId(userId).get();
         try {
             Long amount = accountHistoryRepository.rewardCompleteAmountLong(userId);
@@ -52,6 +52,7 @@ public class RewardServiceImpl implements RewardService {
         }
 
         return RewardInformationDTO.builder()
+                .name(user.getName())
                 .rewardCompleteAmount(accountHistoryRepository.rewardCompleteAmount(userId))
                 .rewardConfirmWaitAmount(missionRepository.rewardConfirmWaitAmount(userId))
                 .thisMonthInterestIncome(10L)

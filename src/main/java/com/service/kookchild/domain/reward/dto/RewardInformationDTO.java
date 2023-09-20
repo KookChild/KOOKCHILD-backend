@@ -9,6 +9,7 @@ import lombok.*;
 @ToString
 public class RewardInformationDTO {
 
+    private String name;
     private String rewardCompleteAmount;
     private String rewardConfirmWaitAmount;
     private Long thisMonthInterestIncome;
