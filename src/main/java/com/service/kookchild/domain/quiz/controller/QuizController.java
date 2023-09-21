@@ -72,6 +72,12 @@ public class QuizController {
         return ResponseEntity.ok(quizParentListDTO);
     }
 
+    @PostMapping("/question")
+    public ResponseEntity askQuestion(Authentication authentication, @RequestBody QuizQuestionDTO quizQuestionDTO){
+        QuizQuestionAnswerDTO quizQuestionAnswerDTO = quizService.askQuestion(quizQuestionDTO.getQuestion());
+        return ResponseEntity.ok(quizQuestionAnswerDTO);
+    }
+
     public String getEmail(Authentication authentication) {
         CustomUserDetails principal = (CustomUserDetails)authentication.getPrincipal();
         return principal.getEmail();

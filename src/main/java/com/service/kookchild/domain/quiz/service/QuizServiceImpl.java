@@ -215,6 +215,17 @@ public class QuizServiceImpl implements QuizService{
 
     @Override
     @Transactional
+    public QuizQuestionAnswerDTO askQuestion(String question) {
+        String subQuestion = " 초등학생부터 고등학생까지의 학생들이 쉽게 이해할 수 있도록, 친근하면서도 공손한 대화체로 3줄 이내로 간단하게 설명해주세요. 그리고 존댓말로 써주세요.";
+        String questionToGPT = question + subQuestion;
+        String answer = chatGptService.sendRequestToChatGPT(questionToGPT);
+        QuizQuestionAnswerDTO quizQuestionAnswerDTO = QuizQuestionAnswerDTO.builder()
+                .answer(answer).build();
+        return quizQuestionAnswerDTO;
+    }
+
+    @Override
+    @Transactional
     public QuizDetailDTO getHistoryQuizDetail(String email, long quizId) {
         ParentChild pc = parentChildRepository.findByChild(findUser(email));
         Quiz quiz = quizRepository.findById(quizId).orElseThrow(() -> new EntityNotFoundException("퀴즈가 존재하지 않습니다."));
