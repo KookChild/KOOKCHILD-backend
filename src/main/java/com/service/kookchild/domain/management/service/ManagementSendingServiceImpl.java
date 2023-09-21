@@ -54,7 +54,7 @@ public class ManagementSendingServiceImpl implements ManagementSendingService {
                 .targetName("")
                 .category("예금")
                 .build();
-        accountHistoryRepository.save(accountHistory);
+//        accountHistoryRepository.save(accountHistory);
         System.out.println("check---5");
         findAccountDTO = accountRepository.checkChildMoney(fi.getChildId());
         System.out.println("check---6");
