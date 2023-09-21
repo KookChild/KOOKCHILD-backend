@@ -24,6 +24,7 @@ public class Mission extends BaseEntity {
     private String title;
     private String content;
     private String reward;
+    @Column(length = 1000)
     private String image;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
@@ -59,5 +60,8 @@ public class Mission extends BaseEntity {
     }
     public void receiveReward(boolean rewardReceive){
         this.rewardReceive = rewardReceive;
+    }
+    public void updateImageUrl(String image){
+        this.image = image;
     }
 }

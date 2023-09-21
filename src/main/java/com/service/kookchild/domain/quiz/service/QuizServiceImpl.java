@@ -237,10 +237,10 @@ public class QuizServiceImpl implements QuizService{
             List<Long> parentChildIds = childList.stream()
                     .map(ParentChild::getId)
                     .collect(Collectors.toList());
-            quizStateList = quizStateRepository.findByCreatedDateBetweenAndParentChildIdIn(startOfDay, endOfDay, parentChildIds);
+            quizStateList = quizStateRepository.findByCreatedDateBetweenAndIsSolvedAndParentChildIdIn(startOfDay, endOfDay, true, parentChildIds);
         }else{
             ParentChild parentChild = parentChildRepository.findByChildId(child).get();
-            quizStateList = quizStateRepository.findByCreatedDateBetweenAndParentChildId(startOfDay, endOfDay, parentChild.getId());
+            quizStateList = quizStateRepository.findByCreatedDateBetweenAndIsSolvedAndParentChildId(startOfDay, endOfDay, true, parentChild.getId());
         }
         List<QuizChildDTO> quizChildList = quizStateList.stream()
                 .map(QuizChildDTO::of)

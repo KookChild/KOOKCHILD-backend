@@ -62,4 +62,45 @@ public class ChatGptService {
             throw new RuntimeException("Failed to get response from OpenAI");
         }
     }
+
+    public String makeImages(String missionTitle){
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.parseMediaType(ChatGptConfig.MEDIA_TYPE));
+        headers.add(ChatGptConfig.AUTHORIZATION, ChatGptConfig.BEARER + apiKey);
+
+        Map<String, Object> requestBody = new HashMap<>();
+        requestBody.put("prompt", missionTitle);
+        requestBody.put("n", ChatGptConfig.IMAGE_COUNT);
+        requestBody.put("size", ChatGptConfig.IMAGE_SIZE);
+
+        HttpEntity<Map<String, Object>> requestHttpEntity = new HttpEntity<>(requestBody, headers);
+
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<Map> responseEntity = restTemplate.postForEntity(
+                ChatGptConfig.URLIMAGE,
+                requestHttpEntity,
+                Map.class
+        );
+
+        if (responseEntity.getStatusCode() == HttpStatus.OK) {
+            Map<String, Object> responseBody = responseEntity.getBody();
+
+            List<?> datas = (List<?>) responseBody.get("data");
+            if (datas.isEmpty()) {
+                throw new RuntimeException("Datas list is empty!");
+            }
+
+            Object dataObject = datas.get(0);
+            if (!(dataObject instanceof Map)) {
+                throw new RuntimeException("Expected a Map but found: " + dataObject.getClass());
+            }
+
+            Map<String, Object> dataMap = (Map<String, Object>) dataObject;
+            String url = (String) dataMap.get("url");
+
+            return url;
+        } else {
+            throw new RuntimeException("Failed to get response from server");
+        }
+    }
 }

@@ -18,4 +18,5 @@ public class MissionDetailDTO {
     private boolean parentConfirm;
     private boolean childConfirm;
     private boolean isParent;
+    private String Imgurl;
 }
