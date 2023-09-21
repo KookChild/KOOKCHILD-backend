@@ -43,7 +43,8 @@ public class MissionServiceImpl implements MissionService{
 				.collect(Collectors.toList());
 		String question = "What is the English term for '"+m.getTitle()+"'? Answer only with the English words.";
 		String missionTitle = chatGptService.sendRequestToChatGPT(question);
-		String imageUrl = chatGptService.makeImages(missionTitle);
+		String questionToGpt = "Give me an image that fits the term "+missionTitle+" suitable for kids.";
+		String imageUrl = chatGptService.makeImages(questionToGpt);
 
 		User Parent = parent.get();
 		for(long childId : childIdList){
