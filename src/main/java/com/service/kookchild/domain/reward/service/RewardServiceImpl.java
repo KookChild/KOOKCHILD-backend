@@ -55,7 +55,7 @@ public class RewardServiceImpl implements RewardService {
                 .name(user.getName())
                 .rewardCompleteAmount(accountHistoryRepository.rewardCompleteAmount(userId))
                 .rewardConfirmWaitAmount(missionRepository.rewardConfirmWaitAmount(userId))
-                .thisMonthInterestIncome(10L)
+                .thisMonthInterestIncome("11,063")
                 .build();
     }
 
